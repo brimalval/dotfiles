@@ -1,17 +1,13 @@
 local augroup = vim.api.nvim_create_augroup("LspFormatting", {})
 local null_ls = require('null-ls')
 
--- Get current project's python executable
 local python_executable = io.popen('which python'):read('*line')
 
 local sources = {
-  -- Set line length to 80
   null_ls.builtins.formatting.black.with({
     extra_args = { "-l", "80" },
   }),
-  -- More linting
   null_ls.builtins.diagnostics.flake8,
-  -- Make mypy aware of the current python executable
   null_ls.builtins.diagnostics.mypy.with({
     extra_args = function(params)
         return python_executable and {
@@ -23,7 +19,6 @@ local sources = {
   null_ls.builtins.diagnostics.ruff,
 }
 
--- Format upon save
 local opts = {
   sources = sources,
   on_attach = function(client, bufnr)

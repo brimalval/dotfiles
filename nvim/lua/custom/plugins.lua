@@ -1,7 +1,21 @@
 local plugins = {
-  -- Hop
+  -- Leap, quick motions
   {
-    "phaazon/hop.nvim",
+    "ggandor/leap.nvim",
+    config = function (_, opts)
+      require('leap').add_default_mappings()
+      local primary_label_colors = {
+        fg = '#a040ff'
+      }
+      vim.api.nvim_set_hl(0, 'LeapLabelPrimary', primary_label_colors)
+      -- automatically set colors upon switching colorschemes
+      vim.api.nvim_create_autocmd('ColorScheme', {
+        callback = function ()
+          vim.api.nvim_set_hl(0, 'LeapLabelPrimary', primary_label_colors)
+        end
+      })
+    end,
+    -- leap already lazy-loads itself
     lazy = false
   },
   {

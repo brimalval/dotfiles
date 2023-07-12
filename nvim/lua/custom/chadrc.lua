@@ -1,9 +1,20 @@
 ---@type ChadrcConfig 
  local M = {}
  M.ui = {
-  theme = 'tokyonight',
+  theme = 'penumbra_dark',
   border = 'rounded',
-  transparency = true
+  transparency = true,
+
+  -- add colors as needed
+  changed_themes = {
+    penumbra_dark = {
+      base_30 = {
+        one_bg2 = "#505050"
+      },
+      base_16 = {
+      }
+    }
+  }
  }
  M.plugins = "custom.plugins"
  M.mappings = require "custom.mappings"
