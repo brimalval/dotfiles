@@ -1,0 +1,58 @@
+# The following lines were added by compinstall
+
+zstyle ':completion:*' completer _expand _complete _ignored
+zstyle ':completion:*' matcher-list 'm:{[:lower:]}={[:upper:]} m:{[:lower:][:upper:]}={[:upper:][:lower:]}' 'r:|[._-]=* r:|=*' '' 'l:|=* r:|=*'
+zstyle :compinstall filename '/Users/brian.valencia/.zshrc'
+
+autoload -Uz compinit
+compinit
+# End of lines added by compinstall
+# Lines configured by zsh-newuser-install
+HISTFILE=~/.histfile
+HISTSIZE=10000
+SAVEHIST=10000
+setopt beep extendedglob notify
+# End of lines configured by zsh-newuser-install
+
+# Extra path variables
+export PATH="/opt/homebrew/bin:$PATH"
+export PATH="/usr/local/bin:$PATH"
+export PATH="/Users/brian.valencia/Dev/Scripts:$PATH"
+
+# Starship prompt
+eval "$(starship init zsh)"
+
+# Plugins
+
+# Zoxide (quick search directories)
+eval "$(zoxide init zsh)"
+
+# Autosuggestions
+if [[ ! -d "$HOME/.zsh" ]]; then
+  mkdir -p "$HOME/.zsh"
+fi
+
+if [[ ! -d "$HOME/.zsh/zsh-autosuggestions" ]]; then
+  git clone https://github.com/zsh-users/zsh-autosuggestions "$HOME/.zsh/zsh-autosuggestions"
+fi
+
+source ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh
+# Suggest using what autocomplete would put or with historical commands
+ZSH_AUTOSUGGEST_STRATEGY=(history completion)
+
+DEV_SCRIPTS_FOLDER="~/Dev/Scripts"
+
+if [[ -d "$DEV_SCRIPTS_FOLDER/pipenv_funcs.sh" ]]; then
+  source "$DEV_SCRIPTS_FOLDER/pipenv_funcs.sh"
+fi
+
+if [[ -d "$DEV_SCRIPTS_FOLDER/codeartifact_funcs.sh" ]]; then
+  source "$DEV_SCRIPTS_FOLDER/codeartifact_funcs.sh"
+fi
+
+# End of Plugins
+
+# Use vi keybindings
+bindkey -v
+
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
