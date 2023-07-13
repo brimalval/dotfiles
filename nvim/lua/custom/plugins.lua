@@ -1,22 +1,59 @@
 local plugins = {
-  -- Leap, quick motions
+  -- Quick project file navigation
   {
-    "ggandor/leap.nvim",
-    config = function (_, opts)
-      require('leap').add_default_mappings()
-      local primary_label_colors = {
-        fg = '#a040ff'
-      }
-      vim.api.nvim_set_hl(0, 'LeapLabelPrimary', primary_label_colors)
-      -- automatically set colors upon switching colorschemes
-      vim.api.nvim_create_autocmd('ColorScheme', {
-        callback = function ()
-          vim.api.nvim_set_hl(0, 'LeapLabelPrimary', primary_label_colors)
-        end
-      })
-    end,
-    -- leap already lazy-loads itself
-    lazy = false
+    "ThePrimeagen/harpoon",
+    dependencies = {
+      "nvim-lua/plenary.nvim"
+    },
+    lazy=false
+  },
+  -- Winbar/breadcrumbs
+  {
+    "utilyre/barbecue.nvim",
+    name = "barbecue",
+    version = "*",
+    dependencies = {
+      "SmiteshP/nvim-navic",
+      "nvim-tree/nvim-web-devicons", -- optional dependency
+    },
+    opts = {
+      -- configurations go here
+    },
+    lazy=false
+  },
+  -- Quick Python docstrings
+  {
+    "pixelneo/vim-python-docstring",
+    ft = "python",
+  },
+  -- Leap, quick motions
+  -- {
+  --   "ggandor/leap.nvim",
+  --   config = function (_, opts)
+  --     require('leap').add_default_mappings()
+  --     local primary_label_colors = {
+  --       fg = '#a040ff'
+  --     }
+  --
+  --     vim.api.nvim_set_hl(0, 'LeapLabelPrimary', primary_label_colors)
+  --     -- automatically set colors upon switching colorschemes
+  --     vim.api.nvim_create_autocmd('ColorScheme', {
+  --       callback = function ()
+  --         vim.api.nvim_set_hl(0, 'LeapLabelPrimary', primary_label_colors)
+  --       end
+  --     })
+  --   end,
+  --   -- leap already lazy-loads itself
+  --   lazy = false
+  -- },
+  -- Flash, quick motions w/ treesitter integration
+  {
+    "folke/flash.nvim",
+    event = "VeryLazy",
+    ---@type Flash.Config
+    opts = {},
+    -- stylua: ignore
+    keys = require("custom.configs.flash").keys,
   },
   {
     "rcarriga/nvim-dap-ui",
@@ -72,6 +109,7 @@ local plugins = {
         "black",
         "debugpy",
         "flake8",
+        "isort",
         "mypy",
         "ruff",
         "pyright"

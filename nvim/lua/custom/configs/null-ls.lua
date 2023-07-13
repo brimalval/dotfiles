@@ -7,6 +7,7 @@ local sources = {
   null_ls.builtins.formatting.black.with({
     extra_args = { "-l", "80" },
   }),
+  null_ls.builtins.formatting.isort,
   null_ls.builtins.diagnostics.flake8,
   null_ls.builtins.diagnostics.mypy.with({
     extra_args = function(params)
