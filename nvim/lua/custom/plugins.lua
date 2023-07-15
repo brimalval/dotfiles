@@ -1,4 +1,19 @@
 local plugins = {
+  -- Quick motions for changing/deleting around a text
+  {
+    "kylechui/nvim-surround",
+    version = "*", -- Use for stability; omit to use `main` branch for the latest features
+    event = "VeryLazy",
+    config = function()
+        require("nvim-surround").setup({
+        })
+    end
+  },
+  -- Sticky context based on LSP
+  {
+    "nvim-treesitter/nvim-treesitter-context",
+    ft = { "python" }
+  },
   -- Quick project file navigation
   {
     "ThePrimeagen/harpoon",
