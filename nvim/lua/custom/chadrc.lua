@@ -1,13 +1,13 @@
 ---@type ChadrcConfig 
  local M = {}
  M.ui = {
-  theme = 'penumbra_dark',
+  theme = 'chadracula',
   border = 'rounded',
   transparency = true,
 
   -- add colors as needed
   changed_themes = {
-    penumbra_dark = {
+    chadracula = {
       base_30 = {
         one_bg2 = "#505050"
       },

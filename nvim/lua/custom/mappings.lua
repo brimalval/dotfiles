@@ -8,18 +8,28 @@ M.general = {
   n = {
     ["<leader>ha"] = {
       function ()
-        harpoon_mark = require("harpoon.mark")   
+        local harpoon_mark = require("harpoon.mark")
         harpoon_mark.add_file()
       end,
       "Harpoon: Add a file"
     },
     ["<leader>hu"] = {
       function ()
-        harpoon_ui = require("harpoon.ui")
+        local harpoon_ui = require("harpoon.ui")
         harpoon_ui.toggle_quick_menu()
       end,
       "Harpoon: Show marked files"
-    }
+    },
+    ["<leader>sf"] = { "<cmd> noa w <CR>", "Save without formatting" },
+    ["<leader>xa"] = { "<cmd> %bdelete|edit|normal `\" <CR>", "Close all buffers except the current one"},
+    ["<leader>xf"] = { "<cmd> %bdelete!|edit|normal `\" <CR>", "Close all buffers except the current one (force)"},
+    ["<leader>gf"] = { "<cmd> G <CR>", "Open git-fugitive" },
+    ["<leader>S"] = { "<cmd>lua require('spectre').open()<CR>", "Open Spectre" },
+    ["<leader>sw"] = { "<cmd>lua require('spectre').open_visual({select_word=true})<CR>", "Search current word" },
+    ["<leader>sp"] = { "<cmd>lua require('spectre').open_file_search({select_word=true})<CR>", "Search on current file" }
+  },
+  v = {
+    ["<leader>sw"] = { "<esc><cmd>lua require('spectre').open_visual()<CR>", "Search current word" }
   }
 }
 

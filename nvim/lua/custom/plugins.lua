@@ -1,4 +1,18 @@
 local plugins = {
+  -- Find and replace
+  {
+    "nvim-pack/nvim-spectre",
+    lazy = false,
+  },
+  -- Quick annotation
+  { 
+    "danymat/neogen", 
+    dependencies = "nvim-treesitter/nvim-treesitter", 
+    config = true,
+    -- Uncomment next line if you want to follow only stable versions
+    -- version = "*" 
+    ft = { "python" }
+  },
   -- Quick motions for changing/deleting around a text
   {
     "kylechui/nvim-surround",
@@ -35,11 +49,6 @@ local plugins = {
       -- configurations go here
     },
     lazy=false
-  },
-  -- Quick Python docstrings
-  {
-    "pixelneo/vim-python-docstring",
-    ft = "python",
   },
   -- Leap, quick motions
   -- {

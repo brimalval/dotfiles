@@ -2,6 +2,7 @@ local augroup = vim.api.nvim_create_augroup("LspFormatting", {})
 local null_ls = require('null-ls')
 
 local python_executable = io.popen('which python'):read('*line')
+print("Python Executable:", python_executable)
 
 local sources = {
   null_ls.builtins.formatting.black.with({
