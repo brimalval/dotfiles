@@ -26,7 +26,8 @@ M.general = {
     ["<leader>gf"] = { "<cmd> G <CR>", "Open git-fugitive" },
     ["<leader>S"] = { "<cmd>lua require('spectre').open()<CR>", "Open Spectre" },
     ["<leader>sw"] = { "<cmd>lua require('spectre').open_visual({select_word=true})<CR>", "Search current word" },
-    ["<leader>sp"] = { "<cmd>lua require('spectre').open_file_search({select_word=true})<CR>", "Search on current file" }
+    ["<leader>sp"] = { "<cmd>lua require('spectre').open_file_search({select_word=true})<CR>", "Search on current file" },
+    ["<leader>sc"] = { "<cmd>lua require('specs').show_specs()<CR>", "Show cursor's current location"}
   },
   v = {
     ["<leader>sw"] = { "<esc><cmd>lua require('spectre').open_visual()<CR>", "Search current word" }

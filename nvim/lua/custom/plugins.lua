@@ -1,13 +1,37 @@
 local plugins = {
+  -- Show where you jump to in a file
+  {
+    'edluffy/specs.nvim',
+    lazy=false,
+    config = function()
+        require("specs").setup({
+            show_jumps  = true,
+            min_jump = 30,
+            popup = {
+                delay_ms = 0, -- delay before popup displays
+                inc_ms = 10, -- time increments used for fade/resize effects 
+                blend = 30, -- starting blend, between 0-100 (fully transparent), see :h winblend
+                width = 50,
+                winhl = "PMenu",
+                fader = require('specs').sinus_fader,
+                resizer = require('specs').slide_resizer
+            },
+            ignore_filetypes = {},
+            ignore_buftypes = {
+                nofile = true,
+            }
+        })
+    end
+  },
   -- Find and replace
   {
     "nvim-pack/nvim-spectre",
     lazy = false,
   },
   -- Quick annotation
-  { 
-    "danymat/neogen", 
-    dependencies = "nvim-treesitter/nvim-treesitter", 
+  {
+    "danymat/neogen",
+    dependencies = "nvim-treesitter/nvim-treesitter",
     config = true,
     -- Uncomment next line if you want to follow only stable versions
     -- version = "*" 
