@@ -9,4 +9,5 @@ return {
   { import = "astrocommunity.pack.python" },
   { import = "astrocommunity.pack.typescript-all-in-one" },
   { import = "astrocommunity.pack.lua" },
+  { import = "astrocommunity.bars-and-lines.heirline-vscode-winbar" },
 }

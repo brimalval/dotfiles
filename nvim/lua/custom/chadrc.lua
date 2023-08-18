@@ -1,7 +1,7 @@
 ---@type ChadrcConfig 
  local M = {}
  M.ui = {
-  theme = 'chadracula',
+  theme = 'penumbra_dark',
   border = 'rounded',
   transparency = true,
 
