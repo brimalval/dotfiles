@@ -42,14 +42,14 @@ return {
     lazy = false,
   },
   -- Quick annotation
-  {
-    "danymat/neogen",
-    dependencies = "nvim-treesitter/nvim-treesitter",
-    config = true,
-    -- Uncomment next line if you want to follow only stable versions
-    -- version = "*"
-    ft = { "python" },
-  },
+  -- {
+  --   "danymat/neogen",
+  --   dependencies = "nvim-treesitter/nvim-treesitter",
+  --   config = true,
+  --   -- Uncomment next line if you want to follow only stable versions
+  --   -- version = "*"
+  --   ft = { "python" },
+  -- },
   -- Quick motions for changing/deleting around a text
   {
     "kylechui/nvim-surround",
@@ -58,18 +58,18 @@ return {
     config = function() require("nvim-surround").setup {} end,
   },
   -- Sticky context based on LSP
-  {
-    "nvim-treesitter/nvim-treesitter-context",
-    ft = { "python" },
-  },
+  -- {
+  --   "nvim-treesitter/nvim-treesitter-context",
+  --   ft = { "python" },
+  -- },
   -- Quick project file navigation
-  {
-    "ThePrimeagen/harpoon",
-    dependencies = {
-      "nvim-lua/plenary.nvim",
-    },
-    lazy = false,
-  },
+  -- {
+  --   "ThePrimeagen/harpoon",
+  --   dependencies = {
+  --     "nvim-lua/plenary.nvim",
+  --   },
+  --   lazy = false,
+  -- },
   -- Winbar/breadcrumbs
   -- {
   --   "utilyre/barbecue.nvim",
@@ -132,6 +132,35 @@ return {
           lsp_doc_border = false, -- add a border to hover docs and signature help
         },
       }
+    end,
+    -- {
+    --   "b0o/schemastore.nvim",
+    --   config = function()
+    --     require("lspconfig").jsonls.setup {
+    --       settings = {
+    --         json = {
+    --           schemas = require("schemastore").json.schemas {
+    --             extra = {
+    --               {
+    --                 description = "GHA",
+    --                 url = "https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/github-workflow.json",
+    --                 fileMatch = { "dev.yml", "prod.yml" },
+    --                 name = "workflows",
+    --               },
+    --             },
+    --           },
+    --           validate = { enable = true },
+    --         },
+    --       },
+    --     }
+    --   end,
+    -- },
+  },
+  {
+    "Exafunction/codeium.vim",
+    config = function()
+      -- Change '<C-g>' here to any keycode you like.
+      vim.keymap.set("i", "<C-k>", function() return vim.fn["codeium#Accept"]() end, { expr = true, silent = true })
     end,
   },
 }

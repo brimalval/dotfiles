@@ -12,6 +12,7 @@ return {
     softtabstop = 4,
     title = true,
     guifont = "Cascursive",
+    swapfile = false,
   },
   g = {
     mapleader = " ", -- sets vim.g.mapleader
@@ -22,7 +23,7 @@ return {
     icons_enabled = true, -- disable icons in the UI (disable if no nerd font is available, requires :PackerSync after changing)
     ui_notifications_enabled = true, -- disable notifications when toggling UI elements
     resession_enabled = false, -- enable experimental resession.nvim session management (will be default in AstroNvim v4)
-    python3_host_prog = "/home/brian/python3-neovim-provider/.venv/bin/python",
+    python3_host_prog = "~/python3-neovim-provider/.venv/bin/python",
   },
 }
 -- If you need more control, you can use the function()...end notation

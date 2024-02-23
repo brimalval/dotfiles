@@ -81,5 +81,13 @@ return {
     --     ["~/%.config/foo/.*"] = "fooscript",
     --   },
     -- }
+    vim.cmd [[
+    augroup Python
+        autocmd!
+        autocmd FileType python set shiftwidth=4
+        autocmd FileType python set tabstop=4
+        autocmd FileType python set expandtab
+    augroup END
+    ]]
   end,
 }

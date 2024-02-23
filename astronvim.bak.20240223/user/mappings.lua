@@ -27,8 +27,23 @@ return {
       end,
       desc = "Pick to close",
     },
+    ["<C-d>"] = { "<C-d>zz", desc = "Save without formatting" },
     ["<leader>sf"] = { "<cmd> noa w <CR>", desc = "Save without formatting" },
     ["<leader>N"] = { "<cmd>lua require('notify').dismiss { silent = true }<CR>", desc = "Clear notifications" },
+    ["<leader>sw"] = {
+      "<cmd>set shiftwidth=4<CR>",
+      desc = "Set shiftwidth to 4 (Hacky, added since current nvim config keeps re-setting the shiftwidth somewhere)",
+    },
+    ["<leader>G"] = {
+      "<cmd>G<CR>",
+      desc = "Open git fugitive",
+    },
+    ["<leader>fR"] = {
+      "<cmd>Telescope resume<CR>",
+      desc = "Reopen last Telescope search",
+    },
+    ["<leader>td"] = { "<Cmd> TroubleToggle document_diagnostics <CR>", desc = "Get current document diagnostics" },
+    ["<leader>tD"] = { "<Cmd> TroubleToggle workspace_diagnostics <CR>", desc = "Get current workspace diagnostics" },
     -- tables with the `name` key will be registered with which-key if it's installed
     -- this is useful for naming menus
     -- ["<leader>b"] = { name = "Buffers" },
@@ -38,5 +53,9 @@ return {
   t = {
     -- setting a mapping to false will disable it
     -- ["<esc>"] = false,
+  },
+  i = {
+    ["<C-n>"] = { "<Cmd> call codeium#CycleCompletions(1) <CR>", desc = "Get next suggestion" },
+    ["<C-b>"] = { "<Cmd> call codeium#CycleCompletions(-1) <CR>", desc = "Get previous suggestion" },
   },
 }
