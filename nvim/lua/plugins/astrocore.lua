@@ -12,21 +12,21 @@ return {
     -- Configure core features of AstroNvim
     features = {
       large_buf = { size = 1024 * 100, lines = 10000 }, -- set global limits for large files for disabling features like treesitter
-      autopairs = true,                                 -- enable autopairs at start
-      cmp = true,                                       -- enable completion at start
-      highlighturl = true,                              -- highlight URLs at start
-      notifications = true,                             -- enable notifications at start
+      autopairs = true, -- enable autopairs at start
+      cmp = true, -- enable completion at start
+      highlighturl = true, -- highlight URLs at start
+      notifications = true, -- enable notifications at start
     },
     -- vim options can be configured here
     options = {
-      opt = {                  -- vim.opt.<key>
+      opt = { -- vim.opt.<key>
         relativenumber = true, -- sets vim.opt.relativenumber
-        number = true,         -- sets vim.opt.number
-        spell = false,         -- sets vim.opt.spell
-        signcolumn = "auto",   -- sets vim.opt.signcolumn to auto
-        wrap = false,          -- sets vim.opt.wrap
+        number = true, -- sets vim.opt.number
+        spell = false, -- sets vim.opt.spell
+        signcolumn = "auto", -- sets vim.opt.signcolumn to auto
+        wrap = false, -- sets vim.opt.wrap
       },
-      g = {                    -- vim.g.<key>
+      g = { -- vim.g.<key>
         -- configure global vim variables (vim.g)
         -- NOTE: `mapleader` and `maplocalleader` must be set in the AstroNvim opts or before `lazy.setup`
         -- This can be found in the `lua/lazy_setup.lua` file
@@ -75,6 +75,26 @@ return {
       t = {
         -- setting a mapping to false will disable it
         -- ["<esc>"] = false,
+      },
+      i = {
+        ["<Tab>"] = false,
+      },
+    },
+    autocmds = {
+      set_python_indent = {
+        {
+          event = "BufEnter",
+          -- Run if filetype is python
+          desc = "Set Python indent level to 4",
+          callback = function()
+            if vim.bo.filetype == "python" then
+              vim.opt_local.tabstop = 4
+              vim.opt_local.shiftwidth = 4
+              vim.opt_local.softtabstop = 4
+              vim.opt_local.expandtab = true
+            end
+          end,
+        },
       },
     },
   },
