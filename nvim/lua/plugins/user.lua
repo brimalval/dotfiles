@@ -156,4 +156,40 @@ return {
       )
     end,
   },
+  {
+    "diepm/vim-rest-console",
+    ft = { "http", "rest" },
+    config = function()
+      vim.g.vrc_response_default_content_type = "application/json"
+      vim.g.vrc_output_buffer_name = "__VRC_OUTPUT.json"
+      vim.g.vrc_auto_format_response_patterns = {
+        json = "jq",
+      }
+      vim.g.vrc_show_command = true
+    end,
+  },
+  {
+    "tpope/vim-abolish",
+    event = "VeryLazy",
+  },
+  {
+    "stevearc/conform.nvim",
+    opts = {},
+    config = function()
+      require("conform").setup {
+        formatters_by_ft = {
+          lua = { "stylua" },
+          -- Conform will run multiple formatters sequentially
+          python = { "isort", "black" },
+          -- Use a sub-list to run only the first available formatter
+          javascript = { { "prettier", "prettierd" }, "eslint" },
+          typescript = { { "prettier", "prettierd" }, "eslint" },
+        },
+      }
+      vim.api.nvim_create_autocmd("BufWritePre", {
+        pattern = "*",
+        callback = function(args) require("conform").format { bufnr = args.buf } end,
+      })
+    end,
+  },
 }
