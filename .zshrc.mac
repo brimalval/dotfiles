@@ -56,3 +56,13 @@ fi
 bindkey -v
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+
+# Custom keybindings
+alias e="$(echo $EDITOR)"
+alias x="exit"
+alias glogol="git log --oneline"
+alias tma="tmux attach"
+alias gpr="gh pr"
+alias gprvw="gh pr view --web"
+alias pnpx="pnpm dlx"
+alias gco="git branch | fzf-tmux -w 75% -h 50% --preview 'git log --oneline --color=always {1}' | xargs git checkout"
