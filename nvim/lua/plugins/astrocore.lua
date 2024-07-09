@@ -12,20 +12,21 @@ return {
     -- Configure core features of AstroNvim
     features = {
       large_buf = { size = 1024 * 100, lines = 10000 }, -- set global limits for large files for disabling features like treesitter
-      autopairs = true, -- enable autopairs at start
-      cmp = true, -- enable completion at start
-      highlighturl = true, -- highlight URLs at start
-      notifications = true, -- enable notifications at start
+      autopairs = true,                                 -- enable autopairs at start
+      cmp = true,                                       -- enable completion at start
+      highlighturl = true,                              -- highlight URLs at start
+      notifications = true,                             -- enable notifications at start
     },
     -- vim options can be configured here
     options = {
-      opt = { -- vim.opt.<key>
+      opt = {                  -- vim.opt.<key>
         relativenumber = true, -- sets vim.opt.relativenumber
-        number = true, -- sets vim.opt.number
-        spell = false, -- sets vim.opt.spell
-        signcolumn = "auto", -- sets vim.opt.signcolumn to auto
-        wrap = true, -- sets vim.opt.wrap
-        swapfile = false, -- sets vim.opt.swapfile
+        number = true,         -- sets vim.opt.number
+        spell = false,         -- sets vim.opt.spell
+        signcolumn = "auto",   -- sets vim.opt.signcolumn to auto
+        wrap = true,           -- sets vim.opt.wrap
+        swapfile = false,      -- sets vim.opt.swapfile
+        conceallevel = 1,
       },
       g = { -- vim.g.<key>
         -- configure global vim variables (vim.g)
@@ -74,6 +75,7 @@ return {
         },
         ["<leader><leader>a"] = { function() require("harpoon"):list():add() end, desc = "Mark in harpoon" },
         ["yB"] = { "<Cmd> let @+ = expand('%:p') <CR>", desc = "Yank current file's path" },
+        ["<leader>fR"] = { function() require("telescope.builtin").lsp_references() end, desc = "Search references" },
       },
       t = {
         -- setting a mapping to false will disable it
