@@ -65,11 +65,23 @@ return {
       }
     end,
   },
+  -- {
+  --   "Exafunction/codeium.vim",
+  --   config = function()
+  --     -- Change '<C-g>' here to any keycode you like.
+  --     vim.keymap.set("i", "<C-k>", function() return vim.fn["codeium#Accept"]() end, { expr = true, silent = true })
+  --   end,
+  -- },
   {
-    "Exafunction/codeium.vim",
+    "supermaven-inc/supermaven-nvim",
     config = function()
-      -- Change '<C-g>' here to any keycode you like.
-      vim.keymap.set("i", "<C-k>", function() return vim.fn["codeium#Accept"]() end, { expr = true, silent = true })
+      require("supermaven-nvim").setup {
+        keymaps = {
+          accept_suggestion = "<C-l>",
+          clear_suggestion = "<C-]>",
+          accept_word = "<C-;>",
+        },
+      }
     end,
   },
 
