@@ -1127,7 +1127,7 @@ hide_window_decorations yes
 
 #: The foreground and background colors.
 
-background_opacity 0.90
+background_opacity 0.95
 
 #: The opacity of the background. A number between zero and one, where
 #: one is opaque and zero is fully transparent. This will only work if
@@ -2470,17 +2470,10 @@ background_blur 8
 
 # Clone the kitty-themes repo
 # git clone --depth 1 https://github.com/dexpota/kitty-themes.git ~/.config/kitty/kitty-themes
-# include ./kitty-themes/themes/Urple.conf
+include ./kitty-themes/themes/Urple.conf
 
 # Clone the poimandres kitty theme repo
 # git clone --depth 1 https://github.com/poimandres-kitty.git ~/.config/kitty/kitty-themes
 # include ./poimandres-kitty/theme/poimandres.conf
 
 # include embark-theme.conf
-
-
-# Used `kitty +kitten theme` to generate the theme
-# BEGIN_KITTY_THEME
-# Rosé Pine
-include current-theme.conf
-# END_KITTY_THEME

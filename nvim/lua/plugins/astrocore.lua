@@ -29,6 +29,7 @@ return {
         swapfile = false, -- sets vim.opt.swapfile
         conceallevel = 2,
         showtabline = 0,
+        cursorline = false,
       },
       g = { -- vim.g.<key>
         -- configure global vim variables (vim.g)
