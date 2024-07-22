@@ -1,13 +1,13 @@
 return {
   {
-    "embark-theme/vim",
-    name = "embark",
+    "rose-pine/neovim",
+    name = "rose-pine",
+    config = function()
+      require("rose-pine").setup({
+        variant = "main",
+      })
+    end,
   },
-  -- {
-  --   "igorgue/danger",
-  --   opts = {
-  --     style = "dark",
-  --     kitty = true,
-  --   },
-  -- },
+  -- LazyVim exclusive
+  { "LazyVim/LazyVim", opts = { colorscheme = "rose-pine-main" } },
 }
