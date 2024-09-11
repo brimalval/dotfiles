@@ -4,7 +4,11 @@ return {
     version = "*", -- Use for stability; omit to use `main` branch for the latest features
     event = "VeryLazy",
     config = function()
-      require("nvim-surround").setup({})
+      require("nvim-surround").setup({
+        keymaps = {
+          visual = "S",
+        },
+      })
     end,
   },
   {
@@ -49,5 +53,34 @@ return {
   {
     "tpope/vim-abolish",
     event = "VeryLazy",
+  },
+  {
+    "nvim-telescope/telescope.nvim",
+    keys = {
+      -- add a keymap to browse plugin files
+      -- stylua: ignore
+      {
+        "<leader>/",
+        function() require("telescope.builtin").current_buffer_fuzzy_find() end,
+        desc = "Find in current buffer",
+      },
+    },
+    -- change some options
+    opts = {
+      defaults = {
+        layout_strategy = "horizontal",
+        layout_config = { prompt_position = "top" },
+        sorting_strategy = "ascending",
+        winblend = 0,
+      },
+    },
+  },
+  {
+    "sustech-data/wildfire.nvim",
+    event = "VeryLazy",
+    dependencies = { "nvim-treesitter/nvim-treesitter" },
+    config = function()
+      require("wildfire").setup()
+    end,
   },
 }

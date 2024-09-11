@@ -6,8 +6,7 @@ zstyle :compinstall filename '/Users/brian.valencia/.zshrc'
 
 autoload -Uz compinit
 compinit
-# End of lines added by compinstall
-# Lines configured by zsh-newuser-install
+# End of lines added by compinstall Lines configured by zsh-newuser-install
 HISTFILE=~/.histfile
 HISTSIZE=10000
 SAVEHIST=10000
@@ -18,6 +17,8 @@ setopt beep extendedglob notify
 export PATH="/opt/homebrew/bin:$PATH"
 export PATH="/usr/local/bin:$PATH"
 export PATH="/Users/brian.valencia/Dev/Scripts:$PATH"
+export PATH="/Library/PostgreSQL/15/bin:$PATH"
+export PATH="/System/Volumes/Data/Applications/neovide.app/Contents/MacOS:$PATH"
 
 # Starship prompt
 eval "$(starship init zsh)"
@@ -55,14 +56,82 @@ fi
 # Use vi keybindings
 bindkey -v
 
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+# Set nvim as default editor
+EDITOR=$(which nvim)
 
-# Custom keybindings
+# Quick commands
 alias e="$(echo $EDITOR)"
+alias nvide="neovide"
 alias x="exit"
 alias glogol="git log --oneline"
 alias tma="tmux attach"
 alias gpr="gh pr"
 alias gprvw="gh pr view --web"
 alias pnpx="pnpm dlx"
-alias gco="git branch | fzf-tmux -w 75% -h 50% --preview 'git log --oneline --color=always {1}' | xargs git checkout"
+alias gyatt="git"
+alias gco="git branch | fzf-tmux --prompt 'checkout: ' -w 75% -h 50% --preview 'git log --oneline --color=always {1}' | xargs git checkout"
+alias grb="git branch | fzf-tmux --prompt 'rebase onto: ' -w 75% -h 50% --preview 'git log --oneline --color=always {1}' | xargs git rebase"
+alias gdel="git branch | fzf-tmux --prompt 'delete: ' -w 75% -h 50% --preview 'git log --oneline --color=always {1}' | xargs git branch -D"
+alias lg="lazygit"
+
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+
+# bun completions
+[ -s "/Users/brian.valencia/.bun/_bun" ] && source "/Users/brian.valencia/.bun/_bun"
+
+# bun
+export BUN_INSTALL="$HOME/.bun"
+export PATH="$BUN_INSTALL/bin:$PATH"
+
+export NVM_DIR="$HOME/.nvm"
+  [ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && \. "/opt/homebrew/opt/nvm/nvm.sh"  # This loads nvm
+  [ -s "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm" ] && \. "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm"  # This loads nvm bash_completion
+
+export DOCKER_DEFAULT_PLATFORM=linux/amd64
+
+# Warpify subshells by default (e.g. from pipenv shell)
+# printf '\eP$f{"hook": "SourcedRcFileForWarp", "value": { "shell": "zsh" }}\x9c'
+
+if command -v ngrok &>/dev/null; then
+    eval "$(ngrok completion)"
+fi
+export PATH=$PATH:/Users/brian.valencia/.spicetify
+
+# Enable pyenv
+export PYENV_ROOT="$HOME/.pyenv"
+[[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"
+eval "$(pyenv init -)"
+
+# pnpm
+export PNPM_HOME="/Users/brian.valencia/Library/pnpm"
+case ":$PATH:" in
+  *":$PNPM_HOME:"*) ;;
+  *) export PATH="$PNPM_HOME:$PATH" ;;
+esac
+# pnpm end
+
+function addSshKeysToAgent() {
+  echo "starting ssh agent:"
+  echo ""
+
+  eval 'ssh-agent -s'
+  echo ""
+
+  echo "adding identities: "
+  ssh-add --apple-use-keychain ~/.ssh/personal_rsa
+  ssh-add --apple-use-keychain ~/.ssh/work_rsa
+  echo ""
+
+  echo "Private keys loaded into SSH: "
+  ssh-add -l -E md5
+  echo ""
+
+  echo "ssh keys added to ssh agent."
+}
+
+# Check if folder has Pipenv
+if [ -f "$(pwd)/Pipfile" ] && [ "$PIPENV_ACTIVE" != 1 ]; then
+  echo "Pipenv detected, activating shell..."
+  pipenv shell
+fi
+
