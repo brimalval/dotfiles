@@ -1,5 +1,5 @@
--- Keymaps are automatically loaded on the VeryLazy event
 -- Default keymaps that are always set: https://github.com/LazyVim/LazyVim/blob/main/lua/lazyvim/config/keymaps.lua
+-- Keymaps are automatically loaded on the VeryLazy event
 -- Add any additional keymaps here
 local map = vim.keymap.set
 
@@ -22,3 +22,7 @@ end, { desc = "Find Files (including hidden files)", noremap = true, silent = tr
 map("n", "<Leader>ss", function()
   require("telescope.builtin").lsp_document_symbols()
 end)
+
+map("n", "<Leader>z", "<Cmd> ZenMode <CR>", { desc = "Toggle Zen Mode", noremap = true, silent = true })
+map("n", "<Leader>uD", "<Cmd> DBUI <CR>", { desc = "Enter DBUI", noremap = true, silent = true })
+map("n", "<Leader>G", "<Cmd> G <CR>", { desc = "Git fugitive", noremap = true, silent = true })

@@ -75,6 +75,33 @@ return {
       },
     },
   },
+  -- Superseded by flash + treesitter
+  -- {
+  --   "sustech-data/wildfire.nvim",
+  --   event = "VeryLazy",
+  --   dependencies = { "nvim-treesitter/nvim-treesitter" },
+  --   config = function()
+  --     require("wildfire").setup()
+  --   end,
+  -- },
+  -- Lua
+  {
+    "folke/twilight.nvim",
+    opts = {},
+  },
+  -- Lua
+  {
+    "folke/zen-mode.nvim",
+    opts = {
+      -- your configuration comes here
+      -- or leave it empty to use the default settings
+      -- refer to the configuration section below
+    },
+  },
+  {
+    "tpope/vim-fugitive",
+    event = "VeryLazy",
+  },
   {
     "sustech-data/wildfire.nvim",
     event = "VeryLazy",
