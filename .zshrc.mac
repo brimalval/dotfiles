@@ -135,3 +135,5 @@ if [ -f "$(pwd)/Pipfile" ] && [ "$PIPENV_ACTIVE" != 1 ]; then
   pipenv shell
 fi
 
+export MAGICK_HOME=/opt/homebrew/opt/imagemagick/
+export PATH="/opt/homebrew/opt/imagemagick/bin:$PATH"
