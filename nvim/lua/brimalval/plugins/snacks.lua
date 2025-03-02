@@ -5,10 +5,15 @@ return {
   ---@type snacks.Config
   opts = function ()
     local keymap = vim.keymap
+    Snacks = require("snacks")
     
     keymap.set("n", "<leader>e", function ()
-      require("snacks").explorer.open()
+      Snacks.explorer.open()
     end, { desc = "Open Snacks explorer" })
+
+    keymap.set("n", "<leader>ff", function ()
+      Snacks.picker.files()
+    end, { desc = "Open Snacks file picker" })
 
     return {
       -- your configuration comes here

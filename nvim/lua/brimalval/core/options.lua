@@ -17,3 +17,6 @@ opt.swapfile = false
 
 opt.number = true
 opt.relativenumber = true
+
+-- Case-insensitive searching
+opt.ignorecase = true

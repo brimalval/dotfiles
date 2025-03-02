@@ -25,3 +25,6 @@ map("i", "<c-s>", "<Esc><Cmd>W<CR>", { desc = "Save file" })
 -- Visual line navigation
 map("n", "j", "gj")
 map("n", "k", "gk")
+
+-- Kill search highlights
+map("n", "<esc>", "<Cmd>noh<CR>")
