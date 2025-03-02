@@ -1,3 +1,30 @@
+local map = vim.keymap.set
+-- LSP
+map("n", "gd", "<Cmd>lua vim.lsp.buf.definition()<CR>", { desc = "Go to definition" })
+map("n", "gD", "<Cmd>lua vim.lsp.buf.declaration()<CR>", { desc = "Go to declaration" })
+map("n", "gi", "<Cmd>lua vim.lsp.buf.implementation()<CR>", { desc = "Go to implementation" })
+map("n", "gr", "<Cmd>lua vim.lsp.buf.references()<CR>", { desc = "Go to references" })
+map("n", "gt", "<Cmd>lua vim.lsp.buf.type_definition()<CR>", { desc = "Go to type definition" })
+
+map("n", "<Leader>c", "", { desc = "Code-related functions" })
+map("n", "<Leader>cr", function()
+	vim.lsp.buf.rename()
+end, { desc = "Rename symbol" })
+map("n", "<Leader>ca", function()
+	vim.lsp.buf.code_action()
+end, { desc = "Code actions" })
+map("n", "<Leader>cf", function()
+	vim.lsp.buf.format()
+end, { desc = "Format buffer" })
+map("n", "<Leader>cd", function()
+	vim.diagnostic.open_float()
+end, { desc = "Show diagnostics" })
+
+vim.diagnostic.config({
+	virtual_text = false,
+	float = { border = vim.g.borderStyle },
+})
+
 return {
 	-- Automatically setup Lua language server for Neovim
 	{
@@ -14,7 +41,7 @@ return {
 	{
 		"williamboman/mason-lspconfig.nvim",
 		dependencies = {
-			"williamboman/mason.nvim",
+			{ "williamboman/mason.nvim", opts = { ui = { border = vim.g.borderStyle } } },
 		},
 		config = function()
 			local keymap = vim.keymap

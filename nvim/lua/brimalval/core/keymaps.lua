@@ -18,13 +18,14 @@ map("n", "<C-j>", "<C-w>j", { desc = "Move to the buffer below" })
 map("n", "<C-k>", "<C-w>k", { desc = "Move to the buffer above" })
 map("n", "<C-l>", "<C-w>l", { desc = "Move to the right buffer" })
 
--- Easier saving
-map("i", "<c-s>", "<Nop>")
-map("i", "<c-s>", "<Esc><Cmd>W<CR>", { desc = "Save file" })
-
 -- Visual line navigation
 map("n", "j", "gj")
 map("n", "k", "gk")
+
+-- Better scrolling
+map("n", "<C-u>", "<C-u>zz")
+map("n", "<C-d>", "<C-d>zz")
+map("n", "G", "Gzz")
 
 -- Kill search highlights
 map("n", "<esc>", "<Cmd>noh<CR>")

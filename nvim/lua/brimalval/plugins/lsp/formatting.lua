@@ -1,6 +1,16 @@
 return {
 	"stevearc/conform.nvim",
 	event = { "BufReadPre", "BufNewFile" },
+	keys = {
+		{
+			"<leader>cf",
+			function()
+				require("conform").format()
+			end,
+			mode = "n",
+			desc = "Format code with conform",
+		},
+	},
 	dependencies = {
 		"williamboman/mason-lspconfig.nvim",
 		{

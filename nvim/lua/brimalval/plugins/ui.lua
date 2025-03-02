@@ -1,3 +1,6 @@
+local boo = 1
+boo = boo + 1
+print(boo)
 return {
 	{
 		"Bekaboo/dropbar.nvim",
@@ -20,6 +23,8 @@ return {
 			-- Add border to floating windows
 			presets = {
 				command_palette = true,
+				long_message_to_split = true,
+				lsp_doc_border = true,
 			},
 			lsp = {
 				hover = {

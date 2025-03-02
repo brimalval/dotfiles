@@ -31,4 +31,9 @@ require("lazy").setup({
 	checker = {
 		enabled = true,
 	},
+	opts = {
+		ui = {
+			border = vim.g.borderStyle,
+		},
+	},
 })
