@@ -1,35 +1,26 @@
 return {
-  'saghen/blink.nvim',
-  keys = {
-	-- chartoggle
-	{
-	  ';',
-	  function()
-	  	require('blink.chartoggle').toggle_char_eol(';')
-	  end,
-	  mode = { 'n', 'v' },
-	  desc = 'Toggle ; at eol',
+	"saghen/blink.cmp",
+	dependencies = "rafamadriz/friendly-snippets",
+	version = "*",
+	---@module 'blink.cmp'
+	---@type blink.cmp.Config
+	opts = {
+		keymap = { preset = "default" },
+		appearance = {
+			use_nvim_cmp_as_default = true,
+			nerd_font_variant = "mono",
+		},
+		sources = {
+			default = { "lazydev", "lsp", "path", "snippets", "buffer" },
+			providers = {
+				lazydev = {
+					name = "LazyDev",
+					module = "lazydev.integrations.blink",
+					score_offset = 100,
+				},
+			},
+		},
+		fuzzy = { implementation = "prefer_rust_with_warning" },
 	},
-	{
-	  ',',
-	  function()
-	  	require('blink.chartoggle').toggle_char_eol(',')
-	  end,
-	  mode = { 'n', 'v' },
-	  desc = 'Toggle , at eol',
-	},
-
-	-- tree
-	-- { '<C-e>', '<cmd>BlinkTree reveal<cr>', desc = 'Reveal current file in tree' },
-	-- { '<leader>E', '<cmd>BlinkTree toggle<cr>', desc = 'Reveal current file in tree' },
-	-- { '<leader>e', '<cmd>BlinkTree toggle-focus<cr>', desc = 'Toggle file tree focus' },
-  },
-  -- all modules handle lazy loading internally
-  lazy = false,
-  opts = {
-    chartoggle = { enabled = false },
-    delimiters = { enabled = false },
-    indent = { enabled = false },
-    tree = { enabled = false }
-  }
+	opts_extend = { "sources.default" },
 }

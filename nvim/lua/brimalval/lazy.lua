@@ -23,12 +23,12 @@ vim.g.maplocalleader = "\\"
 
 -- Setup lazy.nvim
 require("lazy").setup({
-  { import = "brimalval.plugins" },
-  { import = "brimalval.plugins.lsp" },
-  install = {
-    colorscheme = { "rose-pine" }
-  },
-  checker = {
-    enabled = true
-  }
+	{ import = "brimalval.plugins" },
+	{ import = "brimalval.plugins.lsp" },
+	install = {
+		colorscheme = { "rose-pine" },
+	},
+	checker = {
+		enabled = true,
+	},
 })
