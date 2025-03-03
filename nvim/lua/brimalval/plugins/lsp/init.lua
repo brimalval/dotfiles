@@ -64,7 +64,6 @@ return {
 					"pyright",
 					"typos_lsp",
 					"ts_ls",
-					"sqls",
 				},
 				automatic_installation = true,
 			})

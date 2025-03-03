@@ -30,19 +30,23 @@ return {
 
 		keymap.set("n", "<leader>fg", function()
 			Snacks.picker.grep()
-		end, { desc = "Open file grepper" })
+		end, { desc = "Grep within project" })
 
 		keymap.set("n", "<leader>fG", function()
 			Snacks.picker.grep({ hidden = true })
-		end, { desc = "Open file grepper (including hidden files)" })
+		end, { desc = "Grep within project (including hidden files)" })
+
+		keymap.set("n", "<leader>/", function()
+			Snacks.picker.grep_buffers()
+		end, { desc = "Grep opened buffers" })
 
 		keymap.set("n", "<leader>fb", function()
 			Snacks.picker.buffers()
-		end, { desc = "Open buffer picker" })
+		end, { desc = "Find buffer" })
 
 		keymap.set("n", "<leader>fd", function()
 			Snacks.picker.diagnostics()
-		end, { desc = "Open diagnostics picker" })
+		end, { desc = "Open workspace diagnostics picker" })
 
 		keymap.set("n", "<leader>fD", function()
 			Snacks.picker.diagnostics({
@@ -50,6 +54,10 @@ return {
 				cwd = vim.fs.root(0, ".git"),
 			})
 		end, { desc = "Open workspace diagnostics picker" })
+
+		keymap.set("n", "<leader>zn", function()
+			Snacks.zen()
+		end, { desc = "Zen mode" })
 
 		return {
 			-- your configuration comes here

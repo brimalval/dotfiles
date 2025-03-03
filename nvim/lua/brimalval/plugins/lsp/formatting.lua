@@ -21,7 +21,7 @@ return {
 					"isort",
 					"prettier",
 					"eslint-lsp",
-					"sqlfluff",
+					"sleek",
 					"eslint_d",
 				},
 			},
@@ -29,7 +29,7 @@ return {
 	},
 	opts = {
 		formatters_by_ft = {
-			sql = { "sqlfmt" },
+			sql = { "sleek" },
 			python = { "isort", "black" },
 			typescript = { "prettier", "eslint_d" },
 			typescriptreact = { "prettier", "eslint_d" },

@@ -19,7 +19,8 @@ return {
 		opts = {
 			-- Add border to floating windows
 			presets = {
-				command_palette = true,
+				-- Put input box at the top
+				-- command_palette = true,
 				long_message_to_split = true,
 				lsp_doc_border = true,
 			},
@@ -47,6 +48,13 @@ return {
 					require("noice").cmd("last")
 				end,
 				desc = "Noice Last Message",
+			},
+			{
+				"<leader>snh",
+				function()
+					require("noice").cmd("history")
+				end,
+				desc = "Noice History",
 			},
 		},
 		config = function(_, opts)

@@ -34,13 +34,19 @@ return {
 		},
 		config = function()
 			local map = vim.keymap.set
-			map("n", "<leader>ha", ":lua require('harpoon.mark').add_file()<CR>")
-			map("n", "<leader>hf", ":lua require('harpoon.ui').toggle_quick_menu()<CR>")
-			map("n", "<leader>h1", ":lua require('harpoon.ui').nav_file(1)<CR>")
-			map("n", "<leader>h2", ":lua require('harpoon.ui').nav_file(2)<CR>")
-			map("n", "<leader>h3", ":lua require('harpoon.ui').nav_file(3)<CR>")
-			map("n", "<leader>h4", ":lua require('harpoon.ui').nav_file(4)<CR>")
-			map("n", "<leader>h5", ":lua require('harpoon.ui').nav_file(5)<CR>")
+      -- stylua: ignore
+			map("n", "<leader>ha", ":lua require('harpoon.mark').add_file()<CR>", { desc = "Add file to harpoon" })
+			map(
+				"n",
+				"<leader>hf",
+				":lua require('harpoon.ui').toggle_quick_menu()<CR>",
+				{ desc = "Toggle harpoon quick menu" }
+			)
+			map("n", "<leader>h1", ":lua require('harpoon.ui').nav_file(1)<CR>", { desc = "Go to file 1" })
+			map("n", "<leader>h2", ":lua require('harpoon.ui').nav_file(2)<CR>", { desc = "Go to file 2" })
+			map("n", "<leader>h3", ":lua require('harpoon.ui').nav_file(3)<CR>", { desc = "Go to file 3" })
+			map("n", "<leader>h4", ":lua require('harpoon.ui').nav_file(4)<CR>", { desc = "Go to file 4" })
+			map("n", "<leader>h5", ":lua require('harpoon.ui').nav_file(5)<CR>", { desc = "Go to file 5" })
 			require("harpoon").setup({})
 		end,
 	},
