@@ -1,6 +1,3 @@
-local boo = 1
-boo = boo + 1
-print(boo)
 return {
 	{
 		"Bekaboo/dropbar.nvim",
@@ -50,13 +47,6 @@ return {
 					require("noice").cmd("last")
 				end,
 				desc = "Noice Last Message",
-			},
-			{
-				"<leader>snh",
-				function()
-					require("noice").cmd("history")
-				end,
-				desc = "Noice History",
 			},
 		},
 		config = function(_, opts)

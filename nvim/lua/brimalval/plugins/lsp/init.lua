@@ -1,5 +1,6 @@
+-- Keymaps
 local map = vim.keymap.set
--- LSP
+-- Jumps
 map("n", "gd", "<Cmd>lua vim.lsp.buf.definition()<CR>", { desc = "Go to definition" })
 map("n", "gD", "<Cmd>lua vim.lsp.buf.declaration()<CR>", { desc = "Go to declaration" })
 map("n", "gi", "<Cmd>lua vim.lsp.buf.implementation()<CR>", { desc = "Go to implementation" })
@@ -20,9 +21,18 @@ map("n", "<Leader>cd", function()
 	vim.diagnostic.open_float()
 end, { desc = "Show diagnostics" })
 
+-- Configure diagnostics
 vim.diagnostic.config({
 	virtual_text = false,
 	float = { border = vim.g.borderStyle },
+	signs = {
+		text = {
+			[vim.diagnostic.severity.ERROR] = "",
+			[vim.diagnostic.severity.WARN] = "",
+			[vim.diagnostic.severity.INFO] = "",
+			[vim.diagnostic.severity.HINT] = "",
+		},
+	},
 })
 
 return {
@@ -54,6 +64,7 @@ return {
 					"pyright",
 					"typos_lsp",
 					"ts_ls",
+					"sqls",
 				},
 				automatic_installation = true,
 			})
@@ -65,4 +76,59 @@ return {
 		end,
 	},
 	"neovim/nvim-lspconfig",
+	{
+		"nvim-treesitter/nvim-treesitter",
+		event = { "BufReadPre", "BufNewFile" },
+		build = ":TSUpdate",
+		config = function()
+			local treesitter = require("nvim-treesitter.configs")
+
+			---@diagnostic disable-next-line: missing-fields
+			treesitter.setup({
+				highlight = {
+					enable = true,
+				},
+				indent = { enable = true },
+				ensure_installed = {
+					"bash",
+					"c",
+					"cpp",
+					"css",
+					"dockerfile",
+					"gitignore",
+					"html",
+					"javascript",
+					"json",
+					"lua",
+					"markdown",
+					"markdown_inline",
+					"prisma",
+					"python",
+					"query",
+					"rust",
+					"sql",
+					"toml",
+					"tsx",
+					"typescript",
+					"vim",
+					"yaml",
+					"latex",
+					"norg",
+					"scss",
+					"svelte",
+					"typst",
+					"vue",
+				},
+				incremental_selection = {
+					enable = true,
+					keymaps = {
+						init_selection = "<CR>",
+						node_incremental = "<CR>",
+						scope_incremental = false,
+						node_decremental = "<BS>",
+					},
+				},
+			})
+		end,
+	},
 }

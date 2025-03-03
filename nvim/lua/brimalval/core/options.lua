@@ -7,6 +7,7 @@ vim.g.borderStyle = "rounded"
 opt.tabstop = 2
 opt.shiftwidth = 2
 opt.expandtab = true
+
 opt.autoindent = true
 opt.textwidth = 80
 opt.breakindent = true

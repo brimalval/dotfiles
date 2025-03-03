@@ -15,6 +15,13 @@ return {
 			Snacks.picker.files()
 		end, { desc = "Open file picker" })
 
+		keymap.set("n", "<leader>fc", function()
+			Snacks.picker.files({
+				title = "Configs",
+				cwd = "~/.config/nvim",
+			})
+		end, { desc = "Search configs" })
+
 		keymap.set("n", "<leader>fF", function()
 			Snacks.picker.files({
 				hidden = true,
@@ -26,9 +33,7 @@ return {
 		end, { desc = "Open file grepper" })
 
 		keymap.set("n", "<leader>fG", function()
-			Snacks.picker.grep({
-				hidden = true,
-			})
+			Snacks.picker.grep({ hidden = true })
 		end, { desc = "Open file grepper (including hidden files)" })
 
 		keymap.set("n", "<leader>fb", function()
@@ -53,6 +58,7 @@ return {
 			bigfile = { enabled = true },
 			dashboard = { enabled = true },
 			explorer = { enabled = true },
+			image = { enabled = true },
 			indent = { enabled = true },
 			input = { enabled = true },
 			picker = { enabled = true },
