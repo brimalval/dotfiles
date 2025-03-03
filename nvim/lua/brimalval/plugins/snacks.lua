@@ -2,18 +2,49 @@ return {
 	"folke/snacks.nvim",
 	priority = 1000,
 	lazy = false,
-	---@type snacks.Config
+	---@type function|snacks.Config
 	opts = function()
 		local keymap = vim.keymap
 		Snacks = require("snacks")
 
 		keymap.set("n", "<leader>e", function()
 			Snacks.explorer.open()
-		end, { desc = "Open Snacks explorer" })
+		end, { desc = "Open file explorer" })
 
 		keymap.set("n", "<leader>ff", function()
 			Snacks.picker.files()
-		end, { desc = "Open Snacks file picker" })
+		end, { desc = "Open file picker" })
+
+		keymap.set("n", "<leader>fF", function()
+			Snacks.picker.files({
+				hidden = true,
+			})
+		end, { desc = "Open file picker (including hidden files)" })
+
+		keymap.set("n", "<leader>fg", function()
+			Snacks.picker.grep()
+		end, { desc = "Open file grepper" })
+
+		keymap.set("n", "<leader>fG", function()
+			Snacks.picker.grep({
+				hidden = true,
+			})
+		end, { desc = "Open file grepper (including hidden files)" })
+
+		keymap.set("n", "<leader>fb", function()
+			Snacks.picker.buffers()
+		end, { desc = "Open buffer picker" })
+
+		keymap.set("n", "<leader>fd", function()
+			Snacks.picker.diagnostics()
+		end, { desc = "Open diagnostics picker" })
+
+		keymap.set("n", "<leader>fD", function()
+			Snacks.picker.diagnostics({
+				-- Only works in Neovim 0.10+
+				cwd = vim.fs.root(0, ".git"),
+			})
+		end, { desc = "Open workspace diagnostics picker" })
 
 		return {
 			-- your configuration comes here
