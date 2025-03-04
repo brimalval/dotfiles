@@ -18,11 +18,11 @@ return {
 		config = function()
 			require("mini.surround").setup({
 				mappings = {
-					add = "sa",
-					find = "sf",
-					replace = "sr",
-					delete = "sd",
-					highlight = "sh",
+					add = "ys",
+					find = "fs",
+					replace = "cs",
+					delete = "ds",
+					-- highlight = "",
 				},
 			})
 		end,

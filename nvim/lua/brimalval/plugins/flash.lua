@@ -1,3 +1,8 @@
+local map = vim.keymap.set
+
+map("n", "s", "<nop>")
+map("n", "S", "<nop>")
+
 return {
 	"folke/flash.nvim",
 	event = "VeryLazy",
@@ -6,7 +11,7 @@ return {
   -- stylua: ignore
   keys = {
     {
-      "ss",
+      "s",
       mode = { "n", "x", "o" },
       function()
         require("flash").jump()
@@ -14,7 +19,7 @@ return {
       desc = "Flash",
     },
     {
-      "sS",
+      "S",
       mode = { "n" },
       function()
         require("flash").treesitter()
