@@ -16,7 +16,7 @@ return {
 		picker = { enabled = true },
 		quickfile = { enabled = true },
 		scope = { enabled = true },
-		scroll = { enabled = true },
+		scroll = { enabled = false },
 		statuscolumn = { enabled = true },
 		words = { enabled = true },
 		styles = {
@@ -90,6 +90,15 @@ return {
 				Snacks.picker.files()
 			end,
 			desc = "Find Files",
+		},
+		{
+			"<leader>fF",
+			function()
+				Snacks.picker.files({
+					hidden = true,
+				})
+			end,
+			desc = "Find Files (Including Hidden)",
 		},
 		{
 			"<leader>fg",
