@@ -60,7 +60,7 @@ bindkey -v
 EDITOR=$(which nvim)
 
 # Quick commands
-alias e="$(echo $EDITOR)"
+alias e="clear && $(echo $EDITOR)"
 alias nvide="neovide"
 alias x="exit"
 alias glogol="git log --oneline"
