@@ -18,7 +18,7 @@ return {
 		config = function()
 			require("mini.surround").setup({
 				mappings = {
-					add = "ys",
+					add = "as",
 					find = "fs",
 					replace = "cs",
 					delete = "ds",

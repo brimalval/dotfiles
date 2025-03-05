@@ -31,3 +31,6 @@ opt.clipboard = "unnamedplus"
 -- Splits
 opt.splitright = true
 opt.splitbelow = true
+
+-- Remove the tildes on the side
+opt.fillchars = { eob = " " }

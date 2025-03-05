@@ -22,6 +22,7 @@ return {
 			snippet("bwarn", blocktext("WARNING")),
 			snippet("bdanger", blocktext("DANGER")),
 			snippet("bnote", blocktext("NOTE")),
+			snippet("bimportant", blocktext("IMPORTANT")),
 		})
 
 		ls.setup({})

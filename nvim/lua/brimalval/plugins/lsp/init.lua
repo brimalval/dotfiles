@@ -64,6 +64,7 @@ return {
 					"pyright",
 					"typos_lsp",
 					"ts_ls",
+					"prismals",
 				},
 				automatic_installation = true,
 			})
