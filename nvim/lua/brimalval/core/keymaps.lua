@@ -29,3 +29,13 @@ map("n", "G", "Gzz")
 
 -- Kill search highlights
 map("n", "<esc>", "<Cmd>noh<CR>")
+
+-- Select all
+map("n", "<M-a>", "ggVG", { desc = "Select all" })
+
+-- Save using ctrl + S
+map("n", "<C-s>", ":w<CR>", { desc = "Save file" })
+map("i", "<C-s>", "<Esc>:w<CR>", { desc = "Save file" })
+
+-- Bindings that get passed to better-escape.nvim
+return {}

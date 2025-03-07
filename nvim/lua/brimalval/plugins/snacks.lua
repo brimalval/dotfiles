@@ -5,7 +5,24 @@ return {
 	---@type snacks.Config
 	opts = {
 		bigfile = { enabled = true },
-		dashboard = { enabled = true },
+		dashboard = {
+			enabled = true,
+			sections = {
+				{
+					section = "terminal",
+					cmd = "chafa "
+						.. vim.fn.stdpath("config")
+						.. "/cry.png --format symbols --symbols vhalf --size 60x17 --stretch; sleep .1",
+					height = 17,
+					padding = 1,
+				},
+				{
+					pane = 2,
+					{ section = "keys", gap = 1, padding = 1 },
+					{ section = "startup" },
+				},
+			},
+		},
 		explorer = { enabled = true },
 		indent = { enabled = true },
 		input = { enabled = true },
@@ -44,9 +61,9 @@ return {
 		{
 			"<leader>/",
 			function()
-				Snacks.picker.grep()
+				Snacks.picker.lines()
 			end,
-			desc = "Grep",
+			desc = "Search current buffer",
 		},
 		{
 			"<leader>:",
