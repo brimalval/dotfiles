@@ -12,7 +12,7 @@ return {
 					section = "terminal",
 					cmd = "chafa "
 						.. vim.fn.stdpath("config")
-						.. "/cry.png --format symbols --symbols vhalf --size 60x17 --stretch; sleep .1",
+						.. "/nyancattransparent.png --format symbols --symbols vhalf --size 60x17 --stretch; sleep .1",
 					height = 17,
 					padding = 1,
 				},

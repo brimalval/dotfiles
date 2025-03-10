@@ -37,5 +37,5 @@ map("n", "<M-a>", "ggVG", { desc = "Select all" })
 map("n", "<C-s>", ":w<CR>", { desc = "Save file" })
 map("i", "<C-s>", "<Esc>:w<CR>", { desc = "Save file" })
 
--- Bindings that get passed to better-escape.nvim
-return {}
+-- -- Bindings that get passed to better-escape.nvim
+-- return {}
