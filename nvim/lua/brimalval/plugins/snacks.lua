@@ -30,7 +30,7 @@ return {
 			enabled = true,
 			timeout = 3000,
 		},
-		picker = { enabled = true },
+		picker = { enabled = true, layout = "dropdown" },
 		quickfile = { enabled = true },
 		scope = { enabled = true },
 		scroll = { enabled = false },
@@ -209,6 +209,13 @@ return {
 				Snacks.picker.grep()
 			end,
 			desc = "Grep",
+		},
+		{
+			"<leader>sG",
+			function()
+				Snacks.picker.grep({ hidden = true })
+			end,
+			desc = "Grep all",
 		},
 		{
 			"<leader>sw",
@@ -409,6 +416,13 @@ return {
 				Snacks.picker.lsp_symbols()
 			end,
 			desc = "LSP Symbols",
+		},
+		{
+			"<leader>st",
+			function()
+				Snacks.picker.todo_comments()
+			end,
+			desc = "Todo Comments",
 		},
 		{
 			"<leader>sS",
