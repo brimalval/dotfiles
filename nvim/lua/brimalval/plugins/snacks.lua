@@ -537,6 +537,17 @@ return {
 				})
 			end,
 		},
+		{
+			"<leader>bo",
+			function()
+				Snacks.bufdelete({
+					filter = function(buf)
+						return #vim.fn.win_findbuf(buf) == 0
+					end,
+				})
+			end,
+			desc = "Delete all hidden buffers",
+		},
 	},
 	init = function()
 		vim.api.nvim_create_autocmd("User", {

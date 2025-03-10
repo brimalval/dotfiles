@@ -35,9 +35,15 @@ return {
 			typescriptreact = { "prettier", "eslint_d" },
 			javascript = { "prettier", "eslint_d" },
 			lua = { "stylua" },
+			http = { "kulala-fmt" },
 		},
 		format_on_save = {
 			lsp_fallback = true,
+		},
+		formatters = {
+			black = {
+				prepend_args = { "--line-length", "79", "--skip-string-normalization" },
+			},
 		},
 	},
 }
