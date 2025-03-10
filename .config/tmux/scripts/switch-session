@@ -1,3 +1,6 @@
 #!/bin/bash
 
-tmux list-sessions -F "#{session_name}" | grep -v "^$(tmux display-message -p '#S')$" | fzf-tmux -p --reverse | xargs tmux switch-client -t
+tmux list-sessions -F "#{session_name}" \
+  | grep -v "^$(tmux display-message -p '#S')$" \
+  | fzf-tmux -p --reverse  --border --color="border:#6D6B85" \
+  | xargs tmux switch-client -t
