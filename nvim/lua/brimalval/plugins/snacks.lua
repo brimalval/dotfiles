@@ -545,6 +545,7 @@ return {
 						return #vim.fn.win_findbuf(buf) == 0
 					end,
 				})
+				vim.notify("Deleted all hidden buffers")
 			end,
 			desc = "Delete all hidden buffers",
 		},
