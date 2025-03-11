@@ -22,10 +22,10 @@ return {
 		end
 		vim.keymap.set("n", "<leader>ha", function()
 			harpoon:list():add()
-		end)
+		end, { desc = "Harpoon add" })
 		vim.keymap.set("n", "<leader>hl", function()
 			harpoon.ui:toggle_quick_menu(harpoon:list())
-		end)
+		end, { desc = "Harpoon quick menu" })
 		vim.keymap.set("n", "<leader>fh", function()
 			Snacks.picker({
 				finder = generate_harpoon_picker,

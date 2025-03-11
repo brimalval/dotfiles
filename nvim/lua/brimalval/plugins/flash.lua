@@ -1,8 +1,5 @@
 local map = vim.keymap.set
 
-map("n", "s", "<nop>")
-map("n", "S", "<nop>")
-
 return {
 	"folke/flash.nvim",
 	event = "VeryLazy",
@@ -20,7 +17,7 @@ return {
     },
     {
       "S",
-      mode = { "n" },
+      mode = { "n", "x", "o" },
       function()
         require("flash").treesitter()
       end,
