@@ -138,3 +138,5 @@ fi
 export MAGICK_HOME=/opt/homebrew/opt/imagemagick/
 export PATH="/opt/homebrew/opt/imagemagick/bin:$PATH"
 bindkey -M viins "jk" vi-cmd-mode
+
+neofetch

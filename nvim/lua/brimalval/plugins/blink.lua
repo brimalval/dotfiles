@@ -49,13 +49,13 @@ return {
 				auto_show_delay_ms = 250,
 				window = {
 					border = vim.g.borderStyle,
-					winhighlight = "Normal:Normal,FloatBorder:FloatCmpDocBorder,CursorLine:BlinkCmpMenuSelection,Search:None",
+					winhighlight = "Normal:Normal,FloatBorder:FloatBorder,CursorLine:BlinkCmpMenuSelection,Search:None",
 				},
 			},
 			menu = {
 				border = vim.g.borderStyle,
 				draw = { gap = 2 },
-				winhighlight = "Normal:Normal,FloatBorder:FloatCmpMenuBorder,CursorLine:BlinkCmpMenuSelection,Search:None",
+				winhighlight = "Normal:Normal,FloatBorder:FloatBorder,CursorLine:BlinkCmpMenuSelection,Search:None",
 			},
 		},
 	},

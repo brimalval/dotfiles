@@ -18,7 +18,7 @@ return {
 		config = function()
 			require("mini.surround").setup({
 				mappings = {
-					add = "as",
+					add = "gs",
 					find = "fs",
 					find_left = "fS",
 					replace = "cs",
@@ -62,5 +62,10 @@ return {
 			-- or leave it empty to use the default settings
 			-- refer to the configuration section below
 		},
+	},
+	{
+		"gregorias/coerce.nvim",
+		tag = "v4.1.0",
+		config = true,
 	},
 }

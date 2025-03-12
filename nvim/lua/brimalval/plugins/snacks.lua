@@ -61,7 +61,9 @@ return {
 		{
 			"<leader>/",
 			function()
-				Snacks.picker.lines()
+				Snacks.picker.lines({
+					layout = "dropdown",
+				})
 			end,
 			desc = "Search current buffer",
 		},
@@ -473,6 +475,13 @@ return {
 				Snacks.bufdelete()
 			end,
 			desc = "Delete Buffer",
+		},
+		{
+			"<leader>bD",
+			function()
+				Snacks.bufdelete.all()
+			end,
+			desc = "Delete All Buffers",
 		},
 		{
 			"<leader>cR",
