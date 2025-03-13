@@ -36,6 +36,7 @@ return {
 			javascript = { "prettier", "eslint_d" },
 			lua = { "stylua" },
 			http = { "kulala-fmt" },
+			markdown = { "prettier" },
 		},
 		format_on_save = {
 			lsp_fallback = true,

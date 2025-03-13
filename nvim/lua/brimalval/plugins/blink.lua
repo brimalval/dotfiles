@@ -1,6 +1,9 @@
 return {
 	"saghen/blink.cmp",
-	dependencies = "rafamadriz/friendly-snippets",
+	dependencies = {
+		"rafamadriz/friendly-snippets",
+		{ "Kaiser-Yang/blink-cmp-dictionary", dependencies = { "nvim-lua/plenary.nvim" } },
+	},
 	version = "*",
 	---@module 'blink.cmp'
 	---@type blink.cmp.Config
@@ -26,7 +29,7 @@ return {
 			end,
 		},
 		sources = {
-			default = { "lazydev", "lsp", "path", "snippets", "buffer" },
+			default = { "lazydev", "lsp", "path", "snippets", "buffer", "dictionary" },
 			per_filetype = {
 				sql = { "snippets", "dadbod", "buffer" },
 			},
@@ -39,6 +42,17 @@ return {
 				dadbod = {
 					name = "Dadbod",
 					module = "vim_dadbod_completion.blink",
+				},
+				dictionary = {
+					module = "blink-cmp-dictionary",
+					name = "Dict",
+					score_offset = -100,
+					min_keyword_length = 3,
+					opts = {
+						dictionary_directories = {
+							vim.fn.stdpath("config") .. "/dictionary",
+						},
+					},
 				},
 			},
 		},
