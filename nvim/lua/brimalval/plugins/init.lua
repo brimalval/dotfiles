@@ -35,9 +35,11 @@ return {
 		"aserowy/tmux.nvim",
 		config = function()
 			require("tmux").setup({
-				-- your configuration comes here
-				-- or leave it empty to use the default settings
-				-- refer to the configuration section below
+				-- Don't use tmuxclipboard provider
+				-- allow use of the system clipboard instead
+				copy_sync = {
+					enable = false,
+				},
 			})
 		end,
 	},
@@ -67,5 +69,16 @@ return {
 		"gregorias/coerce.nvim",
 		tag = "v4.1.0",
 		config = true,
+	},
+	{
+		"hedyhli/outline.nvim",
+		config = function()
+			-- Example mapping to toggle outline
+			vim.keymap.set("n", "<leader>o", "<cmd>Outline<CR>", { desc = "Toggle Outline" })
+
+			require("outline").setup({
+				-- Your setup opts here (leave empty to use defaults)
+			})
+		end,
 	},
 }
