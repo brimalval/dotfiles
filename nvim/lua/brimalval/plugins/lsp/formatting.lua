@@ -23,6 +23,8 @@ return {
 					"eslint-lsp",
 					"sleek",
 					"eslint_d",
+					"prettierd",
+					"markdown-toc",
 				},
 			},
 		},
@@ -36,7 +38,7 @@ return {
 			javascript = { "prettier", "eslint_d" },
 			lua = { "stylua" },
 			http = { "kulala-fmt" },
-			markdown = { "prettier" },
+			markdown = { "prettierd", "markdown-toc" },
 		},
 		format_on_save = {
 			lsp_fallback = true,

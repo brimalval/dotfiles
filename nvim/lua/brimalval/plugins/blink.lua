@@ -42,6 +42,7 @@ return {
 				dadbod = {
 					name = "Dadbod",
 					module = "vim_dadbod_completion.blink",
+					score_offset = 100,
 				},
 				dictionary = {
 					module = "blink-cmp-dictionary",

@@ -42,6 +42,15 @@ return {
 			snippet("bimportant", blocktext("IMPORTANT")),
 		})
 
+		ls.add_snippets("markdown", {
+			snippet("toc", {
+				text({ "<!-- toc -->", "" }),
+				insert(1),
+				text({ "", "" }),
+				text("<!-- tocstop -->"),
+			}),
+		})
+
 		local http_snippets = {
 			http_snippet("GET"),
 			http_snippet("POST"),
