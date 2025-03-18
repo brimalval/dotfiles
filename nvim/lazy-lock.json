@@ -6,6 +6,7 @@
   "coerce.nvim": { "branch": "main", "commit": "b7927c42bd7f3adaae5f5dcf86a89140d5d80430" },
   "conform.nvim": { "branch": "master", "commit": "db8a4a9edb217067b1d7a2e0362c74bfe9cc944d" },
   "coop.nvim": { "branch": "main", "commit": "d98b9c285f28aded2db05a0c178ab0c43b3ac611" },
+  "diffview.nvim": { "branch": "main", "commit": "4516612fe98ff56ae0415a259ff6361a89419b0a" },
   "dropbar.nvim": { "branch": "master", "commit": "009c214b6eadf49ec50fc81055ceb08ca3fcb8e1" },
   "flash.nvim": { "branch": "main", "commit": "3c942666f115e2811e959eabbdd361a025db8b63" },
   "friendly-snippets": { "branch": "main", "commit": "efff286dd74c22f731cdec26a70b46e5b203c619" },
