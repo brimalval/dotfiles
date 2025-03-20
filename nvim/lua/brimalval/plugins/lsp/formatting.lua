@@ -5,7 +5,7 @@ return {
 		{
 			"<leader>cf",
 			function()
-				require("conform").format()
+				require("conform").format({ async = true, lsp_fallback = true })
 			end,
 			mode = "n",
 			desc = "Format code with conform",
