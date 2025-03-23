@@ -15,7 +15,9 @@ return {
 				fixed_width = 60,
 				preview = {
 					show_always = true,
-					show_line_number = true,
+					-- for some reason showing line numbers breaks
+					-- the line number display for your main buffer
+					-- show_line_number = true,
 				},
 			},
 			-- custom settings here

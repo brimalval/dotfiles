@@ -7,6 +7,25 @@ local map = vim.keymap.set
 -- map("n", "gr", "<Cmd>lua vim.lsp.buf.references()<CR>", { desc = "Go to references" })
 -- map("n", "gt", "<Cmd>lua vim.lsp.buf.type_definition()<CR>", { desc = "Go to type definition" })
 
+local lsps = {
+	"lua_ls",
+	"pyright",
+	"typos_lsp",
+	"ts_ls",
+	"prismals",
+	"eslint",
+}
+local formatters = {
+	"black",
+	"isort",
+	"prettier",
+	"eslint-lsp",
+	"sleek",
+	"eslint_d",
+	"prettierd",
+	"markdown-toc",
+}
+
 map("n", "<Leader>c", "", { desc = "Code-related functions" })
 map("n", "<Leader>cr", function()
 	vim.lsp.buf.rename()
@@ -60,14 +79,7 @@ return {
 			keymap.set("n", "<leader>m", "<cmd>Mason<cr>")
 
 			require("mason-lspconfig").setup({
-				ensure_installed = {
-					"lua_ls",
-					"pyright",
-					"typos_lsp",
-					"ts_ls",
-					"prismals",
-					"eslint",
-				},
+				ensure_installed = lsps,
 				automatic_installation = true,
 			})
 			require("mason-lspconfig").setup_handlers({
@@ -131,6 +143,53 @@ return {
 						node_decremental = "<BS>",
 					},
 				},
+			})
+		end,
+	},
+	{
+		"stevearc/conform.nvim",
+		event = { "BufReadPre", "BufNewFile" },
+		keys = {
+			{
+				"<leader>cf",
+				function()
+					require("conform").format({ async = true, lsp_fallback = true })
+				end,
+				mode = "n",
+				desc = "Format code with conform",
+			},
+		},
+		dependencies = {
+			"williamboman/mason-lspconfig.nvim",
+			{
+				"williamboman/mason.nvim",
+			},
+		},
+		config = function()
+			require("conform").setup({
+				formatters_by_ft = {
+					sql = { "sleek" },
+					python = { "isort", "black" },
+					typescript = { "prettier" },
+					typescriptreact = { "prettier" },
+					javascript = { "prettier" },
+					lua = { "stylua" },
+					http = { "kulala-fmt" },
+					markdown = { "prettierd", "markdown-toc" },
+				},
+				format_on_save = {
+					lsp_fallback = true,
+				},
+				formatters = {
+					black = {
+						prepend_args = { "--line-length", "79", "--skip-string-normalization" },
+					},
+				},
+			})
+			vim.api.nvim_create_autocmd("BufWritePre", {
+				group = vim.api.nvim_create_augroup("EslintFixAll", { clear = true }),
+				pattern = { "*.tsx", "*.ts", "*.jsx", "*.js" },
+				command = "silent! EslintFixAll",
 			})
 		end,
 	},

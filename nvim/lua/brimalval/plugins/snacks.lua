@@ -30,10 +30,14 @@ return {
 			enabled = true,
 			timeout = 3000,
 		},
-		picker = { enabled = true, layout = "dropdown" },
+		-- available layouts: bottom, default, dropdown, ivy, ivy_split, left,
+		-- right, select, sidebar, telescope, top, vertical, vscode
+		picker = { enabled = true, layout = "sidebar" },
 		quickfile = { enabled = true },
 		scope = { enabled = true },
-		scroll = { enabled = false },
+		scroll = { enabled = true, animate = {
+			duration = { step = 20, total = 100 },
+		} },
 		statuscolumn = { enabled = true },
 		words = { enabled = true },
 		styles = {
@@ -61,9 +65,7 @@ return {
 		{
 			"<leader>/",
 			function()
-				Snacks.picker.lines({
-					layout = "dropdown",
-				})
+				Snacks.picker.lines({})
 			end,
 			desc = "Search current buffer",
 		},
@@ -176,13 +178,13 @@ return {
 			end,
 			desc = "Git Stash",
 		},
-		{
-			"<leader>gd",
-			function()
-				Snacks.picker.git_diff()
-			end,
-			desc = "Git Diff (Hunks)",
-		},
+		-- {
+		-- 	"<leader>gd",
+		-- 	function()
+		-- 		Snacks.picker.git_diff()
+		-- 	end,
+		-- 	desc = "Git Diff (Hunks)",
+		-- },
 		{
 			"<leader>gf",
 			function()
