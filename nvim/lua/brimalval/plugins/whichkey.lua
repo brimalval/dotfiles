@@ -1,6 +1,7 @@
 return {
 	"folke/which-key.nvim",
 	event = "VeryLazy",
+	priority = 1000,
 	opts = {
 		-- your configuration comes here
 		-- or leave it empty to use the default settings

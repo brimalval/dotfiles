@@ -35,6 +35,9 @@ opt.splitbelow = true
 -- Remove the tildes on the side
 opt.fillchars = { eob = " " }
 
+-- Make the statusline global
+opt.laststatus = 3
+
 -- Persist undo history
 opt.undofile = true
 opt.undodir = vim.fn.stdpath("cache") .. "/undo"

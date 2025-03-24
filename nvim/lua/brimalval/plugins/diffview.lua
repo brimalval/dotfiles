@@ -1,3 +1,7 @@
+local function is_diffview_open()
+	return require("diffview.lib").get_current_view() ~= nil
+end
+
 local function do_git_diff(from_branch)
 	local git_branches = vim.fn.system("git branch --all --format='%(refname:short)'")
 	git_branches = string.gsub(git_branches, "origin/", "")
@@ -46,9 +50,7 @@ return {
 			wk_desc = {
 				disabled = "Open (against current branch) ",
 			},
-			get = function()
-				return require("diffview.lib").get_current_view() ~= nil
-			end,
+			get = is_diffview_open,
 			set = function(state)
 				if state == true then
 					local current_branch = vim.fn.system("git branch --show-current --format='%(refname:short)'")
@@ -65,9 +67,7 @@ return {
 			wk_desc = {
 				disabled = "Open (select 2 target branches) ",
 			},
-			get = function()
-				return require("diffview.lib").get_current_view() ~= nil
-			end,
+			get = is_diffview_open,
 			set = function(state)
 				if state == true then
 					do_git_diff()
@@ -76,5 +76,37 @@ return {
 				end
 			end,
 		}):map("<leader>gD")
+
+		Snacks.toggle({
+			name = "Diffview",
+			notify = false,
+			wk_desc = {
+				disabled = "Current file history ",
+			},
+			get = is_diffview_open,
+			set = function(state)
+				if state == true then
+					vim.cmd("DiffviewFileHistory %")
+				else
+					vim.cmd("DiffviewClose")
+				end
+			end,
+		}):map("<leader>gf")
+
+		Snacks.toggle({
+			name = "Diffview",
+			notify = false,
+			wk_desc = {
+				disabled = "File history ",
+			},
+			get = is_diffview_open,
+			set = function(state)
+				if state == true then
+					vim.cmd("DiffviewFileHistory")
+				else
+					vim.cmd("DiffviewClose")
+				end
+			end,
+		}):map("<leader>gF")
 	end,
 }
