@@ -23,9 +23,10 @@ map("n", "j", "gj")
 map("n", "k", "gk")
 
 -- Better scrolling
-map("n", "<C-u>", "<C-u>zz")
-map("n", "<C-d>", "<C-d>zz")
-map("n", "G", "Gzz")
+-- map("n", "<C-u>", "<C-u>zz")
+-- map("n", "<C-d>", "<C-d>zz")
+map("n", "<C-e>", "jzz")
+map("n", "<C-y>", "kzz")
 
 -- Kill search highlights
 map("n", "<esc>", "<Cmd>noh<CR>")

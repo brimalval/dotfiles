@@ -13,6 +13,8 @@ local function do_git_diff(from_branch)
 			table.insert(unique_branches, branch)
 		end
 	end
+	-- Add "current branch" as the first option
+	table.insert(unique_branches, 1, "Current branch")
 	vim.ui.select(unique_branches, {
 		prompt = from_branch and "Select branch to compare against:" or "Select target branch:",
 	}, function(branch)
@@ -30,7 +32,11 @@ local function do_git_diff(from_branch)
 				vim.cmd("DiffviewOpen " .. branch .. "..." .. to_branch)
 			end)
 		else
-			vim.cmd("DiffviewOpen " .. branch)
+			if branch == "Current branch" then
+				vim.cmd("DiffviewOpen " .. from_branch)
+			else
+				vim.cmd("DiffviewOpen " .. branch)
+			end
 		end
 	end)
 end

@@ -32,7 +32,16 @@ return {
 		},
 		-- available layouts: bottom, default, dropdown, ivy, ivy_split, left,
 		-- right, select, sidebar, telescope, top, vertical, vscode
-		picker = { enabled = true, layout = "sidebar" },
+		picker = {
+			enabled = true,
+			layout = "sidebar",
+			previewers = {
+				diff = {
+					builtin = true,
+					cmd = { "delta" },
+				},
+			},
+		},
 		quickfile = { enabled = true },
 		scope = { enabled = true },
 		scroll = { enabled = false, animate = {
