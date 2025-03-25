@@ -34,7 +34,7 @@ return {
 		-- right, select, sidebar, telescope, top, vertical, vscode
 		picker = {
 			enabled = true,
-			layout = "sidebar",
+			layout = "dropdown",
 			previewers = {
 				diff = {
 					builtin = true,
@@ -242,7 +242,29 @@ return {
 		{
 			'<leader>s"',
 			function()
-				Snacks.picker.registers()
+				Snacks.picker.registers({
+					actions = {
+						edit = function(_, item)
+							-- TODO: figure out how to programmatically quit and/or refresh the picker
+							vim.ui.input({
+								prompt = "Enter new value for [" .. item.reg .. "] register: ",
+								default = item.value,
+							}, function(input)
+								vim.fn.setreg(item.reg, input)
+							end)
+						end,
+					},
+					win = {
+						input = {
+							keys = {
+								["e"] = {
+									"edit",
+									mode = "n",
+								},
+							},
+						},
+					},
+				})
 			end,
 			desc = "Registers",
 		},

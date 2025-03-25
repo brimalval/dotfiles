@@ -14,6 +14,7 @@ local lsps = {
 	"ts_ls",
 	"prismals",
 	"eslint",
+	"tailwindcss",
 }
 local formatters = {
 	"black",
