@@ -35,7 +35,7 @@ return {
 		picker = { enabled = true, layout = "sidebar" },
 		quickfile = { enabled = true },
 		scope = { enabled = true },
-		scroll = { enabled = true, animate = {
+		scroll = { enabled = false, animate = {
 			duration = { step = 20, total = 100 },
 		} },
 		statuscolumn = { enabled = true },

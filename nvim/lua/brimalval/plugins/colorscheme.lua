@@ -3,6 +3,7 @@ return {
 		"rose-pine/neovim",
 		name = "rose-pine",
 		config = function()
+			local palette = require("rose-pine.palette")
 			require("rose-pine").setup({
 				variant = "moon",
 				styles = {
@@ -11,7 +12,7 @@ return {
 				},
 				highlight_groups = {
 					CursorLineNr = {
-						fg = "#9CCFD8",
+						fg = palette.foam,
 					},
 				},
 			})
