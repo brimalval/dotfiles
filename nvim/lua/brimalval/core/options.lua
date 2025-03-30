@@ -41,3 +41,10 @@ opt.laststatus = 3
 -- Persist undo history
 opt.undofile = true
 opt.undodir = vim.fn.stdpath("cache") .. "/undo"
+
+vim.diagnostic.config({
+	virtual_lines = {
+		current_line = true,
+	},
+	virtual_text = false,
+})

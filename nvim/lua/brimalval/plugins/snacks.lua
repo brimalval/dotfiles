@@ -632,6 +632,19 @@ return {
 				Snacks.toggle
 					.option("background", { off = "light", on = "dark", name = "Dark Background" })
 					:map("<leader>ub")
+				Snacks.toggle({
+					name = "Virtual Lines",
+					get = function()
+						return vim.diagnostic.config().virtual_lines ~= false
+					end,
+					set = function(state)
+						vim.diagnostic.config({
+							virtual_lines = state and {
+								current_line = true,
+							} or false,
+						})
+					end,
+				}):map("<leader>uv")
 				Snacks.toggle.inlay_hints():map("<leader>uh")
 				Snacks.toggle.indent():map("<leader>ug")
 				Snacks.toggle.dim():map("<leader>uD")
