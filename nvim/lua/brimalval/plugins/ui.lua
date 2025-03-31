@@ -11,6 +11,17 @@ return {
 			vim.keymap.set("n", "<Leader>;", dropbar_api.pick, { desc = "Pick symbols in winbar" })
 			vim.keymap.set("n", "[;", dropbar_api.goto_context_start, { desc = "Go to start of current context" })
 			vim.keymap.set("n", "];", dropbar_api.select_next_context, { desc = "Select next context" })
+			vim.cmd([[hi WinBarNC guibg=false]])
+			vim.cmd([[hi WinBar guibg=false]])
+			require("dropbar").setup({
+				icons = {
+					ui = {
+						bar = {
+							separator = " ⟢ ",
+						},
+					},
+				},
+			})
 		end,
 	},
 	{
