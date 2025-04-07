@@ -7,17 +7,20 @@ return {
 			build = "make",
 		},
 		config = function()
+			vim.cmd([[hi WinBarNC guibg=false]])
+			vim.cmd([[hi WinBar guibg=false]])
 			local dropbar_api = require("dropbar.api")
 			vim.keymap.set("n", "<Leader>;", dropbar_api.pick, { desc = "Pick symbols in winbar" })
 			vim.keymap.set("n", "[;", dropbar_api.goto_context_start, { desc = "Go to start of current context" })
 			vim.keymap.set("n", "];", dropbar_api.select_next_context, { desc = "Select next context" })
-			vim.cmd([[hi WinBarNC guibg=false]])
-			vim.cmd([[hi WinBar guibg=false]])
+			-- type
 			require("dropbar").setup({
 				icons = {
 					ui = {
 						bar = {
+							-- chevron
 							separator = " ⟢ ",
+							background = false,
 						},
 					},
 				},
@@ -40,6 +43,18 @@ return {
 					-- Disable message if hover is not available
 					-- ex: shift+k on Typescript code
 					silent = true,
+				},
+			},
+			routes = {
+				{
+					filter = {
+						event = "notify",
+						kind = "error",
+						find = "-32603",
+					},
+					opts = {
+						skip = true,
+					},
 				},
 			},
 		},
