@@ -9,7 +9,19 @@ return {
 	{
 		"supermaven-inc/supermaven-nvim",
 		config = function()
-			require("supermaven-nvim").setup({})
+			require("supermaven-nvim").setup({
+				keymaps = {
+					accept_suggestion = "<C-l>",
+					clear_suggestion = "<C-]>",
+					accept_word = "<C-m>",
+				},
+				log_level = "info",
+				disable_inline_completion = false,
+				disable_keymaps = false,
+				condition = function()
+					return false
+				end,
+			})
 		end,
 	},
 	{
@@ -106,9 +118,17 @@ return {
       { "<leader>qd", function() require("persistence").stop() end, desc = "Don't Save Current Session" },
     },
 	},
+	-- {
+	-- 	"m4xshen/hardtime.nvim",
+	-- 	dependencies = { "MunifTanjim/nui.nvim" },
+	-- 	opts = {},
+	-- },
 	{
-		"m4xshen/hardtime.nvim",
-		dependencies = { "MunifTanjim/nui.nvim" },
-		opts = {},
+		"princejoogie/duckdb.nvim",
+		dir = "~/Projects/duckdb.nvim",
+		opts = {
+			rows_per_page = 50,
+		},
+		ft = { "csv" },
 	},
 }

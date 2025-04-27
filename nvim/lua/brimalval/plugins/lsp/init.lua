@@ -10,7 +10,6 @@ local lsps = {
 	"prismals",
 	"eslint",
 	"tailwindcss",
-	"copilot_ls",
 }
 local formatters = {
 	"black",

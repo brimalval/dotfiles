@@ -1,0 +1,194 @@
+app_version: 0.4.0-windows_beta.0
+behavior_configs:
+- base_wheel_speed: 0.3
+  grid_action_level: subgrid
+  hide_cursor_on_click: false
+  hide_location: bottom_left
+  initial_action_location: system_cursor
+  initial_overlay_monitor: with_mouse
+  move_duration_ms: 100
+  move_real_cursor_with_virtual: false
+  multi_action_timeout_ms: 400
+  name: main_behavior
+  tap_threshold_ms: 250
+  wheel_mode_auto_off_s: 10
+  wheel_speed_multiplier: 4.0
+  wheel_step_size: 2.0
+  wheel_step_size_large: 10.0
+classname: AppConfig
+custom_monitor_assignments: []
+display_input: none
+event_tap_location: hid_head
+grid_configs:
+- always_show_subgrid: false
+  grid_defn:
+  - border_width: 0.0
+    callback: build_cell_strings
+    keys: QWERTYUIOP ASDFGHJKL; ZXCVBNM,./
+    num_cells_x: 10
+    num_cells_y: 3
+  - border_width: 1.0
+    callback: build_cell_strings
+    keys: ''
+    num_cells_x: 5
+    num_cells_y: 6
+  - border_width: 0.0
+    callback: apply_strings_and_subgrid_to_cells
+    keys: ''
+    num_cells_x: 2
+    num_cells_y: 1
+  name: position_based
+  strategy: subgrid
+  subgrid_dims:
+  - 8
+  - 3
+  subgrid_mouse_action_keys: QWER UIOP ASDF JKL; ZXCV M,./
+keyboard_layout: null
+keymaps:
+- entries:
+    back mouse button (w/o overlay): null
+    close UI element: Escape
+    cycle click count: null
+    cycle font: '3'
+    cycle font reverse: shift+3
+    cycle grid action level: '2'
+    cycle mouse action type: null
+    cycle mouse button: null
+    decrease overlay opacity: ArrowDown
+    edit config: Tab
+    enter wheel mode: null
+    execute mouse action: Space
+    execute mouse move: AltLeft tap
+    exit wheel mode: Escape
+    forward mouse button (w/o overlay): null
+    hide overlay: Escape
+    hold for back button: null
+    hold for drag: AltLeft
+    hold for forward button: null
+    hold for middle button: null
+    hold for move: null
+    hold for right button: Shift
+    hold for speed decrease: ShiftLeft
+    hold for speed increase: AltLeft
+    increase overlay opacity: ArrowUp
+    jump to bottom: null
+    jump to left edge: null
+    jump to right edge: null
+    jump to top: null
+    left mouse button (w/o overlay): null
+    middle mouse button (w/o overlay): null
+    release hold/drag: Escape
+    repeat last mouse action: null
+    right mouse button (w/o overlay): null
+    show overlay: AltLeft tap
+    switch monitor left: ShiftLeft tap
+    switch monitor right: ShiftRight tap
+    toggle continuous mode: null
+    toggle continuous mode until closed: '1'
+    toggle overlay: null
+    toggle overlay lock: null
+    toggle wheel mode: ControlLeft tap
+    undo last key: Backspace
+    wheel down: J
+    wheel down fast: null
+    wheel left: H
+    wheel left fast: null
+    wheel right: L
+    wheel right fast: null
+    wheel step down: null
+    wheel step down large: null
+    wheel step left: null
+    wheel step left large: null
+    wheel step right: null
+    wheel step right large: null
+    wheel step up: null
+    wheel step up large: null
+    wheel up: K
+    wheel up fast: null
+  name: mac
+monitor_assignment_mode: auto
+name: ''
+style_configs:
+- always_on_subgrid_rgba:
+  - 1.0
+  - 1.0
+  - 1.0
+  - 0.2
+  background_rgba:
+  - 0.00392156862745098
+  - 0.00392156862745098
+  - 0.00392156862745098
+  - 0.1
+  char_spacing_cell_width_ratio: 0.5
+  char_spacing_font_size_ratio: 0.5
+  char_spacing_strategy: cell_width_relative
+  cursor_drag_rgba:
+  - 0.0
+  - 0.5
+  - 1.0
+  - 0.7
+  cursor_move_rgba:
+  - 0.75
+  - 0.41
+  - 0.92
+  - 0.7
+  cursor_other_rgba:
+  - 1.0
+  - 1.0
+  - 1.0
+  - 0.7
+  cursor_rgba:
+  - 0.3
+  - 0.42
+  - 0.58
+  - 0.8
+  cursor_right_button_rgba:
+  - 0.92
+  - 0.32
+  - 0.32
+  - 0.7
+  cursor_size: 7
+  font_family: Hack Nerd Font
+  font_size_multiplier: 0.4
+  font_weight: 500
+  grid_line_style: lines
+  grid_rgba:
+  - 1.0
+  - 1.0
+  - 1.0
+  - 0.5
+  highlight_animation_ms: 0
+  highlight_rgba:
+  - 0.5725490196078431
+  - 0.3058823529411765
+  - 0.8117647058823529
+  - 0.2
+  name: default
+  show_initial_highlight: false
+  subgrid_font_size_multiplier: 0.75
+  subgrid_rgba:
+  - 1.0
+  - 1.0
+  - 1.0
+  - 0.5
+  subgrid_text_rgba:
+  - 1.0
+  - 1.0
+  - 1.0
+  - 0.5
+  text_rgba:
+  - 1.0
+  - 1.0
+  - 1.0
+  - 1.0
+  text_shadow_blur_radius: 4.0
+  text_shadow_offset:
+  - 0.0
+  - 0.0
+  text_shadow_rgba:
+  - 1.0
+  - 1.0
+  - 1.0
+  - 1.0
+  text_y_offset: 0.0
+  window_opacity: 1.0
