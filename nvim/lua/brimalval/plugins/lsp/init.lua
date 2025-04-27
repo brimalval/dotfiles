@@ -1,11 +1,6 @@
 -- Keymaps
 local map = vim.keymap.set
 -- Jumps
--- map("n", "gd", "<Cmd>lua vim.lsp.buf.definition()<CR>", { desc = "Go to definition" })
--- map("n", "gD", "<Cmd>lua vim.lsp.buf.declaration()<CR>", { desc = "Go to declaration" })
--- map("n", "gi", "<Cmd>lua vim.lsp.buf.implementation()<CR>", { desc = "Go to implementation" })
--- map("n", "gr", "<Cmd>lua vim.lsp.buf.references()<CR>", { desc = "Go to references" })
--- map("n", "gt", "<Cmd>lua vim.lsp.buf.type_definition()<CR>", { desc = "Go to type definition" })
 
 local lsps = {
 	"lua_ls",
@@ -15,6 +10,7 @@ local lsps = {
 	"prismals",
 	"eslint",
 	"tailwindcss",
+	"copilot_ls",
 }
 local formatters = {
 	"black",
@@ -194,4 +190,40 @@ return {
 			})
 		end,
 	},
+	{
+		"copilotlsp-nvim/copilot-lsp",
+		dependencies = { "github/copilot.vim" },
+		init = function()
+			vim.g.copilot_nes_debounce = 500
+			vim.lsp.enable("copilot")
+			vim.keymap.set("n", "<tab>", function()
+				require("copilot-lsp.nes").apply_pending_nes()
+			end)
+		end,
+	},
+	-- {
+	-- 	"copilotlsp-nvim/copilot-lsp",
+	-- 	dependencies = {
+	-- 		-- {
+	-- 		-- 	"zbirenbaum/copilot.lua",
+	-- 		-- 	cmd = "Copilot",
+	-- 		-- 	build = ":Copilot auth",
+	-- 		-- 	event = "BufReadPost",
+	-- 		-- 	config = function()
+	-- 		-- 		require("copilot").setup({})
+	-- 		-- 	end,
+	-- 		-- },
+	-- 	},
+	-- 	init = function()
+	-- 		vim.g.copilot_nes_debounce = 300
+	-- 		vim.lsp.enable("copilot")
+	-- 		vim.keymap.set({ "n", "v" }, "<tab>", function()
+	-- 			require("copilot-lsp.nes").apply_pending_nes()
+	-- 		end)
+	-- 		vim.keymap.set("n", "<M-\\>", function()
+	-- 			local copilot_lsp_client = vim.lsp.get_clients({ name = "copilot" })[1]
+	-- 			require("copilot-lsp.nes").request_nes(copilot_lsp_client)
+	-- 		end)
+	-- 	end,
+	-- },
 }

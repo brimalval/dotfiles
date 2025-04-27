@@ -1,4 +1,5 @@
-local OBSIDIAN_VAULT = "~/Projects/Zettelkasten"
+local OBSIDIAN_VAULT = vim.fn.expand("~") .. "/Projects/Zettelkasten"
+local ARCHIVES_FOLDER = OBSIDIAN_VAULT .. "/400. Archive"
 return {
 	{
 		"MeanderingProgrammer/render-markdown.nvim",
@@ -29,6 +30,43 @@ return {
 			-- see below for full list of optional dependencies 👇
 		},
 		opts = {
+			mappings = {
+				["<leader>A"] = {
+					action = function()
+						local result = vim.fn.system({
+							"mv",
+							vim.fn.expand("%"),
+							ARCHIVES_FOLDER,
+						})
+						if vim.v.shell_error ~= 0 then
+							print("Error moving file: " .. result)
+						else
+							print("Archived" .. vim.fn.expand("%:t"))
+						end
+					end,
+					opts = { noremap = false, desc = "Archive note" },
+				},
+				["gf"] = {
+					action = function()
+						return require("obsidian").util.gf_passthrough()
+					end,
+					opts = { noremap = false, expr = true, buffer = true },
+				},
+				-- Toggle check-boxes.
+				["<leader>ch"] = {
+					action = function()
+						return require("obsidian").util.toggle_checkbox()
+					end,
+					opts = { buffer = true },
+				},
+				-- Smart action depending on context, either follow link or toggle checkbox.
+				["<cr>"] = {
+					action = function()
+						return require("obsidian").util.smart_action()
+					end,
+					opts = { buffer = true, expr = true },
+				},
+			},
 			workspaces = {
 				{
 					name = "Zettelkasten",

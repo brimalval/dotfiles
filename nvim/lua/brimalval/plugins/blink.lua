@@ -3,12 +3,31 @@ return {
 	dependencies = {
 		"rafamadriz/friendly-snippets",
 		{ "Kaiser-Yang/blink-cmp-dictionary", dependencies = { "nvim-lua/plenary.nvim" } },
+		-- "giuxtaposition/blink-cmp-copilot",
 	},
 	version = "*",
 	---@module 'blink.cmp'
 	---@type blink.cmp.Config
 	opts = {
-		keymap = { preset = "enter", ["<CR>"] = { "accept", "fallback" } },
+		keymap = {
+			preset = "enter",
+			["<CR>"] = { "accept", "fallback" },
+			-- ["<Tab>"] = {
+			-- 	function(cmp)
+			-- 		if vim.b[vim.api.nvim_get_current_buf()].nes_state then
+			-- 			cmp.hide()
+			-- 			return require("copilot-lsp.nes").apply_pending_nes()
+			-- 		end
+			-- 		if cmp.snippet_active() then
+			-- 			return cmp.accept()
+			-- 		else
+			-- 			return cmp.select_and_accept()
+			-- 		end
+			-- 	end,
+			-- 	"snippet_forward",
+			-- 	"fallback",
+			-- },
+		},
 		appearance = {
 			use_nvim_cmp_as_default = true,
 			nerd_font_variant = "mono",
@@ -34,11 +53,12 @@ return {
 				sql = { "snippets", "dadbod", "buffer" },
 			},
 			providers = {
-				lazydev = {
-					name = "LazyDev",
-					module = "lazydev.integrations.blink",
-					score_offset = 100,
-				},
+				-- copilot = {
+				-- 	name = "copilot",
+				-- 	module = "blink-cmp-copilot",
+				-- 	score_offset = 100,
+				-- 	async = true,
+				-- },
 				dadbod = {
 					name = "Dadbod",
 					module = "vim_dadbod_completion.blink",
@@ -54,6 +74,11 @@ return {
 							vim.fn.stdpath("config") .. "/dictionary",
 						},
 					},
+				},
+				lazydev = {
+					name = "LazyDev",
+					module = "lazydev.integrations.blink",
+					score_offset = 100,
 				},
 			},
 		},

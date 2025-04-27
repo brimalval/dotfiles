@@ -140,3 +140,8 @@ export PATH="/opt/homebrew/opt/imagemagick/bin:$PATH"
 bindkey -M viins "jk" vi-cmd-mode
 
 neofetch
+
+# If .nvmrc is in current directory, run nvm use
+if [ -f .nvmrc ]; then
+  nvm use
+fi
