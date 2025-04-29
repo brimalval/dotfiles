@@ -3,7 +3,7 @@ return {
 	dependencies = {
 		"rafamadriz/friendly-snippets",
 		{ "Kaiser-Yang/blink-cmp-dictionary", dependencies = { "nvim-lua/plenary.nvim" } },
-		-- "giuxtaposition/blink-cmp-copilot",
+		"giuxtaposition/blink-cmp-copilot",
 	},
 	version = "*",
 	---@module 'blink.cmp'
@@ -12,21 +12,6 @@ return {
 		keymap = {
 			preset = "enter",
 			["<CR>"] = { "accept", "fallback" },
-			-- ["<Tab>"] = {
-			-- 	function(cmp)
-			-- 		if vim.b[vim.api.nvim_get_current_buf()].nes_state then
-			-- 			cmp.hide()
-			-- 			return require("copilot-lsp.nes").apply_pending_nes()
-			-- 		end
-			-- 		if cmp.snippet_active() then
-			-- 			return cmp.accept()
-			-- 		else
-			-- 			return cmp.select_and_accept()
-			-- 		end
-			-- 	end,
-			-- 	"snippet_forward",
-			-- 	"fallback",
-			-- },
 		},
 		appearance = {
 			use_nvim_cmp_as_default = true,
@@ -48,17 +33,17 @@ return {
 			end,
 		},
 		sources = {
-			default = { "lazydev", "lsp", "path", "snippets", "buffer", "dictionary" },
+			default = { "lazydev", "lsp", "path", "snippets", "copilot", "buffer", "dictionary" },
 			per_filetype = {
 				sql = { "snippets", "dadbod", "buffer" },
 			},
 			providers = {
-				-- copilot = {
-				-- 	name = "copilot",
-				-- 	module = "blink-cmp-copilot",
-				-- 	score_offset = 100,
-				-- 	async = true,
-				-- },
+				copilot = {
+					name = "copilot",
+					module = "blink-cmp-copilot",
+					score_offset = 50,
+					async = true,
+				},
 				dadbod = {
 					name = "Dadbod",
 					module = "vim_dadbod_completion.blink",

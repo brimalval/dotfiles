@@ -170,7 +170,7 @@ return {
 					typescriptreact = { "prettier" },
 					javascript = { "prettier" },
 					lua = { "stylua" },
-					http = { "kulala-fmt" },
+					http = { "kulala" },
 					markdown = { "prettierd", "markdown-toc" },
 				},
 				format_on_save = {
@@ -179,6 +179,11 @@ return {
 				formatters = {
 					black = {
 						prepend_args = { "--line-length", "79", "--skip-string-normalization" },
+					},
+					kulala = {
+						command = "kulala-fmt",
+						args = { "format", "$FILENAME" },
+						stdin = false,
 					},
 				},
 			})
@@ -189,40 +194,32 @@ return {
 			})
 		end,
 	},
-	{
-		"copilotlsp-nvim/copilot-lsp",
-		dependencies = { "github/copilot.vim" },
-		init = function()
-			vim.g.copilot_nes_debounce = 500
-			vim.lsp.enable("copilot")
-			vim.keymap.set("n", "<tab>", function()
-				require("copilot-lsp.nes").apply_pending_nes()
-			end)
-		end,
-	},
 	-- {
 	-- 	"copilotlsp-nvim/copilot-lsp",
-	-- 	dependencies = {
-	-- 		-- {
-	-- 		-- 	"zbirenbaum/copilot.lua",
-	-- 		-- 	cmd = "Copilot",
-	-- 		-- 	build = ":Copilot auth",
-	-- 		-- 	event = "BufReadPost",
-	-- 		-- 	config = function()
-	-- 		-- 		require("copilot").setup({})
-	-- 		-- 	end,
-	-- 		-- },
-	-- 	},
+	-- 	dependencies = { "github/copilot.vim" },
 	-- 	init = function()
-	-- 		vim.g.copilot_nes_debounce = 300
+	-- 		vim.g.copilot_nes_debounce = 500
 	-- 		vim.lsp.enable("copilot")
-	-- 		vim.keymap.set({ "n", "v" }, "<tab>", function()
+	-- 		vim.keymap.set("n", "<tab>", function()
 	-- 			require("copilot-lsp.nes").apply_pending_nes()
-	-- 		end)
-	-- 		vim.keymap.set("n", "<M-\\>", function()
-	-- 			local copilot_lsp_client = vim.lsp.get_clients({ name = "copilot" })[1]
-	-- 			require("copilot-lsp.nes").request_nes(copilot_lsp_client)
 	-- 		end)
 	-- 	end,
 	-- },
+	{
+		"copilotlsp-nvim/copilot-lsp",
+		dependencies = { "zbirenbaum/copilot.lua" },
+		init = function()
+			vim.g.copilot_nes_debounce = 300
+			vim.lsp.enable("copilot_ls")
+			vim.keymap.set({ "n", "v" }, "<M-a>", function()
+				local _ = (
+					require("copilot-lsp.nes").apply_pending_nes() and require("copilot-lsp.nes").walk_cursor_end_edit()
+				)
+			end)
+			vim.keymap.set("n", "<M-\\>", function()
+				local copilot_lsp_client = vim.lsp.get_clients({ name = "copilot_ls" })[1]
+				require("copilot-lsp.nes").request_nes(copilot_lsp_client)
+			end)
+		end,
+	},
 }

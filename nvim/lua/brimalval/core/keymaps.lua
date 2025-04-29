@@ -32,7 +32,7 @@ map("n", "<C-y>", "kzz")
 map("n", "<esc>", "<Cmd>noh<CR>")
 
 -- Select all
-map("n", "<M-a>", "ggVG", { desc = "Select all" })
+-- map("n", "<M-a>", "ggVG", { desc = "Select all" })
 
 -- Save using ctrl + S
 map("n", "<C-s>", ":w<CR>", { desc = "Save file" })

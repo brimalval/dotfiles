@@ -130,10 +130,10 @@ function addSshKeysToAgent() {
 }
 
 # Check if folder has Pipenv
-if [ -f "$(pwd)/Pipfile" ] && [ "$PIPENV_ACTIVE" != 1 ]; then
-  echo "Pipenv detected, activating shell..."
-  pipenv shell
-fi
+# if [ -f "$(pwd)/Pipfile" ] && [ "$PIPENV_ACTIVE" != 1 ]; then
+#   echo "Pipenv detected, activating shell..."
+#   pipenv shell
+# fi
 
 export MAGICK_HOME=/opt/homebrew/opt/imagemagick/
 export PATH="/opt/homebrew/opt/imagemagick/bin:$PATH"
