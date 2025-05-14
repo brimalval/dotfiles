@@ -77,12 +77,14 @@ return {
 			require("mason-lspconfig").setup({
 				ensure_installed = lsps,
 				automatic_installation = true,
+				automatic_enable = true,
 			})
-			require("mason-lspconfig").setup_handlers({
-				function(server_name)
-					require("lspconfig")[server_name].setup({})
-				end,
-			})
+			-- Deprecated
+			-- require("mason-lspconfig").setup_handlers({
+			-- 	function(server_name)
+			-- 		require("lspconfig")[server_name].setup({})
+			-- 	end,
+			-- })
 		end,
 	},
 	"neovim/nvim-lspconfig",

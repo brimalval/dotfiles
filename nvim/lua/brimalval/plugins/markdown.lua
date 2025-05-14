@@ -1,5 +1,7 @@
 local OBSIDIAN_VAULT = vim.fn.expand("~") .. "/Projects/Zettelkasten"
 local ARCHIVES_FOLDER = OBSIDIAN_VAULT .. "/400. Archive"
+local DAILY_NOTES_FOLDER = "500. Daily Notes"
+
 return {
 	{
 		"MeanderingProgrammer/render-markdown.nvim",
@@ -72,6 +74,9 @@ return {
 					name = "Zettelkasten",
 					path = OBSIDIAN_VAULT,
 				},
+			},
+			daily_notes = {
+				folder = DAILY_NOTES_FOLDER,
 			},
 			config = {
 				ui = {

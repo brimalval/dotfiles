@@ -686,7 +686,9 @@ return {
 			end
 			vim.api.nvim_buf_set_lines(out_buf, 0, -1, false, content)
 			opts.win.buf = out_buf
-			return Snacks.win(opts.win):show()
+			local win = Snacks.win(opts.win)
+			win:set_title("Scratch Output")
+			return win:show()
 		end
 
 		--- Run the current buffer or a range of lines.
