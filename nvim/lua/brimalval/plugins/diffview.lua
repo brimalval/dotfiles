@@ -87,6 +87,22 @@ return {
 			name = "Diffview",
 			notify = false,
 			wk_desc = {
+				disabled = "Basic open (conflicts)",
+			},
+			get = is_diffview_open,
+			set = function(state)
+				if state == true then
+					vim.cmd("DiffviewOpen")
+				else
+					vim.cmd("DiffviewClose")
+				end
+			end,
+		}):map("<leader>gc")
+
+		Snacks.toggle({
+			name = "Diffview",
+			notify = false,
+			wk_desc = {
 				disabled = "Current file history ",
 			},
 			get = is_diffview_open,

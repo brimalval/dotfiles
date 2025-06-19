@@ -17,7 +17,9 @@ setopt beep extendedglob notify
 export PATH="/opt/homebrew/bin:$PATH"
 export PATH="/usr/local/bin:$PATH"
 export PATH="/Users/brian.valencia/Dev/Scripts:$PATH"
-export PATH="/Library/PostgreSQL/15/bin:$PATH"
+# Opt to use pgenv instead
+# export PATH="/Library/PostgreSQL/15/bin:$PATH"
+export PATH="$HOME/.pgenv/bin:$HOME/.pgenv/pgsql/bin:$PATH"
 export PATH="/System/Volumes/Data/Applications/neovide.app/Contents/MacOS:$PATH"
 
 # Starship prompt

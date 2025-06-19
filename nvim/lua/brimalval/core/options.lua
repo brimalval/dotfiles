@@ -3,6 +3,10 @@ local opt = vim.opt
 vim.g.mapleader = " "
 vim.g.borderStyle = "rounded"
 
+-- folds
+-- vim.opt.foldmethod = "expr"
+-- vim.opt.foldexpr = "nvim_treesitter#foldexpr()"
+
 -- tabs & indentation
 opt.tabstop = 2
 opt.shiftwidth = 2
@@ -43,8 +47,8 @@ opt.undofile = true
 opt.undodir = vim.fn.stdpath("cache") .. "/undo"
 
 vim.diagnostic.config({
-	virtual_lines = {
-		current_line = true,
-	},
-	virtual_text = false,
+	-- virtual_lines = {
+	-- 	current_line = true,
+	-- },
+	virtual_text = true,
 })

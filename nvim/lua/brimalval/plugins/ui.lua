@@ -7,12 +7,25 @@ return {
 			build = "make",
 		},
 		config = function()
+			local function jump_without_expanding()
+				local utils = require("dropbar.utils")
+				local menu = utils.menu.get_current()
+				if not menu then
+					return
+				end
+				local cursor = vim.api.nvim_win_get_cursor(menu.win)
+				local entry = menu.entries[cursor[1]]
+				local component = entry:first_clickable(entry.padding.left + entry.components[1]:bytewidth())
+				if component then
+					menu:click_on(component, nil, 1, "l")
+				end
+			end
 			vim.cmd([[hi WinBarNC guibg=false]])
 			vim.cmd([[hi WinBar guibg=false]])
 			local dropbar_api = require("dropbar.api")
 			vim.keymap.set("n", "<Leader>;", dropbar_api.pick, { desc = "Pick symbols in winbar" })
-			vim.keymap.set("n", "[;", dropbar_api.goto_context_start, { desc = "Go to start of current context" })
-			vim.keymap.set("n", "];", dropbar_api.select_next_context, { desc = "Select next context" })
+			vim.keymap.set("n", "[\\", dropbar_api.goto_context_start, { desc = "Go to start of current context" })
+			vim.keymap.set("n", "]\\", dropbar_api.select_next_context, { desc = "Select next context" })
 			-- type
 			require("dropbar").setup({
 				icons = {
@@ -22,6 +35,26 @@ return {
 							separator = " ⟢ ",
 							background = false,
 						},
+					},
+				},
+				menu = {
+					keymaps = {
+						-- close menu
+						["o"] = jump_without_expanding,
+						["<CR>"] = jump_without_expanding,
+						["h"] = "<C-w>q",
+						["l"] = function()
+							local utils = require("dropbar.utils")
+							local menu = utils.menu.get_current()
+							if not menu then
+								return
+							end
+							local cursor = vim.api.nvim_win_get_cursor(menu.win)
+							local component = menu.entries[cursor[1]]:first_clickable(cursor[2])
+							if component then
+								menu:click_on(component, nil, 1, "l")
+							end
+						end,
 					},
 				},
 			})
@@ -91,6 +124,28 @@ return {
 				vim.cmd([[messages clear]])
 			end
 			require("noice").setup(opts)
+		end,
+	},
+	{
+		"nvim-treesitter/nvim-treesitter-context",
+		event = "VeryLazy",
+		opts = function()
+			local tsc = require("treesitter-context")
+			Snacks.toggle({
+				name = "Treesitter Context",
+				get = tsc.enabled,
+				set = function(state)
+					if state then
+						tsc.enable()
+					else
+						tsc.disable()
+					end
+				end,
+			}):map("<leader>ut")
+			vim.keymap.set("n", "[c", function()
+				require("treesitter-context").go_to_context(vim.v.count1)
+			end, { silent = true })
+			return { mode = "cursor", max_lines = 3 }
 		end,
 	},
 }
