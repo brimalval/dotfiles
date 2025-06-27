@@ -147,3 +147,10 @@ neofetch
 if [ -f .nvmrc ]; then
   nvm use
 fi
+
+#  History options
+setopt HIST_IGNORE_ALL_DUPS
+setopt HIST_FIND_NO_DUPS
+setopt HIST_SAVE_NO_DUPS
+setopt SHARE_HISTORY
+setopt INC_APPEND_HISTORY

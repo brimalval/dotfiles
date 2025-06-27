@@ -152,4 +152,17 @@ return {
 	-- 	event = "VeryLazy",
 	-- 	opts = {}, -- needed even when using default config
 	-- },
+	{
+		"smjonas/live-command.nvim",
+		-- live-command supports semantic versioning via Git tags
+		-- tag = "2.*",
+		config = function()
+			require("live-command").setup({
+				commands = {
+					Norm = { cmd = "norm" },
+					Sub = { cmd = "s/\\v" },
+				},
+			})
+		end,
+	},
 }
