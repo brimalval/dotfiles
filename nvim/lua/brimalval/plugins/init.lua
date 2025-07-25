@@ -165,4 +165,10 @@ return {
 			})
 		end,
 	},
+	{
+		"mluders/comfy-line-numbers.nvim",
+		config = function()
+			require("comfy-line-numbers").setup()
+		end,
+	},
 }

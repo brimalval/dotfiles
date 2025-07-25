@@ -52,3 +52,6 @@ vim.diagnostic.config({
 	-- },
 	virtual_text = true,
 })
+
+-- Prevent file explorer from being opened on session restore
+vim.opt.sessionoptions = "buffers,curdir,folds,help,tabpages,winsize,terminal"

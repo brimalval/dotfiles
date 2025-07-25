@@ -74,6 +74,19 @@ return {
 						},
 					},
 				},
+				typescriptreact = {
+					keys = {
+						["source"] = {
+							"<cr>",
+							function(self)
+								local name = "scratch." .. vim.fn.fnamemodify(vim.api.nvim_buf_get_name(self.buf), ":e")
+								run_scratch_code("typescript", { buf = self.buf, name = name })
+							end,
+							desc = "Source buffer",
+							mode = { "n", "x" },
+						},
+					},
+				},
 			},
 		},
 		scroll = { enabled = false, animate = {
