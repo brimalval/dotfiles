@@ -21,3 +21,20 @@ vim.api.nvim_create_autocmd({ "BufWritePre" }, {
 		vim.fn.mkdir(vim.fn.fnamemodify(file, ":p:h"), "p")
 	end,
 })
+
+-- Show diagnostics on cursor hold
+-- Used in conjunction with setting updatetime to 100
+vim.api.nvim_create_autocmd("CursorHold", {
+	callback = function()
+		local line = vim.api.nvim_win_get_cursor(0)[1] - 1
+		local buf = vim.api.nvim_get_current_buf()
+		local diagnostics = vim.diagnostic.get(buf, { lnum = line })
+		if #diagnostics > 0 then
+			vim.diagnostic.open_float(nil, {
+				focusable = false,
+				border = "rounded",
+				scope = "cursor",
+			})
+		end
+	end,
+})

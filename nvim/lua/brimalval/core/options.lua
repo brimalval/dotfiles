@@ -55,3 +55,6 @@ vim.diagnostic.config({
 
 -- Prevent file explorer from being opened on session restore
 vim.opt.sessionoptions = "buffers,curdir,folds,help,tabpages,winsize,terminal"
+
+-- Shorten CursorHold
+vim.o.updatetime = 100

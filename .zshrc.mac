@@ -154,3 +154,6 @@ setopt HIST_FIND_NO_DUPS
 setopt HIST_SAVE_NO_DUPS
 setopt SHARE_HISTORY
 setopt INC_APPEND_HISTORY
+
+# opencode
+export PATH=/Users/brian.valencia/.opencode/bin:$PATH
