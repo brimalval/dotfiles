@@ -5,7 +5,7 @@ zstyle ':completion:*' matcher-list 'm:{[:lower:]}={[:upper:]} m:{[:lower:][:upp
 zstyle :compinstall filename '/Users/brian.valencia/.zshrc'
 
 autoload -Uz compinit
-compinit
+compinit -C
 # End of lines added by compinstall Lines configured by zsh-newuser-install
 HISTFILE=~/.histfile
 HISTSIZE=10000
@@ -85,9 +85,36 @@ alias lg="lazygit"
 export BUN_INSTALL="$HOME/.bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
 
+# Lazy load NVM to improve startup time
 export NVM_DIR="$HOME/.nvm"
-  [ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && \. "/opt/homebrew/opt/nvm/nvm.sh"  # This loads nvm
-  [ -s "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm" ] && \. "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm"  # This loads nvm bash_completion
+nvm() {
+  unset -f nvm
+  [ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && \. "/opt/homebrew/opt/nvm/nvm.sh"
+  [ -s "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm" ] && \. "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm"
+  nvm "$@"
+}
+
+# Lazy load node, npm, npx
+node() {
+  unset -f node npm npx
+  [ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && \. "/opt/homebrew/opt/nvm/nvm.sh"
+  [ -s "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm" ] && \. "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm"
+  node "$@"
+}
+
+npm() {
+  unset -f node npm npx
+  [ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && \. "/opt/homebrew/opt/nvm/nvm.sh"
+  [ -s "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm" ] && \. "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm"
+  npm "$@"
+}
+
+npx() {
+  unset -f node npm npx
+  [ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && \. "/opt/homebrew/opt/nvm/nvm.sh"
+  [ -s "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm" ] && \. "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm"
+  npx "$@"
+}
 
 export DOCKER_DEFAULT_PLATFORM=linux/amd64
 
@@ -100,9 +127,9 @@ fi
 export PATH=$PATH:/Users/brian.valencia/.spicetify
 
 # Enable pyenv
-export PYENV_ROOT="$HOME/.pyenv"
-[[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"
-eval "$(pyenv init -)"
+# export PYENV_ROOT="$HOME/.pyenv"
+# [[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"
+# eval "$(pyenv init -)"
 
 # pnpm
 export PNPM_HOME="/Users/brian.valencia/Library/pnpm"
@@ -141,12 +168,28 @@ export MAGICK_HOME=/opt/homebrew/opt/imagemagick/
 export PATH="/opt/homebrew/opt/imagemagick/bin:$PATH"
 bindkey -M viins "jk" vi-cmd-mode
 
-neofetch
+# neofetch
 
-# If .nvmrc is in current directory, run nvm use
-if [ -f .nvmrc ]; then
-  nvm use
-fi
+# Convenience functions for Node development
+load-nvmrc() {
+  if [ -f .nvmrc ]; then
+    nvm use
+  else
+    echo "No .nvmrc file found"
+  fi
+}
+
+# Quick function to setup Node environment
+setup-node() {
+  echo "Loading NVM..."
+  nvm --version > /dev/null  # This triggers the lazy load
+  if [ -f .nvmrc ]; then
+    echo "Found .nvmrc, switching to specified version..."
+    nvm use
+  else
+    echo "No .nvmrc found, using default Node version"
+  fi
+}
 
 #  History options
 setopt HIST_IGNORE_ALL_DUPS
