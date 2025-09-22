@@ -37,6 +37,14 @@ map("n", "<Leader>cd", function()
 	vim.diagnostic.open_float()
 end, { desc = "Show diagnostics" })
 
+map("n", "<Leader>cp", function()
+	vim.fn.setreg("+", vim.fn.expand("%:~:."))
+end, { desc = "File path relative to project root to clipboard" })
+
+map("n", "<Leader>cP", function()
+	vim.fn.setreg("+", vim.fn.expand("%"))
+end, { desc = "File path relative to root to clipboard" })
+
 -- Configure diagnostics
 vim.diagnostic.config({
 	virtual_text = false,

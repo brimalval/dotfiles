@@ -25,6 +25,7 @@ vim.g.maplocalleader = "\\"
 require("lazy").setup({
 	{ import = "brimalval.plugins" },
 	{ import = "brimalval.plugins.lsp" },
+	{ import = "brimalval.plugins.mini" },
 	install = {
 		colorscheme = { "rose-pine" },
 	},

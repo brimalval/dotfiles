@@ -5,7 +5,7 @@ zstyle ':completion:*' matcher-list 'm:{[:lower:]}={[:upper:]} m:{[:lower:][:upp
 zstyle :compinstall filename '/Users/brian.valencia/.zshrc'
 
 autoload -Uz compinit
-compinit
+compinit -C
 # End of lines added by compinstall Lines configured by zsh-newuser-install
 HISTFILE=~/.histfile
 HISTSIZE=10000
@@ -75,6 +75,7 @@ alias gco="git branch | fzf-tmux --prompt 'checkout: ' -w 75% -h 50% --preview '
 alias grb="git branch | fzf-tmux --prompt 'rebase onto: ' -w 75% -h 50% --preview 'git log --oneline --color=always {1}' | xargs git rebase"
 alias gdel="git branch | fzf-tmux --prompt 'delete: ' -w 75% -h 50% --preview 'git log --oneline --color=always {1}' | xargs git branch -D"
 alias lg="lazygit"
+alias db="nvim -c :DBUI"
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
@@ -141,7 +142,7 @@ export MAGICK_HOME=/opt/homebrew/opt/imagemagick/
 export PATH="/opt/homebrew/opt/imagemagick/bin:$PATH"
 bindkey -M viins "jk" vi-cmd-mode
 
-neofetch
+fastfetch
 
 # If .nvmrc is in current directory, run nvm use
 if [ -f .nvmrc ]; then
@@ -157,3 +158,5 @@ setopt INC_APPEND_HISTORY
 
 # opencode
 export PATH=/Users/brian.valencia/.opencode/bin:$PATH
+
+alias claude="/Users/brian.valencia/.claude/local/claude"
