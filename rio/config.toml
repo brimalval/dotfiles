@@ -1,0 +1,100 @@
+# ============================================================================
+# Rio Terminal Configuration
+# ============================================================================
+#
+# IMPORTANT NOTE FOR WINDOWS USERS:
+# ----------------------------------
+# Due to limitations with symlinks between WSL2 and Windows filesystems,
+# this configuration uses hard links to sync files between Windows and WSL:
+#
+# 1. RIO_CONFIG_HOME is set to: ~/.config/rio (\\wsl$\Debian\home\vaiciel\.config\rio)
+# 2. Hard link this file from dotfiles to Rio's config directory:
+#    - From Windows: fsutil hardlink create C:\Users\<user>\.config\rio\config.toml C:\path\to\dotfiles\rio\config.toml
+#    - Or from WSL: ln -fd ~/Projects/dotfiles/rio/config.toml ~/.config/rio/config.toml
+# 3. Repeat for theme files in the rio/themes/ directory
+#
+# Hard links keep both locations in sync automatically - editing either location
+# updates both since they point to the same inode on disk.
+# ============================================================================
+
+theme = "rose-pine-moon.toml"
+
+# Editor Configuration
+[editor]
+program = "nvim"
+args = []
+
+
+# Font Configuration
+[fonts]
+size = 16
+family = "Maple Mono NF"
+
+# Line Height
+# Kitty uses: modify_font cell_height 115%
+# Rio equivalent: 1.15 multiplier
+line-height = 1.15
+
+# Window Configuration
+[window]
+# Matching kitty's background_opacity = 0.90
+opacity = 0.90
+
+# Matching kitty's background_blur = 24
+blur = true
+
+# Matching kitty's hide_window_decorations = yes
+decorations = "Disabled"
+
+# Renderer Configuration
+[renderer]
+performance = "High"
+backend = "Automatic"
+disable-unfocused-render = false
+# Level 1 enables ligatures (matching kitty's disable_ligatures = never)
+level = 1
+
+# Navigation
+[navigation]
+# Plain mode works well with tmux/zellij (no tab UI)
+mode = "Plain"
+hide-if-single = true
+
+# Confirm before quit
+confirm-before-quit = false
+
+# Platform-Specific Shell Configuration
+[platform.windows.shell]
+# For Windows: Launch WSL2 Debian with zsh
+program = "wsl"
+args = ["-d", "Debian", "-e", "zsh"]
+
+[platform.mac.shell]
+# For macOS: Use system zsh
+program = "/usr/bin/zsh"
+args = []
+
+
+[hints]
+# Characters used for hint labels (should be easy to type)
+alphabet = "jfkdls;ahgurieowpq"
+
+# URL hint example
+[[hints.rules]]
+regex = "(https://|http://|ftp://)[^ ]+"
+hyperlinks = true
+post-processing = true
+persist = false
+
+  [hints.rules.action]
+  # command = "xdg-open"  # Linux/BSD
+  # command = "open"    # macOS  
+  action = "Copy"
+
+  [hints.rules.mouse]
+  enabled = true
+  mods = []
+
+  [hints.rules.binding]
+  key = "O"
+  mods = ["Control", "Shift"]
