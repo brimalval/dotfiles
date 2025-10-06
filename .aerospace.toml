@@ -133,6 +133,7 @@ automatically-unhide-macos-hidden-apps = false
     alt-e = 'workspace E'
     # alt-f = 'workspace F'
     alt-f = 'fullscreen'
+    alt-shift-f = 'layout floating tiling'
     alt-g = 'workspace G'
     alt-i = 'workspace I'
     alt-m = 'workspace M'

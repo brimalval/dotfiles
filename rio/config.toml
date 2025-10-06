@@ -38,7 +38,8 @@ line-height = 1.15
 # Window Configuration
 [window]
 # Matching kitty's background_opacity = 0.90
-opacity = 0.90
+opacity = 0.50
+mode = "Maximized"
 
 # Matching kitty's background_blur = 24
 blur = true
@@ -48,6 +49,10 @@ decorations = "Disabled"
 
 # Renderer Configuration
 [renderer]
+filters = [
+  # "newpixiecrt"
+  # "/Users/brian.valencia/Projects/slang-shaders/crt/crt-aperture.slangp"
+]
 performance = "High"
 backend = "Automatic"
 disable-unfocused-render = false

@@ -159,4 +159,3 @@ setopt INC_APPEND_HISTORY
 # opencode
 export PATH=/Users/brian.valencia/.opencode/bin:$PATH
 
-alias claude="/Users/brian.valencia/.claude/local/claude"
