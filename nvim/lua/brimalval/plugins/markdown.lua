@@ -4,9 +4,21 @@ local DAILY_NOTES_FOLDER = "500. Daily Notes"
 
 return {
 	{
+		"OXY2DEV/markview.nvim",
+		lazy = false,
+
+		-- For blink.cmp's completion
+		-- source
+		ft = { "markdown", "markdown_inline" },
+		dependencies = {
+			"saghen/blink.cmp",
+		},
+	},
+	{
 		"MeanderingProgrammer/render-markdown.nvim",
 		-- dependencies = { 'nvim-treesitter/nvim-treesitter', 'echasnovski/mini.nvim' }, -- if you use the mini.nvim suite
 		-- dependencies = { 'nvim-treesitter/nvim-treesitter', 'echasnovski/mini.icons' }, -- if you use standalone mini plugins
+		enabled = false,
 		dependencies = { "nvim-treesitter/nvim-treesitter", "nvim-tree/nvim-web-devicons" }, -- if you prefer nvim-web-devicons
 		---@module 'render-markdown'
 		---@type render.md.UserConfig
@@ -15,7 +27,6 @@ return {
 	{
 		"obsidian-nvim/obsidian.nvim",
 		version = "*", -- recommended, use latest release instead of latest commit
-		lazy = true,
 		ft = "markdown",
 		-- Replace the above line with this if you only want to load obsidian.nvim for markdown files in your vault:
 		-- event = {
@@ -32,43 +43,45 @@ return {
 			-- see below for full list of optional dependencies 👇
 		},
 		opts = {
-			mappings = {
-				["<leader>A"] = {
-					action = function()
-						local result = vim.fn.system({
-							"mv",
-							vim.fn.expand("%"),
-							ARCHIVES_FOLDER,
-						})
-						if vim.v.shell_error ~= 0 then
-							print("Error moving file: " .. result)
-						else
-							print("Archived" .. vim.fn.expand("%:t"))
-						end
-					end,
-					opts = { noremap = false, desc = "Archive note" },
-				},
-				["gf"] = {
-					action = function()
-						return require("obsidian").util.gf_passthrough()
-					end,
-					opts = { noremap = false, expr = true, buffer = true },
-				},
-				-- Toggle check-boxes.
-				["<leader>ch"] = {
-					action = function()
-						return require("obsidian").util.toggle_checkbox()
-					end,
-					opts = { buffer = true },
-				},
-				-- Smart action depending on context, either follow link or toggle checkbox.
-				["<cr>"] = {
-					action = function()
-						return require("obsidian").util.smart_action()
-					end,
-					opts = { buffer = true, expr = true },
-				},
-			},
+			legacy_commands = false,
+			-- deprecated
+			-- mappings = {
+			-- 	["<leader>A"] = {
+			-- 		action = function()
+			-- 			local result = vim.fn.system({
+			-- 				"mv",
+			-- 				vim.fn.expand("%"),
+			-- 				ARCHIVES_FOLDER,
+			-- 			})
+			-- 			if vim.v.shell_error ~= 0 then
+			-- 				print("Error moving file: " .. result)
+			-- 			else
+			-- 				print("Archived" .. vim.fn.expand("%:t"))
+			-- 			end
+			-- 		end,
+			-- 		opts = { noremap = false, desc = "Archive note" },
+			-- 	},
+			-- 	["gf"] = {
+			-- 		action = function()
+			-- 			return require("obsidian").util.gf_passthrough()
+			-- 		end,
+			-- 		opts = { noremap = false, expr = true, buffer = true },
+			-- 	},
+			-- 	-- Toggle check-boxes.
+			-- 	["<leader>ch"] = {
+			-- 		action = function()
+			-- 			return require("obsidian").util.toggle_checkbox()
+			-- 		end,
+			-- 		opts = { buffer = true },
+			-- 	},
+			-- 	-- Smart action depending on context, either follow link or toggle checkbox.
+			-- 	["<cr>"] = {
+			-- 		action = function()
+			-- 			return require("obsidian").util.smart_action()
+			-- 		end,
+			-- 		opts = { buffer = true, expr = true },
+			-- 	},
+			-- },
 			workspaces = {
 				{
 					name = "Zettelkasten",

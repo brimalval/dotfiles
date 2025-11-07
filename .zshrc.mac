@@ -159,3 +159,6 @@ setopt INC_APPEND_HISTORY
 # opencode
 export PATH=/Users/brian.valencia/.opencode/bin:$PATH
 
+
+# sst
+export PATH=/Users/brian.valencia/.sst/bin:$PATH

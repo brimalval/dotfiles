@@ -156,6 +156,7 @@ return {
 		event = "VeryLazy",
 		dependencies = {
 			{ "nvim-lua/plenary.nvim", lazy = true },
+			{ "folke/snacks.nvim" },
 		},
 		keys = {
 			-- 👇 in this section, choose your own keymappings!
@@ -171,18 +172,26 @@ return {
 				"<cmd>Yazi cwd<cr>",
 				desc = "Open the file manager in nvim's working directory",
 			},
-			-- {
-			-- 	"<leader>-",
-			-- 	"<cmd>Yazi toggle<cr>",
-			-- 	desc = "Resume the last yazi session",
-			-- },
+			{
+				"<leader>-",
+				"<cmd>Yazi toggle<cr>",
+				desc = "Resume the last yazi session",
+			},
 		},
 		---@type YaziConfig | {}
 		opts = {
 			-- if you want to open yazi instead of netrw, see below for more info
-			open_for_directories = false,
+			open_for_directories = true,
 			keymaps = {
 				show_help = "<f1>",
+			},
+			integrations = {
+				grep_in_directory = function(directory)
+					Snacks.picker.grep({ cwd = directory })
+				end,
+				grep_in_selected_files = function(selected_files)
+					Snacks.picker.grep({ paths = selected_files })
+				end,
 			},
 		},
 		-- 👇 if you use `open_for_directories=true`, this is recommended

@@ -62,6 +62,10 @@ return {
 		ls.add_snippets("http", http_snippets)
 		ls.add_snippets("rest", http_snippets)
 
+		ls.add_snippets("sql", {
+			snippet("lj", text("left join")),
+		})
+
 		ls.setup({})
 	end,
 }
