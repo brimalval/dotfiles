@@ -1,4 +1,4 @@
-app_version: 0.4.0-windows_beta.0
+app_version: 0.4.0-preview.1
 behavior_configs:
 - base_wheel_speed: 0.3
   grid_action_level: subgrid
@@ -43,7 +43,6 @@ grid_configs:
   - 8
   - 3
   subgrid_mouse_action_keys: QWER UIOP ASDF JKL; ZXCV M,./
-keyboard_layout: null
 keymaps:
 - entries:
     back mouse button (w/o overlay): null

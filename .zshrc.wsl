@@ -1,0 +1,41 @@
+# WSL-specific environment and tooling setup
+
+# Make sure neovim and local bin installs are available
+export PATH="$PATH:/opt/nvim-linux-x86_64/bin"
+export PATH="$PATH:$HOME/.local/bin"
+
+# Source the local env script if it exists
+[ -f "$HOME/.local/bin/env" ] && . "$HOME/.local/bin/env"
+
+# pnpm home
+export PNPM_HOME="$HOME/.local/share/pnpm"
+case ":$PATH:" in
+  *":$PNPM_HOME:"*) ;;
+  *) export PATH="$PNPM_HOME:$PATH" ;;
+esac
+
+# zsh-autosuggestions
+if [[ ! -d "$HOME/.zsh" ]]; then
+  mkdir -p "$HOME/.zsh"
+fi
+
+if [[ ! -d "$HOME/.zsh/zsh-autosuggestions" ]]; then
+  if command -v git >/dev/null 2>&1; then
+    if ! git clone https://github.com/zsh-users/zsh-autosuggestions "$HOME/.zsh/zsh-autosuggestions"; then
+      printf 'warning: failed to clone zsh-autosuggestions, continuing without it\n'
+    fi
+  else
+    printf 'warning: git not available, cannot clone zsh-autosuggestions\n'
+  fi
+fi
+
+if [[ -f "$HOME/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh" ]]; then
+  source "$HOME/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh"
+  ZSH_AUTOSUGGEST_STRATEGY=(history completion)
+fi
+
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+
+if command -v fastfetch >/dev/null 2>&1; then
+  fastfetch
+fi

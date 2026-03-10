@@ -1,0 +1,45 @@
+lockfileVersion: '9.0'
+
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
+
+importers:
+
+  .:
+    dependencies:
+      '@opencode-ai/plugin':
+        specifier: 1.2.24
+        version: 1.2.24
+      ecc-universal:
+        specifier: ^1.8.0
+        version: 1.8.0
+
+packages:
+
+  '@opencode-ai/plugin@1.2.24':
+    resolution: {integrity: sha512-B3hw415D+2w6AtdRdvKWkuQVT0LXDWTdnAZhZC6gbd+UHh5O5DMmnZTe/YM8yK8ZZO9Dvo5rnV78TdDDYunJiw==}
+
+  '@opencode-ai/sdk@1.2.24':
+    resolution: {integrity: sha512-MQamFkRl4B/3d6oIRLNpkYR2fcwet1V/ffKyOKJXWjtP/CT9PDJMtLpu6olVHjXKQi8zMNltwuMhv1QsNtRlZg==}
+
+  ecc-universal@1.8.0:
+    resolution: {integrity: sha512-HeQqDW75Mda7s2MqGjLSY3ZUboDAJLUk5a0uuCWmcPbC9YRXLEhzI0rzgEP5mmnYFo3jKFG3oOEPpIk6UjYpSQ==}
+    engines: {node: '>=18'}
+    hasBin: true
+
+  zod@4.1.8:
+    resolution: {integrity: sha512-5R1P+WwQqmmMIEACyzSvo4JXHY5WiAFHRMg+zBZKgKS+Q1viRa0C1hmUKtHltoIFKtIdki3pRxkmpP74jnNYHQ==}
+
+snapshots:
+
+  '@opencode-ai/plugin@1.2.24':
+    dependencies:
+      '@opencode-ai/sdk': 1.2.24
+      zod: 4.1.8
+
+  '@opencode-ai/sdk@1.2.24': {}
+
+  ecc-universal@1.8.0: {}
+
+  zod@4.1.8: {}
