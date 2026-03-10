@@ -31,6 +31,7 @@ return {
 				javascript = { "prettier", "eslint_d", "biome" },
 				typescriptreact = { "prettier", "eslint_d", "biome" },
 				javascriptreact = { "prettier", "eslint_d", "biome" },
+				json = { "jsonls", "biome" },
 				lua = { "stylua" },
 				http = { "kulala" },
 				markdown = { "prettierd", "markdown-toc" },

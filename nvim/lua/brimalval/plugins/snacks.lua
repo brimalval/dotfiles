@@ -87,6 +87,19 @@ return {
 						},
 					},
 				},
+				ruby = {
+					keys = {
+						["source"] = {
+							"<cr>",
+							function(self)
+								local name = "scratch." .. vim.fn.fnamemodify(vim.api.nvim_buf_get_name(self.buf), ":e")
+								run_scratch_code("ruby", { buf = self.buf, name = name })
+							end,
+							desc = "Source buffer",
+							mode = { "n", "x" },
+						},
+					},
+				},
 			},
 		},
 		scroll = { enabled = false, animate = {
@@ -783,6 +796,7 @@ return {
 			local exec_command_by_ft = {
 				["python"] = "python",
 				["typescript"] = "node",
+				["ruby"] = "ruby",
 			}
 			-- Transpile first
 			local command = "echo " .. vim.fn.shellescape(table.concat(lines, "\n")) .. " | "
