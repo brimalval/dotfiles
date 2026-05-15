@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+f="/tmp/clip_$(cat /proc/sys/kernel/random/uuid | tr -d '-').png"
+powershell.exe -NoProfile -Command "Add-Type -AssemblyName System.Windows.Forms; \$img = [System.Windows.Forms.Clipboard]::GetImage(); if (\$img -ne \$null) { \$img.Save('$f', [System.Drawing.Imaging.ImageFormat]::Png) }" 2>/dev/null
+[ -f "$f" ] && printf '%s' "$f"
