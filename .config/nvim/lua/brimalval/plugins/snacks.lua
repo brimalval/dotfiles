@@ -251,13 +251,13 @@ return {
 		-- 	end,
 		-- 	desc = "Git Diff (Hunks)",
 		-- },
-		{
-			"<leader>gf",
-			function()
-				Snacks.picker.git_log_file()
-			end,
-			desc = "Git Log File",
-		},
+		-- {
+		-- 	"<leader>gf",
+		-- 	function()
+		-- 		Snacks.picker.git_log_file()
+		-- 	end,
+		-- 	desc = "Git Log File",
+		-- },
 		{
 			"<leader>gi",
 			function()
