@@ -1,6 +1,11 @@
 nvim/dictionary/
+*.bak
 *.bak.*
+*.backup-*
 *.legacy
 .sisyphus
 *oh-my-opencode.json
 !oh-my-opencode.json
+.config/opencode/.opencode/
+.config/opencode/.ocx/
+*.migrations.json
