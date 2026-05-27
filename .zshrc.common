@@ -54,6 +54,12 @@ if [[ -n "${PNPM_HOME:-}" ]]; then
   esac
 fi
 
+# Other variables
+export EDITOR="nvim"
+# For everything-claude-code (see: https://github.com/affaan-m/everything-claude-code#hook-runtime-controls)
+export ECC_HOOK_PROFILE="minimal"
+export ECC_SESSION_START_MAX_CHARS=4000
+
 export PYENV_ROOT="$HOME/.pyenv"
 if [[ -d "$PYENV_ROOT/bin" ]]; then
   export PATH="$PYENV_ROOT/bin:$PATH"

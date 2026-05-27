@@ -1,7 +1,7 @@
 #! /usr/bin/env zsh
 
-typeset -r __zshrc_self="${(%):-%N}"
-typeset -r __zshrc_dir="${__zshrc_self:A:h}"
+(( ${+__zshrc_self} )) || typeset -r __zshrc_self="${(%):-%N}"
+(( ${+__zshrc_dir} )) || typeset -r __zshrc_dir="${__zshrc_self:A:h}"
 
 PLATFORM="unknown"
 

@@ -4,6 +4,9 @@
 export PATH="$PATH:/opt/nvim-linux-x86_64/bin"
 export PATH="$PATH:$HOME/.local/bin"
 
+export BROWSER="/mnt/c/Windows/explorer.exe"
+alias see="explorer.exe"
+
 # Source the local env script if it exists
 [ -f "$HOME/.local/bin/env" ] && . "$HOME/.local/bin/env"
 
@@ -39,3 +42,12 @@ fi
 if command -v fastfetch >/dev/null 2>&1; then
   fastfetch
 fi
+
+# Alt+V: save clipboard image via PowerShell and insert the path at cursor
+_wsl_imgpaste() {
+  local f="/tmp/clip_$(cat /proc/sys/kernel/random/uuid | tr -d '-').png"
+  powershell.exe -NoProfile -Command "Add-Type -AssemblyName System.Windows.Forms; \$img = [System.Windows.Forms.Clipboard]::GetImage(); if (\$img -ne \$null) { \$img.Save('$f', [System.Drawing.Imaging.ImageFormat]::Png) }" 2>/dev/null
+  [[ -f "$f" ]] && LBUFFER+="$f"
+}
+zle -N _wsl_imgpaste
+bindkey -M viins '\ev' _wsl_imgpaste
