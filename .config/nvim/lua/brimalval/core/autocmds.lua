@@ -38,3 +38,38 @@ vim.api.nvim_create_autocmd("CursorHold", {
 		end
 	end,
 })
+
+-- Mason Ruby LSP shim for rv
+vim.api.nvim_create_autocmd("FileType", {
+	group = augroup("mason_ruby_shim"),
+	pattern = { "ruby", "eruby", "rbs" },
+	callback = function()
+		local ruby = vim.fn.exepath("ruby")
+		if ruby == "" then
+			return
+		end
+
+		local packages = vim.fn.stdpath("data") .. "/mason/packages"
+		for _, bin in ipairs(vim.fn.glob(packages .. "/*/bin", true, true)) do
+			local link = bin .. "/ruby"
+			-- Only act when the sibling is missing (cheap and idempotent).
+			if not vim.uv.fs_lstat(link) then
+				-- Only gem packages use the relative `$bindir/ruby` stub.
+				for _, stub in ipairs(vim.fn.glob(bin .. "/*", true, true)) do
+					local ok, lines = pcall(vim.fn.readfile, stub, "", 8)
+					if ok then
+						for _, l in ipairs(lines) do
+							if l:find("$bindir/ruby", 1, true) then
+								vim.uv.fs_symlink(ruby, link)
+								break
+							end
+						end
+					end
+					if vim.uv.fs_lstat(link) then
+						break
+					end
+				end
+			end
+		end
+	end,
+})

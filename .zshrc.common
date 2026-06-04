@@ -111,3 +111,8 @@ fi
 if command -v fnm >/dev/null 2>&1; then
   eval "$(fnm env)"
 fi
+
+# check if rv exists, and add completions and init if it does
+rv_version="$(rv --version 2>/dev/null)"
+[[ -n "$rv_version" ]] && eval "$(rv shell completions zsh)"
+[[ -n "$rv_version" ]] && eval "$(rv shell init zsh)"

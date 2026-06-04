@@ -87,6 +87,19 @@ return {
 				automatic_installation = true,
 				automatic_enable = true,
 			})
+
+			-- Root Ruby LSPs at the nearest Gemfile rather than the repo-root
+			-- .git, so Bundler-backed servers (solargraph) don't crash with
+			-- `Bundler::GemfileNotFound` in monorepos where the app lives in a
+			-- subdirectory (e.g. backend/Gemfile).
+			local function gemfile_root(bufnr, on_dir)
+				local fname = vim.api.nvim_buf_get_name(bufnr)
+				on_dir(vim.fs.root(fname, { "Gemfile", ".solargraph.yml" }) or vim.fn.getcwd())
+			end
+
+			for _, server in ipairs({ "solargraph", "ruby_lsp" }) do
+				vim.lsp.config(server, { root_dir = gemfile_root })
+			end
 			-- Deprecated
 			-- require("mason-lspconfig").setup_handlers({
 			-- 	function(server_name)
@@ -95,7 +108,16 @@ return {
 			-- })
 		end,
 	},
-	"neovim/nvim-lspconfig",
+	{
+		"neovim/nvim-lspconfig",
+		config = function()
+			vim.lsp.config("ruby_lsp", {
+				cmd = { "bundle", "exec", "ruby-lsp" },
+			})
+
+			vim.lsp.enable("ruby_lsp")
+		end,
+	},
 	{
 		"nvim-treesitter/nvim-treesitter",
 		event = { "BufReadPre", "BufNewFile" },
