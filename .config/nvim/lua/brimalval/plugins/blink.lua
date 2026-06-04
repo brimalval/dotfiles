@@ -3,7 +3,6 @@ return {
 	dependencies = {
 		"rafamadriz/friendly-snippets",
 		{ "Kaiser-Yang/blink-cmp-dictionary", dependencies = { "nvim-lua/plenary.nvim" } },
-		"giuxtaposition/blink-cmp-copilot",
 	},
 	version = "*",
 	---@module 'blink.cmp'
@@ -33,17 +32,11 @@ return {
 			end,
 		},
 		sources = {
-			default = { "lazydev", "lsp", "path", "snippets", "copilot", "buffer", "dictionary" },
+			default = { "lazydev", "lsp", "path", "snippets", "buffer", "dictionary" },
 			per_filetype = {
 				sql = { "snippets", "dadbod", "buffer" },
 			},
 			providers = {
-				copilot = {
-					name = "copilot",
-					module = "blink-cmp-copilot",
-					score_offset = 50,
-					async = true,
-				},
 				dadbod = {
 					name = "Dadbod",
 					module = "vim_dadbod_completion.blink",

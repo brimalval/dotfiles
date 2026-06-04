@@ -3,22 +3,23 @@ local ARCHIVES_FOLDER = OBSIDIAN_VAULT .. "/400. Archive"
 local DAILY_NOTES_FOLDER = "500. Daily Notes"
 
 return {
-	{
-		"OXY2DEV/markview.nvim",
-		lazy = false,
-
-		-- For blink.cmp's completion
-		-- source
-		ft = { "markdown", "markdown_inline" },
-		dependencies = {
-			"saghen/blink.cmp",
-		},
-	},
+	-- {
+	-- 	"OXY2DEV/markview.nvim",
+	-- 	lazy = false,
+	--
+	-- 	-- For blink.cmp's completion
+	-- 	-- source
+	-- 	ft = { "markdown", "markdown_inline" },
+	-- 	dependencies = {
+	-- 		"saghen/blink.cmp",
+	-- 	},
+	-- },
 	{
 		"MeanderingProgrammer/render-markdown.nvim",
 		-- dependencies = { 'nvim-treesitter/nvim-treesitter', 'echasnovski/mini.nvim' }, -- if you use the mini.nvim suite
 		-- dependencies = { 'nvim-treesitter/nvim-treesitter', 'echasnovski/mini.icons' }, -- if you use standalone mini plugins
-		enabled = false,
+		-- enabled = false,
+		ft = { "markdown", "markdown_inline" },
 		dependencies = { "nvim-treesitter/nvim-treesitter", "nvim-tree/nvim-web-devicons" }, -- if you prefer nvim-web-devicons
 		---@module 'render-markdown'
 		---@type render.md.UserConfig
