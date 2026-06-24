@@ -8,16 +8,10 @@ return {
 		{
 			"<leader>cf",
 			function()
-				require("conform").format({ async = true, lsp_fallback = true })
+				require("conform").format({ async = true, lsp_format = "fallback" })
 			end,
 			mode = "n",
 			desc = "Format code with conform",
-		},
-	},
-	dependencies = {
-		"williamboman/mason-lspconfig.nvim",
-		{
-			"williamboman/mason.nvim",
 		},
 	},
 	config = function()
@@ -37,7 +31,7 @@ return {
 				markdown = { "prettierd", "markdown-toc" },
 			},
 			format_on_save = {
-				lsp_fallback = true,
+				lsp_format = "fallback",
 			},
 			formatters = {
 				black = {
