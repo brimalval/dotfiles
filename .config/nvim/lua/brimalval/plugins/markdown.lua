@@ -97,9 +97,6 @@ return {
 					enable = false,
 				},
 			},
-			completion = {
-				blink = true,
-			},
 		},
 	},
 	{

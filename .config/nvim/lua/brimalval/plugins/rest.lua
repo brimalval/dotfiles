@@ -42,5 +42,10 @@ return {
 		-- your configuration comes here
 		global_keymaps = false,
 		additional_curl_options = { "--insecure" },
+		ui = {
+			win_opts = {
+				wo = { foldmethod = "manual" },
+			},
+		},
 	},
 }
