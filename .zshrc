@@ -48,3 +48,9 @@ source_fragment() {
 
 source_fragment "${__zshrc_dir}/.zshrc.common"
 source_fragment "${__zshrc_dir}/.zshrc.${PLATFORM}"
+
+# fnm
+FNM_PATH="/opt/homebrew/opt/fnm/bin"
+if command -v fnm >/dev/null 2>&1; then
+  eval "$(fnm env --use-on-cd --shell zsh)"
+fi

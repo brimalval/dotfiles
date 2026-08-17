@@ -29,7 +29,7 @@ bindkey '^R' history-incremental-search-backward
 # Aliases
 alias e="clear && ${EDITOR:-nvim}"
 alias x="exit"
-alias ls="exa --icons"
+alias ls="eza --icons"
 alias glogol="git log --oneline"
 alias tma="tmux attach"
 alias gpr="gh pr"
