@@ -1,0 +1,59 @@
+onboarding = false
+
+[keys]
+# Match tmux (.tmux.conf: `set-option -g prefix C-a`)
+prefix = "ctrl+a"
+# prefix+s goes to herdr-flash (below)
+settings = "prefix+shift+s"
+
+[theme]
+# Built-in rose-pine is the main variant (base #191724). The overrides below
+# repaint it as rose-pine-moon to match nvim/yazi/starship/tmux.
+name = "rose-pine"
+auto_switch = false
+
+[theme.custom]
+# Let kitty's transparency/blur show through, like nvim's `transparency = true`
+panel_bg = "reset"
+# Rose Pine Moon palette — https://rosepinetheme.com/palette
+surface0 = "#393552"      # overlay
+surface1 = "#44415a"      # highlight med
+# Workaround for herdrdev/herdr#1946: the built-in rose-pine draws the sidebar
+# divider and section rule in surface_dim == base, so they're invisible.
+# muted is also the border color used in .tmux.conf popups.
+surface_dim = "#6e6a86"   # muted
+overlay0 = "#6e6a86"      # muted
+overlay1 = "#908caa"      # subtle
+text = "#e0def4"          # text
+subtext0 = "#908caa"      # subtle
+active_row_bg = "#2a273f" # surface
+selection_bg = "#44415a"  # highlight med
+accent = "#c4a7e7"        # iris
+mauve = "#c4a7e7"         # iris
+red = "#eb6f92"           # love
+yellow = "#f6c177"        # gold
+peach = "#ea9a97"         # rose
+green = "#9ccfd8"         # foam (rose pine has no green)
+teal = "#9ccfd8"          # foam
+blue = "#3e8fb0"          # pine
+
+# Sessionizer — andrewchng/herdr-sessionizer
+# (plugin config: ~/.config/herdr/plugins/config/sessionizer/config.toml)
+[[keys.command]]
+key = "prefix+ctrl+o"
+type = "plugin_action"
+command = "sessionizer.open"
+description = "open project workspace"
+
+[[keys.command]]
+key = "prefix+ctrl+w"
+type = "plugin_action"
+command = "sessionizer.worktree-open"
+description = "open worktree workspace"
+
+# Flash — youguanxinqing/herdr-flash (installed --ref 233209c)
+[[keys.command]]
+key = "prefix+s"
+type = "plugin_action"
+command = "youguanxinqing.herdr-flash.flash"
+description = "flash: search visible text, then select and yank"
