@@ -19,15 +19,11 @@ return {
 		end,
 	},
 	{
-		"aserowy/tmux.nvim",
+		-- Ctrl+h/j/k/l across nvim splits and herdr panes
+		-- (herdr side: ~/.config/herdr/config.toml)
+		"aimdevlee/herdr-nvim-nav",
 		config = function()
-			require("tmux").setup({
-				-- Don't use tmuxclipboard provider
-				-- allow use of the system clipboard instead
-				copy_sync = {
-					enable = false,
-				},
-			})
+			require("herdr-nvim-nav").setup()
 		end,
 	},
 	{

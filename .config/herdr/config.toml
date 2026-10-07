@@ -57,3 +57,29 @@ key = "prefix+s"
 type = "plugin_action"
 command = "youguanxinqing.herdr-flash.flash"
 description = "flash: search visible text, then select and yank"
+
+# Seamless nvim/herdr navigation — aimdevlee/herdr-nvim-nav
+# (nvim side: brimalval/plugins/init.lua)
+[[keys.command]]
+key = "ctrl+h"
+type = "plugin_action"
+command = "herdr-nvim-nav.left"
+description = "focus left (nvim-aware)"
+
+[[keys.command]]
+key = "ctrl+j"
+type = "plugin_action"
+command = "herdr-nvim-nav.down"
+description = "focus down (nvim-aware)"
+
+[[keys.command]]
+key = "ctrl+k"
+type = "plugin_action"
+command = "herdr-nvim-nav.up"
+description = "focus up (nvim-aware)"
+
+[[keys.command]]
+key = "ctrl+l"
+type = "plugin_action"
+command = "herdr-nvim-nav.right"
+description = "focus right (nvim-aware)"
