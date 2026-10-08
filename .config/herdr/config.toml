@@ -5,6 +5,12 @@ onboarding = false
 prefix = "ctrl+a"
 # prefix+s goes to herdr-flash (below)
 settings = "prefix+shift+s"
+# prefix+1..9 is tabs
+switch_workspace = "prefix+ctrl+1..9"
+next_agent = "prefix+]"
+previous_agent = "prefix+["
+# ctrl+l is taken by herdr-nvim-nav, so clear the screen from here instead
+clear_pane = "prefix+ctrl+k"
 
 [theme]
 # Built-in rose-pine is the main variant (base #191724). The overrides below
@@ -83,3 +89,11 @@ key = "ctrl+l"
 type = "plugin_action"
 command = "herdr-nvim-nav.right"
 description = "focus right (nvim-aware)"
+
+[[keys.command]]
+key = "prefix+ctrl+g"
+type = "popup"
+command = "lazygit"
+width = "90%"
+height = "90%"
+description = "lazygit"
