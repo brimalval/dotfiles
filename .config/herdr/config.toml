@@ -57,7 +57,9 @@ type = "plugin_action"
 command = "sessionizer.worktree-open"
 description = "open worktree workspace"
 
-# Flash — youguanxinqing/herdr-flash (installed --ref 233209c)
+# Flash — brimalval/herdr-flash, a fork of youguanxinqing/herdr-flash adding
+# two-key labels and `s` search from the cursor. Plugin id is unchanged.
+# Install: herdr plugin install brimalval/herdr-flash --ref main
 [[keys.command]]
 key = "prefix+s"
 type = "plugin_action"
