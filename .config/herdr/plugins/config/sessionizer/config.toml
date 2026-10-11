@@ -1,0 +1,10 @@
+# Mirrors tms (search_dirs = ~/Projects)
+[projects]
+roots = ["~/Projects"]
+git_only = true
+depth = 2
+
+[ui]
+placement = "popup"
+width = "80%"
+height = "80%"
