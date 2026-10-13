@@ -18,3 +18,5 @@ nvim/dictionary/
 .config/herdr/plugins.json
 .config/herdr/.plugins.lock
 .config/herdr/plugins/github/
+# Claude Code mods: types the engine regenerates on load
+.claude/mods/*/.claude-plugin/types/

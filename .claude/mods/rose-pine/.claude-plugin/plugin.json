@@ -1,0 +1,6 @@
+{
+  "name": "rose-pine",
+  "version": "0.1.0",
+  "description": "Rosé Pine Moon for the bottom of Claude Code: a lualine-style band, palette spinners, turn summaries and mode pills",
+  "types": "./types/index.d.ts"
+}
