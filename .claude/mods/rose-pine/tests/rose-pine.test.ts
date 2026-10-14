@@ -1,6 +1,6 @@
 import { expect, mock, test } from 'claude-code/testing'
 
-import { formatDuration, hasModePill, meter, parseGit, prettyModel, stripMode } from '../hooks/register'
+import { fitPath, formatDuration, hasModePill, meter, parseGit, parseRepo, pathCandidates, prettyModel, stripMode } from '../hooks/register'
 
 test('parses git status headers', async () => {
   expect(parseGit('## main...origin/main [ahead 2, behind 1]\n M a.ts\n?? b.ts\n')).toEqual({
@@ -72,4 +72,31 @@ test('spots the mode pill and prettifies model ids', async () => {
   expect(prettyModel('claude-opus-5-5')).toBe('Opus 5.5')
   expect(prettyModel('claude-fable-5-1[1m]')).toBe('Fable 5.1')
   expect(prettyModel('gpt-x')).toBe('gpt-x')
+})
+
+test('finds the project a linked worktree belongs to, wherever it lives', async () => {
+  expect(parseRepo('/Users/me/dots\n/Users/me/dots/.git\n/Users/me/dots/.git\n')).toEqual({
+    top: '/Users/me/dots',
+    project: 'dots',
+  })
+  expect(
+    parseRepo('/Users/me/Projects/worktrees/fix\n/Users/me/dots/.git/worktrees/fix\n/Users/me/dots/.git\n'),
+  ).toEqual({ top: '/Users/me/Projects/worktrees/fix', project: 'dots', worktree: 'fix' })
+  expect(parseRepo('/srv/wt/a\n/srv/dots.git/worktrees/a\n/srv/dots.git\n')?.project).toBe('dots')
+  expect(parseRepo('')).toBe(null)
+})
+
+test('path candidates shrink from full to the last folder', async () => {
+  const wt = { top: '/w/fix', project: 'dots', worktree: 'fix' }
+  expect(pathCandidates('/w/fix/a/b/c', '/Users/me', wt)).toEqual([
+    'dots ⎇ fix/a/b/c',
+    'dots ⎇ fix/…/b/c',
+    'dots ⎇ fix/…/c',
+    'dots ⎇ fix',
+    'c',
+  ])
+  expect(pathCandidates('/Users/me/x/y', '/Users/me', null)).toEqual(['~/x/y', '~/…/y', 'y'])
+  expect(pathCandidates('/Users/me/dots', '/Users/me', { top: '/Users/me/dots', project: 'dots' })).toEqual(['dots'])
+  expect(fitPath(['dots ⎇ fix/a', 'fix'], 8)).toBe('fix')
+  expect(fitPath(['abcdef'], 4)).toBe(null)
 })

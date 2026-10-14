@@ -1,7 +1,7 @@
 import { atom, read, update } from 'claude-code'
 import type { EngineInterface, Register, RenderChildren, Timer } from 'claude-code'
 
-import type { Git, SpinnerStyle, Tick, TurnStat } from '../types'
+import type { Git, Repo, SpinnerStyle, Tick, TurnStat } from '../types'
 
 // Rosé Pine Moon
 const P = {
@@ -47,6 +47,7 @@ const STORE_SPINNER = 'spinner'
 const mode = atom({ plugin: 'rose-pine', key: 'mode' } as const, 'default')
 const model = atom({ plugin: 'rose-pine', key: 'model' } as const, '')
 const git = atom({ plugin: 'rose-pine', key: 'git' } as const, null)
+const repo = atom({ plugin: 'rose-pine', key: 'repo' } as const, null)
 const tick = atom({ plugin: 'rose-pine', key: 'tick' } as const, { n: 0, now: 0, startedAt: 0 })
 const spinner = atom({ plugin: 'rose-pine', key: 'spinner' } as const, 'shimmer')
 const turns = atom({ plugin: 'rose-pine', key: 'turns' } as const, [])
@@ -107,14 +108,70 @@ export const meter = (percent: number, cells: number) => {
   return { filled: '▰'.repeat(filled), empty: '▱'.repeat(cells - filled) }
 }
 
+const base = (p: string) => p.replace(/\/+$/, '').split('/').pop() ?? p
+const parent = (p: string) => p.replace(/\/+$/, '').replace(/\/[^/]*$/, '')
+
+// `git rev-parse --show-toplevel --git-dir --git-common-dir`, absolute paths.
+// A linked worktree's git dir differs from the common dir, which is always the
+// main checkout's `.git` (or a bare `name.git`), wherever the worktree lives.
+export const parseRepo = (out: string): Repo | null => {
+  const [top, gitDir, common] = out.trim().split('\n')
+  if (!top || !gitDir || !common) return null
+  if (gitDir === common) return { top, project: base(top) }
+  const project = base(common) === '.git' ? base(parent(common)) : base(common).replace(/\.git$/, '')
+  return { top, project, worktree: base(top) }
+}
+
+const width = (s: string) => [...s].length
+
+// The location block's text from widest to narrowest: inside a repo it reads
+// `project[ ⎇ worktree]/sub/dirs`, elsewhere the `~`-relative path.
+export const pathCandidates = (cwd: string, home: string | undefined, r: Repo | null) => {
+  let head: string
+  let segs: string[]
+  const inRepo = r !== null && (cwd === r.top || cwd.startsWith(`${r.top}/`))
+  if (inRepo) {
+    head = r.worktree ? `${r.project} ⎇ ${r.worktree}` : r.project
+    segs = cwd.slice(r.top.length).split('/').filter(Boolean)
+  } else if (home && (cwd === home || cwd.startsWith(`${home}/`))) {
+    head = '~'
+    segs = cwd.slice(home.length).split('/').filter(Boolean)
+  } else {
+    head = '/'
+    segs = cwd.split('/').filter(Boolean)
+  }
+  const join = (parts: string[]) =>
+    parts.length === 0 ? head : head === '/' ? `/${parts.join('/')}` : `${head}/${parts.join('/')}`
+  const n = segs.length
+  const out = [join(segs)]
+  if (n > 2) out.push(join(['…', ...segs.slice(-2)]))
+  if (n > 1) out.push(join(['…', segs[n - 1]!]))
+  if (inRepo && n > 0) out.push(head)
+  if (n > 0) out.push(segs[n - 1]!)
+  return [...new Set(out)]
+}
+
+// The widest candidate that fits `budget` columns once padded, or null.
+export const fitPath = (candidates: string[], budget: number) =>
+  candidates.find(c => width(c) + 2 <= budget) ?? null
+
 const refreshGit = async ($: EngineInterface) => {
   try {
     const cwd = await $.session.cwd()
-    const r = await $.process.run(['git', 'status', '--porcelain=v1', '--branch'], { cwd, timeoutMs: 3000 })
-    const next = r.exitCode === 0 ? parseGit(r.stdout) : null
+    const [st, rp] = await Promise.all([
+      $.process.run(['git', 'status', '--porcelain=v1', '--branch'], { cwd, timeoutMs: 3000 }),
+      $.process.run(
+        ['git', 'rev-parse', '--path-format=absolute', '--show-toplevel', '--git-dir', '--git-common-dir'],
+        { cwd, timeoutMs: 3000 },
+      ),
+    ])
+    const next = st.exitCode === 0 ? parseGit(st.stdout) : null
+    const where = rp.exitCode === 0 ? parseRepo(rp.stdout) : null
     await update($, git, () => next)
+    await update($, repo, () => where)
   } catch {
     await update($, git, () => null)
+    await update($, repo, () => null)
   }
 }
 
@@ -356,11 +413,11 @@ export const register: Register = on => {
 
     const m = MODES[await read($, mode)] ?? { label: (await read($, mode)).toUpperCase(), color: P.subtle }
     const g = await read($, git)
+    const r = await read($, repo)
     const name = prettyModel((await read($, model)) || (await $.session.model()))
     const usage = await $.session.usage()
     const cwd = await $.session.cwd()
     const home = await $.env.get('HOME')
-    const dir = home && cwd.startsWith(home) ? `~${cwd.slice(home.length)}` : cwd
     const pct = usage.context.percent
     const pill = PILLS[await read($, mode)]
     // The row's 2-column indent, the pill and the ` · ` after it, and one
@@ -375,6 +432,38 @@ export const register: Register = on => {
     const ctxColor = pct === undefined ? P.muted : pct >= 80 ? P.love : pct >= 50 ? P.gold : P.foam
     const bar = meter(pct ?? 0, cols >= 90 ? 10 : 5)
     const cost = usage.cost?.usd
+    const costText = cost === undefined ? '' : ` $${cost.toFixed(2)} `
+    const agentsText = agents > 0 ? `← ${agents} agent${agents === 1 ? '' : 's'} ` : ''
+    const stats = g
+      ? `${g.dirty > 0 ? ` ●${g.dirty}` : ''}${g.ahead > 0 ? ` ↑${g.ahead}` : ''}${g.behind > 0 ? ` ↓${g.behind}` : ''}`
+      : ''
+
+    // Width budget: everything but the path is measured, the path gets what is
+    // left. Give up the cost first, then the model, then path detail, then the
+    // branch's dirty/ahead/behind counts.
+    const candidates = pathCandidates(cwd, home, r)
+    const steps = [
+      { showCost: true, showModel: true, showStats: true, fullOnly: true },
+      { showCost: false, showModel: true, showStats: true, fullOnly: true },
+      { showCost: false, showModel: false, showStats: true, fullOnly: false },
+      { showCost: false, showModel: false, showStats: false, fullOnly: false },
+    ]
+    let fit = steps[steps.length - 1]!
+    let dir: string | null = null
+    for (const step of steps) {
+      const used =
+        (pill ? 0 : width(m.label) + 2) +
+        (g ? 4 + width(g.branch) + (step.showStats ? width(stats) : 0) : 0) +
+        width(agentsText) +
+        (step.showModel ? width(name) + 1 : 0) +
+        (7 + bar.filled.length + bar.empty.length) +
+        (step.showCost ? width(costText) : 0) +
+        1
+      const pick = fitPath(step.fullOnly ? candidates.slice(0, 1) : candidates, cols - used)
+      fit = step
+      dir = pick
+      if (pick !== null) break
+    }
 
     return (
       <Box flexDirection="row" height={1} width={cols} overflow="hidden">
@@ -383,15 +472,17 @@ export const register: Register = on => {
             {` ${m.label} `}
           </Text>
         )}
-        <Text backgroundColor={P.overlay} color={P.text} wrap="truncate-start">
-          {` ${dir} `}
-        </Text>
+        {dir !== null && (
+          <Text backgroundColor={P.overlay} color={P.text}>
+            {` ${dir} `}
+          </Text>
+        )}
         {g && (
           <Text backgroundColor={P.surface}>
             <Text color={P.iris}>{`  ${g.branch}`}</Text>
-            {g.dirty > 0 && <Text color={P.gold}>{` ●${g.dirty}`}</Text>}
-            {g.ahead > 0 && <Text color={P.foam}>{` ↑${g.ahead}`}</Text>}
-            {g.behind > 0 && <Text color={P.love}>{` ↓${g.behind}`}</Text>}
+            {fit.showStats && g.dirty > 0 && <Text color={P.gold}>{` ●${g.dirty}`}</Text>}
+            {fit.showStats && g.ahead > 0 && <Text color={P.foam}>{` ↑${g.ahead}`}</Text>}
+            {fit.showStats && g.behind > 0 && <Text color={P.love}>{` ↓${g.behind}`}</Text>}
             <Text> </Text>
           </Text>
         )}
@@ -400,15 +491,15 @@ export const register: Register = on => {
             <Text color={P.muted} wrap="truncate">{hint}</Text>
           )}
         </Box>
-        {agents > 0 && <Text color={P.foam}>{`← ${agents} agent${agents === 1 ? '' : 's'} `}</Text>}
-        {cols >= 70 && <Text color={P.subtle}>{`${name} `}</Text>}
+        {agentsText !== '' && <Text color={P.foam}>{agentsText}</Text>}
+        {fit.showModel && <Text color={P.subtle}>{`${name} `}</Text>}
         <Text backgroundColor={P.surface}>
           <Text color={ctxColor}>{` ${bar.filled}`}</Text>
           <Text color={P.hlHigh}>{bar.empty}</Text>
           <Text color={P.subtle}>{pct === undefined ? '  --% ' : ` ${String(pct).padStart(3)}% `}</Text>
         </Text>
-        {cost !== undefined && cols >= 80 && (
-          <Text backgroundColor={P.overlay} color={P.gold}>{` $${cost.toFixed(2)} `}</Text>
+        {fit.showCost && costText !== '' && (
+          <Text backgroundColor={P.overlay} color={P.gold}>{costText}</Text>
         )}
         <Text backgroundColor={m.color}> </Text>
       </Box>
