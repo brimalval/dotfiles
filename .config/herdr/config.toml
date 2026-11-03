@@ -1,14 +1,17 @@
 onboarding = false
 
 [keys]
-# Match tmux (.tmux.conf: `set-option -g prefix C-a`)
-prefix = "ctrl+a"
+# Match tmux (.tmux.conf: `set-option -g prefix C-a`). ctrl+b too, so
+# Termius's built-in tmux hotkeys work over SSH from the phone.
+prefix = ["ctrl+a", "ctrl+b"]
 # prefix+s goes to herdr-flash (below)
 settings = "prefix+shift+s"
 # prefix+1..9 is tabs
 switch_workspace = "prefix+ctrl+1..9"
 next_agent = "prefix+]"
 previous_agent = "prefix+["
+# Default copy mode key is prefix+[, taken by previous_agent above
+copy_mode = "prefix+y"
 # ctrl+l is taken by herdr-nvim-nav, so clear the screen from here instead
 clear_pane = "prefix+ctrl+k"
 
