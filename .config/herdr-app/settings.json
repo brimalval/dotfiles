@@ -1,0 +1,11 @@
+{
+  "zoom": 1.0,
+  "sounds": {
+    "enabled": true
+  },
+  "font": "Maple Mono NF",
+  "font_size": 14.0,
+  "minimum_contrast": 1.0,
+  "appearance": "dark",
+  "theme": "rose-pine-moon"
+}

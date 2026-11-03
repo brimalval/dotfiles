@@ -20,10 +20,35 @@ return {
 	},
 	{
 		-- Ctrl+h/j/k/l across nvim splits and herdr panes
-		-- (herdr side: ~/.config/herdr/config.toml)
+		-- (herdr TUI side: ~/.config/herdr/config.toml;
+		--  herdr-app side: ~/.config/herdr-app/mods/nvim-nav + keys.json)
 		"aimdevlee/herdr-nvim-nav",
 		config = function()
 			require("herdr-nvim-nav").setup()
+
+			-- Inside herdr-app (terminals run by herdr-core set HC_TERMINAL_ID),
+			-- the nvim-nav mod hands ctrl+h/j/k/l to nvim; at a split edge,
+			-- cross into the neighbouring herdr-app pane ourselves.
+			if vim.env.HC_TERMINAL_ID and vim.env.HC_TERMINAL_ID ~= "" then
+				local wincmd = { left = "h", down = "j", up = "k", right = "l" }
+				local lhs = {
+					left = { "<C-h>", "<C-Left>" },
+					down = { "<C-j>", "<C-Down>" },
+					up = { "<C-k>", "<C-Up>" },
+					right = { "<C-l>", "<C-Right>" },
+				}
+				for dir, keys in pairs(lhs) do
+					for _, key in ipairs(keys) do
+						vim.keymap.set("n", key, function()
+							local prev = vim.api.nvim_get_current_win()
+							vim.cmd("wincmd " .. wincmd[dir])
+							if vim.api.nvim_get_current_win() == prev then
+								vim.system({ "herdr-app", "do", "pane.go", "--direction", dir })
+							end
+						end, { silent = true, noremap = true, desc = "Navigate " .. dir })
+					end
+				end
+			end
 		end,
 	},
 	{
