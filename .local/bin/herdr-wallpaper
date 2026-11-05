@@ -46,7 +46,7 @@ if [[ -z $src ]]; then
 fi
 [[ -n $src ]] || die "no wallpaper path reported"
 [[ -f $src ]] || die "wallpaper file not found: $src (dynamic/system wallpapers may not expose a file; pass one: herdr-wallpaper FILE)"
-"$magick" identify -- "$src[0]" >/dev/null 2>&1 \
+"$magick" identify -- "${src}[0]" >/dev/null 2>&1 \
   || die "ImageMagick can't read $src (unsupported format?)"
 
 mkdir -p "$out_dir"
@@ -54,7 +54,7 @@ tmp=$(mktemp "$out_dir/.wallpaper-blur.XXXXXX")
 trap 'rm -f "$tmp"' EXIT
 
 # Downscale first (fast), then blur; [0] takes the first frame of HEIC/AVIF sequences.
-"$magick" "$src[0]" -auto-orient -colorspace sRGB -resize "${width}x>" \
+"$magick" "${src}[0]" -auto-orient -colorspace sRGB -resize "${width}x>" \
   -blur "0x$sigma" -strip -quality 88 "jpg:$tmp" \
   || die "ImageMagick failed on $src"
 chmod 644 "$tmp"
@@ -70,7 +70,7 @@ if [[ $restart -eq 0 ]]; then
 fi
 
 if [[ -n $(app_pid) ]]; then
-  herdr-app do app.quit >/dev/null 2>&1 || osascript -e 'tell application "Herdr" to quit' >/dev/null 2>&1 || true
+  herdr-app "do" app.quit >/dev/null 2>&1 || osascript -e 'tell application "Herdr" to quit' >/dev/null 2>&1 || true
   for _ in $(seq 1 50); do [[ -z $(app_pid) ]] && break; sleep 0.2; done
   [[ -z $(app_pid) ]] || die "Herdr didn't quit; restart it by hand to see the new background"
 fi
