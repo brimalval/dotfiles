@@ -1,0 +1,78 @@
+#!/usr/bin/env bash
+# herdr-wallpaper: bake a blurred copy of the current macOS wallpaper into
+# ~/.config/herdr-app/backgrounds/wallpaper-blur.jpg so Herdr looks like kitty
+# (background_opacity 0.75 + background_blur 20). The layout points its root
+# "background" at that image and sets "terminal_opacity": 0.75.
+#
+# Run it by hand after changing the wallpaper. Idempotent.
+#
+#   herdr-wallpaper              # use the first desktop's wallpaper
+#   herdr-wallpaper FILE         # use FILE instead
+#   herdr-wallpaper --restart    # then quit and reopen Herdr to show it
+#
+# Herdr caches a background image by path while its window is open (touching
+# or editing the layout doesn't reload it), so a new image shows on Herdr's
+# next start. --restart does that; terminals keep running in herdr-core.
+#
+# Env: HERDR_WALLPAPER_BLUR (Gaussian sigma at 2560px wide, default 30),
+#      HERDR_WALLPAPER_WIDTH (default 2560), HERDR_APP_HOME.
+set -euo pipefail
+
+home="${HERDR_APP_HOME:-$HOME/.config/herdr-app}"
+width="${HERDR_WALLPAPER_WIDTH:-2560}"
+sigma="${HERDR_WALLPAPER_BLUR:-30}"
+out_dir="$home/backgrounds"
+out="$out_dir/wallpaper-blur.jpg"
+
+die() { echo "herdr-wallpaper: $*" >&2; exit 1; }
+
+restart=0 src=
+for arg in "$@"; do
+  case $arg in
+    --restart) restart=1 ;;
+    -h|--help) sed -n '2,18p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
+    -*) die "unknown option: $arg (try --help)" ;;
+    *) [[ -z $src ]] || die "only one FILE, please"; src=$arg ;;
+  esac
+done
+
+magick=$(command -v magick || true)
+[[ -z $magick && -x /opt/homebrew/bin/magick ]] && magick=/opt/homebrew/bin/magick
+[[ -n $magick ]] || die "ImageMagick 'magick' not found (brew install imagemagick)"
+
+if [[ -z $src ]]; then
+  src=$(osascript -e 'tell application "System Events" to get picture of desktop 1' 2>/dev/null) \
+    || die "could not ask System Events for the wallpaper (Automation permission?)"
+fi
+[[ -n $src ]] || die "no wallpaper path reported"
+[[ -f $src ]] || die "wallpaper file not found: $src (dynamic/system wallpapers may not expose a file; pass one: herdr-wallpaper FILE)"
+"$magick" identify -- "$src[0]" >/dev/null 2>&1 \
+  || die "ImageMagick can't read $src (unsupported format?)"
+
+mkdir -p "$out_dir"
+tmp=$(mktemp "$out_dir/.wallpaper-blur.XXXXXX")
+trap 'rm -f "$tmp"' EXIT
+
+# Downscale first (fast), then blur; [0] takes the first frame of HEIC/AVIF sequences.
+"$magick" "$src[0]" -auto-orient -colorspace sRGB -resize "${width}x>" \
+  -blur "0x$sigma" -strip -quality 88 "jpg:$tmp" \
+  || die "ImageMagick failed on $src"
+chmod 644 "$tmp"
+mv -f "$tmp" "$out"
+trap - EXIT
+
+echo "$out  (from $src, ${width}px, blur 0x$sigma)"
+
+app_pid() { pgrep -f '/Herdr\.app/Contents/MacOS/Herdr$' | head -n1; }
+if [[ $restart -eq 0 ]]; then
+  [[ -n $(app_pid) ]] && echo "Restart Herdr to see it (or run: herdr-wallpaper --restart)."
+  exit 0
+fi
+
+if [[ -n $(app_pid) ]]; then
+  herdr-app do app.quit >/dev/null 2>&1 || osascript -e 'tell application "Herdr" to quit' >/dev/null 2>&1 || true
+  for _ in $(seq 1 50); do [[ -z $(app_pid) ]] && break; sleep 0.2; done
+  [[ -z $(app_pid) ]] || die "Herdr didn't quit; restart it by hand to see the new background"
+fi
+open -a Herdr || die "couldn't open Herdr.app; start it by hand"
+echo "Herdr restarted."
