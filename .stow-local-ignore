@@ -26,3 +26,7 @@ node_modules
 mouseless.*\.config.*
 !mouseless.config.yaml
 .*.bak
+
+# Not dotfiles: the Nix flake and docs live in the repo only.
+^/nix
+^/docs
