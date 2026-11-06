@@ -1,0 +1,26 @@
+--- a/chat/main.js
++++ b/chat/main.js
+@@ -114,6 +114,14 @@
+   return hit ? { agent: hit.agent, model: hit.model } : null;
+ }
+ // About how many lines words take at a width (px), for a row's height before it's measured.
++// The chat's own background at 75% (the layout's terminal_opacity), so a layout background shows
++// through; bubbles, code and the box stay solid. Only #rgb/#rrggbb get alpha; anything else as is.
++const seeThrough = (c, a = "bf") => {
++  const m = /^#([0-9a-f]{3}|[0-9a-f]{6})$/i.exec(String(c ?? ""));
++  if (!m) return c;
++  const h = m[1].length === 3 ? [...m[1]].map((x) => x + x).join("") : m[1];
++  return `#${h}${a}`;
++};
+ const wrapLines = (text, width) => String(text ?? "").split("\n").reduce((n, l) => n + Math.max(1, Math.ceil((l.length * 7) / Math.max(120, width))), 0);
+ // A folded reply's first lines: about `h` px of them at width `w` (wrapLines' estimate), plus one
+ // line under the fade.
+@@ -3688,7 +3696,7 @@
+     if (st === "working" && this.lastWorking !== "working") this.workingSince = Date.now();
+     if (st !== "working") this.stopping = false;
+     this.lastWorking = st;
+-    const root = v_flex().id("chat").size_full().bg(t.background).text_color(t.foreground).text_size(13)
++    const root = v_flex().id("chat").size_full().bg(seeThrough(t.background)).text_color(t.foreground).text_size(13)
+       .on_size_change((size, cx) => {
+         if (Math.abs(size.width - this.width) > 1) this.width = size.width;
+         this.height = size.height;

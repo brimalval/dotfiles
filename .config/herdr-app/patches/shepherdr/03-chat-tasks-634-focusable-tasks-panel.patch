@@ -1,0 +1,33 @@
+--- a/chat/main.js
++++ b/chat/main.js
+@@ -501,6 +501,9 @@
+           }
+           continue;
+         }
++        // pane.go landed on this copy (mod.json "focusable"): a task's chat in the Tasks panel takes
++        // the keyboard into its box; a pane copy already does on focus (draw()).
++        if (c === "focus") { if (this.inner || this.thread) this.box.focus(); continue; }
+         if (focused()?.pane !== this.myPane()) continue;
+         // Voice off (Shepherdr settings > Window > Add-ons): its keys do nothing.
+         if (c === "dictate" && addonOn("voice")) this.toggleDictation(cx);
+--- a/chat/mod.json
++++ b/chat/mod.json
+@@ -1 +1 @@
+-{ "place": "none", "title": "Chat" }
++{ "place": "none", "title": "Chat", "focusable": true }
+--- a/tasks/main.js
++++ b/tasks/main.js
+@@ -124,6 +124,8 @@
+         if (c === undefined) continue;
+         cmd = null;
+         if (c === "search") this.query.focus();
++        // pane.go landed on this block (mod.json "focusable"): the keyboard goes to the list.
++        else if (c === "focus") this.listFocus.focus();
+         else if (GROUP_BY.includes(c) || c === "folder") setShared("tasks.groupby", groupBy(c));
+         // tasks.filter-all, tasks.filter-needs, ...: the filter row's chip.
+         else if (c.startsWith("filter-") && (c === "filter-all" || ORDER.includes(c.slice(7)))) {
+--- a/tasks/mod.json
++++ b/tasks/mod.json
+@@ -1 +1 @@
+-{ "place": "none" }
++{ "place": "none", "focusable": true }

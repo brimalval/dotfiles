@@ -1,0 +1,13 @@
+--- a/chat/main.js
++++ b/chat/main.js
+@@ -3605,7 +3605,10 @@
+     if (paneFocused && showsBox && (!this.wasFocused || !this.hadBox)) { cx.timer.after(0, () => this.box.focus()); cx.timer.after(600, () => this.box.focus()); }
+     // The pane focused again (a command, a click on its header) can leave the box without the
+     // keyboard: give it back, unless the person just pressed something inside the chat.
++    // Not while a task's chat in the Tasks panel has the keyboard: that block isn't a pane, so this
++    // pane still counts as focused.
+     else if (paneFocused && showsBox && !this.call && this.focused === false && Date.now() - (this.press?.at ?? 0) > 1500
++      && !(this.areaKey() !== "thread" && shared("chat.areas")?.thread?.focus)
+       && Date.now() - (this.refocusAt ?? 0) > 1000) {
+       this.refocusAt = Date.now();
+       cx.timer.after(0, () => this.box.focus());
