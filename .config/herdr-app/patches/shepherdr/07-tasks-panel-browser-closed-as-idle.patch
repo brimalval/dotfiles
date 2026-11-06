@@ -1,0 +1,15 @@
+--- a/tasks/bin/herdr_task/browsers.py
++++ b/tasks/bin/herdr_task/browsers.py
+@@ -124,7 +124,11 @@
+         you = _age_ms(os.path.join(ROOT, name + ".you"))
+         if you is not None and you < YOU_FRESH_S * 1000:
+             continue
+-        used = _age_ms(os.path.join(ROOT, name + ".used"))
++        # The last use: the agent's (.used), or the person watching it in the panel (.view, kept
++        # fresh by its viewer). The panel opens and watches with --own, which never touches .used,
++        # so a browser only ever opened from the panel counts from when it was last watched.
++        ages = [a for a in (_age_ms(os.path.join(ROOT, name + ext)) for ext in (".used", ".view")) if a is not None]
++        used = min(ages) if ages else None
+         if used is None or used >= idle:
+             _close(bp, key)
+             report.setdefault("browsers_closed", []).append(key)

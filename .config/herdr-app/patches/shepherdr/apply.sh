@@ -60,21 +60,33 @@ scratch=$(mktemp -d "${TMPDIR:-/tmp}/shepherdr-patches.XXXXXX") || exit 1
 trap 'rm -rf "$scratch"' EXIT
 trap 'exit 130' INT TERM
 
-# Print the hunks of $1 that don't apply. patch writes its output (-o) and
-# rejects (-r) into scratch, so the mods folder is not touched.
+# Copy the mod folders the patches $2... touch from $mods into the new dir $1.
+copy_mods() {
+	dest=$1; shift
+	mkdir "$dest" || return 1
+	for d in $(sed -n 's|^+++ b/\([^/]*\)/.*|\1|p' "$@" | sort -u); do
+		[ -d "$mods/$d" ] && cp -Rp "$mods/$d" "$dest/"
+	done
+	return 0
+}
+
+# Print the hunks of $1 that don't apply. It patches a scratch copy, not the
+# mods folder: BSD patch ignores -r for a hunk it skips as already applied
+# (as with a new file that is already there) and writes <file>.rej beside it.
 show_rejects() {
-	rm -f "$scratch/out" "$scratch/rej"
-	run_patch -o "$scratch/out" -r "$scratch/rej" -i "$1" 2>&1 | grep -v -e '^done$' -e 'saving rejects to'
-	[ -s "$scratch/rej" ] && { echo "--- rejected hunks:"; cat "$scratch/rej"; }
+	rm -rf "$scratch/rej"
+	copy_mods "$scratch/rej" "$1" || return
+	patch -d "$scratch/rej" -p1 -N -t -V none -i "$1" </dev/null 2>&1 | grep -v -e '^done$' -e 'saving rejects to'
+	(cd "$scratch/rej" && find . -name '*.rej' | sort) | while IFS= read -r r; do
+		echo "--- rejected hunks (${r#./}):"
+		cat "$scratch/rej/$r"
+	done
 }
 
 # --check works on a scratch copy of the mod folders the patches touch, so
 # each later patch is checked as if the earlier ones were applied.
 if [ $check -eq 1 ]; then
-	mkdir "$scratch/mods" || exit 1
-	for d in $(sed -n 's|^+++ b/\([^/]*\)/.*|\1|p' "$@" | sort -u); do
-		[ -d "$mods/$d" ] && cp -Rp "$mods/$d" "$scratch/mods/"
-	done
+	copy_mods "$scratch/mods" "$@" || exit 1
 	mods=$scratch/mods
 fi
 
