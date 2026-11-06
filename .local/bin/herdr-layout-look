@@ -1,0 +1,96 @@
+#!/usr/bin/env bash
+# herdr-layout-look: apply our look overrides to a live Herdr layout file
+# (default ~/.config/herdr-app/layouts/shepherdr.json). The layout itself is
+# owned by Herdr/Shepherdr (its panel mods rewrite it at runtime), so dotfiles
+# keep only these overrides:
+#
+#   - root "background": {"image": "backgrounds/wallpaper-blur.jpg", "fit": "cover"}
+#   - root "terminal_opacity": 0.75
+#   - no "background" on the active-tab pane block, so terminals show the wallpaper
+#
+# Run it after a Shepherdr update, or after taking layouts/shepherdr.json.new.
+# Idempotent: when the overrides are already there it doesn't touch the file.
+#
+#   herdr-layout-look              # apply to layouts/shepherdr.json
+#   herdr-layout-look NAME|FILE    # apply to layouts/NAME.json, or to FILE
+#   herdr-layout-look --check      # report only; exit 1 if any are missing
+#
+# The file is rewritten in place (same inode, never temp-and-rename), and only
+# if nobody changed it while the new content was being computed.
+#
+# Env: HERDR_APP_HOME (default ~/.config/herdr-app),
+#      HERDR_LAYOUT_OPACITY (default 0.75).
+set -euo pipefail
+
+home="${HERDR_APP_HOME:-$HOME/.config/herdr-app}"
+opacity="${HERDR_LAYOUT_OPACITY:-0.75}"
+
+die() { echo "herdr-layout-look: $*" >&2; exit 2; }
+
+check=0 target=
+for arg in "$@"; do
+  case $arg in
+    --check) check=1 ;;
+    -h|--help) sed -n '2,22p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
+    -*) die "unknown option: $arg (try --help)" ;;
+    *) [[ -z $target ]] || die "only one layout, please"; target=$arg ;;
+  esac
+done
+
+target=${target:-shepherdr}
+if [[ $target == */* || $target == *.json ]]; then file=$target; else file="$home/layouts/$target.json"; fi
+[[ -f $file ]] || die "no layout file: $file"
+command -v jq >/dev/null || die "jq not found"
+
+# Is the "main" pane frame the active-tab block? Matches by shape, not by path,
+# so it survives upstream reshuffles of the tree.
+read -r -d '' JQ_LIB <<'EOF' || true
+def is_tab_pane: type == "object" and (.content? | type == "object")
+  and .content.tab? == "active" and (.content.pane? | type == "object");
+def status:
+  { background: (.background == {image: "backgrounds/wallpaper-blur.jpg", fit: "cover"}),
+    terminal_opacity: (.terminal_opacity == $op),
+    pane_background_removed: ([.. | select(is_tab_pane) | .content.pane | has("background")] | any | not) };
+def apply:
+  .background = {image: "backgrounds/wallpaper-blur.jpg", fit: "cover"}
+  | .terminal_opacity = $op
+  | walk(if is_tab_pane then .content.pane |= del(.background) else . end);
+EOF
+
+text=$(cat -- "$file")
+st=$(jq -c --argjson op "$opacity" "$JQ_LIB status" <<<"$text") \
+  || die "$file is not valid JSON"
+
+report() {
+  jq -r 'to_entries[] | "  \(if .value then "ok     " else "missing" end)  \(.key)"' <<<"$1"
+}
+
+if [[ $check -eq 1 ]]; then
+  if jq -e 'all(.[]; .)' <<<"$st" >/dev/null; then
+    echo "$file: overrides applied"; report "$st"; exit 0
+  fi
+  echo "$file: overrides missing"; report "$st"; exit 1
+fi
+
+if jq -e 'all(.[]; .)' <<<"$st" >/dev/null; then
+  echo "$file: overrides already applied (unchanged)"; exit 0
+fi
+
+new=$(jq --indent 2 --argjson op "$opacity" "$JQ_LIB apply" <<<"$text") || die "jq failed on $file"
+jq -e --argjson op "$opacity" "$JQ_LIB status | all(.[]; .)" <<<"$new" >/dev/null \
+  || die "result doesn't validate; $file left as it was"
+
+# Compare-and-write, like the panel mods: if the file moved under us, start over.
+for _ in 1 2 3; do
+  if [[ $(cat -- "$file") == "$text" ]]; then
+    printf '%s\n' "$new" >"$file"
+    echo "$file: overrides applied"; report "$(jq -c --argjson op "$opacity" "$JQ_LIB status" <<<"$new")"
+    exit 0
+  fi
+  text=$(cat -- "$file")
+  if jq -e --argjson op "$opacity" "$JQ_LIB status | all(.[]; .)" <<<"$text" >/dev/null 2>&1; then
+    echo "$file: overrides already applied (unchanged)"; exit 0
+  fi
+  new=$(jq --indent 2 --argjson op "$opacity" "$JQ_LIB apply" <<<"$text") || die "$file is not valid JSON"
+done
+die "$file kept changing; try again"

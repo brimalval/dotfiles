@@ -2,7 +2,9 @@
 # herdr-wallpaper: bake a blurred copy of the current macOS wallpaper into
 # ~/.config/herdr-app/backgrounds/wallpaper-blur.jpg so Herdr looks like kitty
 # (background_opacity 0.75 + background_blur 20). The layout points its root
-# "background" at that image and sets "terminal_opacity": 0.75.
+# "background" at that image and sets "terminal_opacity": 0.75; those overrides
+# are applied by herdr-layout-look (re-run it after a Shepherdr update or after
+# taking layouts/shepherdr.json.new). This warns if they're missing.
 #
 # Run it by hand after changing the wallpaper. Idempotent.
 #
@@ -30,7 +32,7 @@ restart=0 src=
 for arg in "$@"; do
   case $arg in
     --restart) restart=1 ;;
-    -h|--help) sed -n '2,18p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
+    -h|--help) sed -n '2,20p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
     -*) die "unknown option: $arg (try --help)" ;;
     *) [[ -z $src ]] || die "only one FILE, please"; src=$arg ;;
   esac
@@ -62,6 +64,13 @@ mv -f "$tmp" "$out"
 trap - EXIT
 
 echo "$out  (from $src, ${width}px, blur 0x$sigma)"
+
+look=$(command -v herdr-layout-look || true)
+[[ -z $look && -x "$(dirname "$0")/herdr-layout-look" ]] && look="$(dirname "$0")/herdr-layout-look"
+if [[ -n $look ]]; then
+  "$look" --check >/dev/null 2>&1 \
+    || echo "herdr-wallpaper: the layout doesn't use this background yet; run: herdr-layout-look" >&2
+fi
 
 app_pid() { pgrep -f '/Herdr\.app/Contents/MacOS/Herdr$' | head -n1; }
 if [[ $restart -eq 0 ]]; then
