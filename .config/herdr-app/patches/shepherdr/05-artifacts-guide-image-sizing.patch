@@ -1,0 +1,14 @@
+--- a/artifacts/ARTIFACTS.md
++++ b/artifacts/ARTIFACTS.md
+@@ -72,6 +72,11 @@
+   follows light and dark. Text sizes in px (12-15). No emojis.
+ - Fill the panel (`size_full()`), scroll long content (`.id(..).overflow_y_scrollbar()`), and
+   work from about 320 px wide.
++- Images: give each `image()` its own `w(..)` and `h(..)` in the picture's aspect ratio (a
++  1280x800 screenshot: `.w(480).h(300)`; for full width, measure the panel with
++  `on_size_change` and set `h` from the width). `image()` keeps the picture's ratio from its
++  width and ignores the height of a box it fills, and that box doesn't clip it: an
++  `image().size_full()` in a `w_full().h(240)` box spills over what comes after it.
+ - Data: bake it into the files, or read it live with `readTextFile(path)` / `exec(cmd, args,
+   { cwd })` inside `cx.spawn`. Absolute paths. `fetch` works but prefer local data.
+ - No `setTimeout`/`setInterval` (`cx.timer.every` for data, rarely); animate natively

@@ -1,0 +1,125 @@
+--- a/chat/log.js
++++ b/chat/log.js
+@@ -191,7 +191,8 @@
+ // Task news in a message: [{ ref, event, text }], one per <herdr-news task=… event=…> tag.
+ const unattr = (v) => String(v ?? "").replace(/&quot;/g, '"').replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&amp;/g, "&");
+ function newsOf(t) {
+-  return [...String(t).matchAll(/<herdr-news\b([^>]*)>([\s\S]*?)<\/herdr-news\s*>/g)].map(([, a, text]) => ({
++  // Not inside fenced code: a template's examples (assistant.md) aren't news.
++  return [...String(t).replace(/```[\s\S]*?(?:```|$)/g, "").matchAll(/<herdr-news\b([^>]*)>([\s\S]*?)<\/herdr-news\s*>/g)].map(([, a, text]) => ({
+     ref: unattr(/\btask="([^"]*)"/.exec(a)?.[1]), event: unattr(/\bevent="([^"]*)"/.exec(a)?.[1]), text: text.trim() })).filter((n) => n.ref && n.event);
+ }
+ 
+--- a/chat/main.js
++++ b/chat/main.js
+@@ -115,6 +115,19 @@
+ }
+ // About how many lines words take at a width (px), for a row's height before it's measured.
+ const wrapLines = (text, width) => String(text ?? "").split("\n").reduce((n, l) => n + Math.max(1, Math.ceil((l.length * 7) / Math.max(120, width))), 0);
++// A folded reply's first lines: about `h` px of them at width `w` (wrapLines' estimate), plus one
++// line under the fade.
++const cutLines = (text, h, w) => {
++  const out = [];
++  let used = 0;
++  for (const l of String(text ?? "").split("\n")) {
++    const n = Math.max(1, Math.ceil((l.length * 7) / Math.max(120, w)));
++    if (out.length && (used + n) * LINE_H > h + LINE_H) break;
++    out.push(l);
++    used += n;
++  }
++  return out.join("\n");
++};
+ const shellWord = (s) => (/^[\w@%+=:,./-]+$/.test(s) ? s : `'${String(s).replace(/'/g, `'"'"'`)}'`);
+ // A message's time: 14:05 today, else 3 Nov 14:05.
+ function clock(at) {
+@@ -166,7 +179,10 @@
+ }
+ // The person's words keep the line breaks they typed: markdown joins single lines, so each one
+ // becomes a hard break (outside code fences, which keep theirs).
+-const typed = (text) => String(text).split(/(```[\s\S]*?(?:```|$))/).map((part, i) => (i % 2 ? part : part.replace(/([^\n])\n(?!\n)/g, "$1  \n"))).join("");
++// Typed `<` is the person's character, not HTML: escaped outside code (fenced and inline), or
++// markdown drops `<yours>` as a tag.
++const escLt = (s) => s.split(/(`[^`\n]*`)/).map((p, j) => (j % 2 ? p : p.replace(/</g, "\\<"))).join("");
++const typed = (text) => String(text).split(/(```[\s\S]*?(?:```|$))/).map((part, i) => (i % 2 ? part : escLt(part.replace(/([^\n])\n(?!\n)/g, "$1  \n")))).join("");
+ 
+ // An agent message in parts: markdown, and fenced code blocks (drawn with a Copy bar).
+ function parts(text) {
+@@ -416,7 +432,10 @@
+     this.draftFile = `${appHome()}/data/chat-drafts/${safe(this.originKey)}.json`;
+     if (!this.addr && this.role) this.phase = "fresh";
+     if (this.phase === "fresh") this.loadChoice(cx);
+-    if (this.slot) cx.spawn(async (cx) => { this.firstTask = await fs.readFile(this.firstFile, "utf8").catch(() => null); cx.notify(); });
++    // The slot's first message, also when this chat was reopened by the agent's address (after a
++    // reload): the agent's herdr.chat.slot label still names the slot it was started from.
++    this.firstSlot = this.slot ?? labels["herdr.chat.slot"] ?? null;
++    if (this.firstSlot) cx.spawn(async (cx) => { this.firstTask = await fs.readFile(this.firstFile, "utf8").catch(() => null); cx.notify(); });
+     if (this.addr || this.role) cx.spawn(async (cx) => { await this.loadDraft(cx); attach.prune(); });
+     if (this.addr) cx.spawn(async (cx) => this.follow(cx));
+     // A Coordinator tab's chat that missed its agent (started, or Herdr restarted, before this
+@@ -1538,7 +1557,7 @@
+     });
+   }
+ 
+-  get firstFile() { return `${appHome()}/data/chat-first/${safe(this.slot ?? this.originKey)}.txt`; }
++  get firstFile() { return `${appHome()}/data/chat-first/${safe(this.slot ?? this.firstSlot ?? this.originKey)}.txt`; }
+ 
+   // The empty state: what to do, and what the assistant does.
+   fresh(t) {
+@@ -2406,6 +2425,9 @@
+     if (this.start === 0) out.push({ kind: "top", id: "top" });
+     else if (this.start) out.push({ kind: "loading", id: "loading" });
+     const items = this.conv?.items ?? [];
++    // The session's first message is the first user item, not items[0]: news lines the log
++    // pulled out of it (a template's <herdr-news> examples) come before it.
++    const firstUser = items.findIndex((y) => y.kind === "user");
+     const working = this.status() === "working";
+     const arts = this.resolveArts(items);
+     // The space's tasks' news lines (newsLines()): Herdr's in place, the rest each before the
+@@ -2454,16 +2476,17 @@
+       // This chat started the agent from a template with the person's words as its task: the
+       // template's part is a quiet row, the person's words their own message.
+       const ft = this.firstTask?.trim();
+-      if (i === 0 && this.start === 0 && x.kind === "user" && ft && this.t?.template && String(x.text ?? "").trim().endsWith(ft)) {
++      if (i === firstUser && this.start === 0 && x.kind === "user" && ft && this.t?.template && String(x.text ?? "").trim().endsWith(ft)) {
+         const body = String(x.text).trim().slice(0, -ft.length).trim();
+         if (body) out.push({ kind: "brief", id: `${x.id}:b`, label: "New session", text: body });
+         x = { ...x, text: ft };
+       }
+-      if (x.kind === "user" && !(i === 0 && ft && x.text === ft) && this.brief(x, i)) {
++      const ui = i === firstUser ? 0 : i + 1;
++      if (x.kind === "user" && !(ui === 0 && ft && x.text === ft) && this.brief(x, ui)) {
+         // Not typed by the person: a launch brief or another agent's message, as a quiet row.
+         // A fresh start's handover says it all in its label.
+         const restart = /^<restart>/.test(x.text ?? "");
+-        out.push({ kind: "brief", id: x.id, label: this.brief(x, i), text: restart ? x.text.replace(/<\/?restart>/g, "") : x.from ? unsigned(x.text) : x.text, bare: restart });
++        out.push({ kind: "brief", id: x.id, label: this.brief(x, ui), text: restart ? x.text.replace(/<\/?restart>/g, "") : x.from ? unsigned(x.text) : x.text, bare: restart });
+         continue;
+       }
+       if (x.kind === "user") {
+@@ -2537,7 +2560,10 @@
+     if (q && String(x.text).toLowerCase().includes(q)) return null;
+     const w = Math.max(240, Math.floor(Math.min(this.width, COLUMN) * 0.8)) - 24;
+     const est = ps.map((p) => (p.type === "md" ? wrapLines(p.text, w) * LINE_H : 34 + 16 + p.code.split("\n").length * 19));
+-    const drawn = ps.length === 1 ? this.natural.get(x.id) : null;
++    // A drawn height only counts once it's past a line or two: markdown's first frame lays a
++    // long reply out as one line, and taking that unfolds it and folds it again, over and over.
++    const nat = ps.length === 1 ? this.natural.get(x.id) : null;
++    const drawn = nat > 2 * LINE_H ? nat : null;
+     if ((drawn ?? est.reduce((a, b) => a + b, 0)) <= FOLD_TALL * LINE_H) return null;
+     if (this.unfolded.has(x.id)) return { open: true, clips: new Map(), last: ps.length - 1 };
+     const clips = new Map();
+@@ -2743,10 +2769,11 @@
+         .child(TextView.markdown(`${pre}chat-md-${x.id}`, this.findMark(typed(text)) || " ").selectable(true)));
+     const theirs = (text) => h_flex().w_full().justify_start().child(
+       div().max_w(most).px(12).py(8).rounded(12).bg(t.raised).text_color(t.foreground)
++        // Folded: only about the lines that show are laid out. Laying out the whole reply under a
++        // max_h left the row's content far taller than its slot, and the list went blank when
++        // the row scrolled into view.
+         .child(x.clip ? this.clipped(t.raised, x.clip, div().id(`${pre}fold-in-${x.id}`).flex_none()
+-          // Its words' drawn height: a reply shorter than it looked isn't folded (foldOf()).
+-          .on_size_change((size, cx) => { const was = this.natural.get(x.id); if (!was || Math.abs(was - size.height) > 1) { this.natural.set(x.id, size.height); cx.notify(); } })
+-          .child(TextView.markdown(`${pre}chat-md-${x.id}`, this.findMark(text) || " ").selectable(true)))
++          .child(TextView.markdown(`${pre}chat-md-${x.id}`, this.findMark(cutLines(text, x.clip, most - 24)) || " ").selectable(true)))
+           : TextView.markdown(`${pre}chat-md-${x.id}`, this.findMark(text) || " ").selectable(true)));
+     const fileLine = (label) => h_flex().gap(5).items_center().text_size(12).text_color(t.dim)
+       .child(svg("mods/chat/paperclip.svg").size(12).flex_none()).child(div().truncate().child(label));
