@@ -20,3 +20,12 @@ Check: patch -d ~/.config/herdr-app/mods -p1 -N --dry-run < NN-*.patch
 "Reversed (or previously applied) patch detected" means it's already in (applied, or upstream took it).
 After `shepherdr update`, Shepherdr keeps these files (changed) and drops its new copies as *.new:
 compare those before re-applying.
+
+Added 2026-11-06:
+06-chat-browser-host-stuck-hidden-after-restart.patch   chat/main.js, chat/browserfix.js (new)
+   The task header mends a Browser view left hidden with no viewer after a restart. Upstream
+   issue drafted, not filed yet.
+07-tasks-panel-browser-closed-as-idle.patch             tasks/bin/herdr_task/browsers.py
+   A browser being watched in the panel (.view fresh) counts as used, so it isn't closed as idle.
+   Upstream issue drafted, not filed yet. The herdr-automations scheduler re-execs itself when
+   herdr-task's code changes, so no restart is needed.

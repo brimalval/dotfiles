@@ -1,0 +1,66 @@
+--- a/chat/main.js
++++ b/chat/main.js
+@@ -33,6 +33,7 @@
+ import * as strips from "./strips.js";
+ import { button, red, green, amber, H, RADIUS, TEXT, toast, toastWho, plainError } from "./ui.js";
+ import { openViewer, noteChatArea } from "./artview.js";
++import { mendBrowserHost } from "./browserfix.js";
+ import { SecretCards } from "./secret-card.js";
+ import * as secrets from "./secrets.js";
+ import { taskDot, ownProgress } from "./dot.js";
+@@ -215,7 +216,13 @@
+     // The Tasks panel's drill-in view (props { panel: true }): its header (props { head: true })
+     // and its body, a nested Chat for the task's worker, made with its own props ({ inner: true,
+     // thread: true, terminal, ... }).
+-    if (props()?.panel === true && !_props?.inner) { this.host = new PanelHost(Chat, props()?.head === true); return; }
++    if (props()?.panel === true && !_props?.inner) {
++      this.host = new PanelHost(Chat, props()?.head === true);
++      // The header runs whenever a task view shows: it mends a Browser view left hidden with no
++      // viewer after a restart (browserfix.js), which that view's own mod can't.
++      if (props()?.head === true) cx.timer.every(5000, (cx) => cx.spawn(async () => { try { await mendBrowserHost(); } catch {} }));
++      return;
++    }
+     this.inner = _props?.inner === true;
+     if (this.inner) inner.chat = this;
+     const P = this.inner ? _props : props();
+--- /dev/null
++++ b/chat/browserfix.js
+@@ -0,0 +1,38 @@
++// The Browser view's host left hidden with no live viewer (a Herdr restart ended the viewer and
++// dropped its terminal block, but the layout file kept "hidden" on the host). A hidden block's
++// mod never starts, so mods/task-browser can't mend it itself: the Tasks panel's task header
++// (mods/chat, props { panel, head }), which runs whenever a task view shows, shows the host again,
++// and task-browser starts a viewer when the Browser view shows.
++import { layout, terminals, appHome, shared, readTextFile, writeTextFile } from "herdr";
++
++const BROWSER = "tasks-thread-browser", HOST = "tasks-thread-browser-host", VIEW = "tasks-thread-browser-view";
++
++function find(node, id) {
++  if (!node || typeof node !== "object") return null;
++  if (node.id === id) return node;
++  for (const c of node.children ?? []) { const hit = find(c, id); if (hit) return hit; }
++  return null;
++}
++
++function stuck(tree) {
++  if (!find(tree, HOST)?.hidden) return false;
++  const addr = find(tree, VIEW)?.content?.terminal;
++  return !(addr && terminals().some((k) => k.address === addr && k.state === "live"));
++}
++
++let seen = 0;
++// Every few seconds: stuck on two looks in a row (not a viewer that's just starting), then one
++// edit of the layout file, only if it's unchanged since read.
++export async function mendBrowserHost() {
++  if (!stuck(layout())) { seen = 0; return; }
++  if (++seen < 2) return;
++  seen = 0;
++  const path = `${appHome()}/layouts/${shared("layout")}.json`;
++  const text = await readTextFile(path);
++  const tree = JSON.parse(text ?? "null");
++  const col = find(tree, BROWSER), host = find(tree, HOST);
++  if (!col || !host?.hidden || !stuck(tree)) return;
++  delete host.hidden;
++  col.children = (col.children ?? []).filter((c) => c.id !== VIEW);
++  await writeTextFile(path, JSON.stringify(tree, null, 2), text);
++}
