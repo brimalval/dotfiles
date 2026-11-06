@@ -126,6 +126,8 @@ When Herdr moves (watch `PIN=` in `~/.local/bin/herdr-browser`):
 
 ## Starter: Nix flake (untested)
 
+> **Now real:** this starter lives in [`nix/`](../nix/) and is built and checked there. Install, bump and roll back: [nix/README.md](../nix/README.md).
+
 **Untested proposal.** It's written against current docs, but nothing has been built. The hash is real: it's the sha256 of the v0.41.1 `agent-browser-darwin-arm64` release asset, computed today.
 
 ```

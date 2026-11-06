@@ -19,6 +19,11 @@ case ":$PATH:" in
   *) export PATH="$FNM_DIR:$PATH" ;;
 esac
 
+# Pinned agent-browser for herdr-browser, from nix/ (bump: docs/cli-version-management.md#bumping-the-pin).
+if [[ -x "$HOME/.nix-profile/bin/agent-browser" ]]; then
+  export HERDR_BROWSER_BIN="$HOME/.nix-profile/bin/agent-browser"
+fi
+
 # Rust/cargo tools.
 if [[ -r "$HOME/.cargo/env" ]]; then
   . "$HOME/.cargo/env"
