@@ -36,12 +36,16 @@ A flake only sees files git tracks: an untracked new config fails the build with
 4. Dotfile links from home-manager. Done 2026-11-09: stow and the hand-made herdr-app links
    replaced by `links.nix`; `~/.local/bin` is a real folder. starship.toml now lands in `~/.config`, where
    starship reads it. Dead links (alacritty, karabiner, starship variants) dropped; the files stay in the repo.
-5. **macOS settings, fonts, gcloud** ← you are here. Done 2026-11-09: `system.defaults` declares the settings as
+5. macOS settings, fonts, gcloud. Done 2026-11-09: `system.defaults` declares the settings as
    they were (key repeat, dark mode, Dock, Finder, trackpad, Stage Manager); change them in `darwin.nix`, not
    System Settings, or the next switch reverts them. Maple Mono fonts and gcloud (with the GKE auth plugin) come
    from Nix. Postgres stays a Homebrew service on purpose (34 work databases in /opt/homebrew/var/postgresql@18).
    brew's python@3.14 left with the gcloud cask; the virtualenvs that used it were moved to Nix's 3.14.
-6. `homebrew.onActivation.cleanup = "zap"`.
+6. **`homebrew.onActivation.cleanup = "zap"`** ← you are here. Done 2026-11-09. Each switch uninstalls any brew
+   formula, cask or tap not listed in `darwin.nix` (casks also lose their app-support files). The dry run
+   before turning it on removed nothing installed; only stale download caches. Third-party taps must be
+   declared `{ name = ...; trusted = true; }`: Homebrew 7 refuses their casks otherwise, and the cleanup step
+   fails the whole activation (the new generation is registered but `/run/current-system` stays on the old one).
 
 ## First switch (one-off)
 
@@ -81,8 +85,9 @@ sudo darwin-rebuild --rollback                               # back to the previ
 nix flake update --flake ~/Projects/dotfiles/nix             # refresh nixpkgs, nix-darwin, home-manager
 ```
 
-To add a cask or formula: list it in `darwin.nix`, then switch. Installing with `brew install` still works,
-but the tool isn't in the config until you list it.
+To add a cask or formula: list it in `darwin.nix`, then switch. A plain `brew install` works until the next
+switch, which uninstalls it (cleanup = "zap"). Prefer nixpkgs in `home.nix` when the package is there.
+To preview what a switch would remove: `brew bundle cleanup --file=$(grep -o '/nix/store/[^ "]*Brewfile' /run/current-system/activate | head -1)`.
 
 Uninstall nix-darwin: `sudo darwin-uninstaller`. Then restore the `.before-nix-darwin` files.
 

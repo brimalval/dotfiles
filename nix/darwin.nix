@@ -91,15 +91,18 @@
     onActivation = {
       autoUpdate = false;
       upgrade = false;
-      cleanup = "none"; # later: "zap" removes anything not listed here
+      # Phase 6: anything installed with brew but not listed below is uninstalled on the next switch
+      # (casks also lose their app-support files). To keep a new tool, list it here first.
+      cleanup = "zap";
     };
 
     taps = [
-      "nikitabobko/tap" # aerospace
+      # aerospace. Homebrew 7 refuses casks from untrusted third-party taps, and `brew cleanup`
+      # (run by cleanup = "zap") failed on it until the tap itself was marked trusted.
+      { name = "nikitabobko/tap"; trusted = true; }
     ];
 
-    # Phase 2 moved the CLI formulae to home.nix. Removing a line here doesn't uninstall it
-    # (cleanup = "none"); `brew uninstall` does, after the switch.
+    # Everything else comes from Nix (home.nix). Removing a line here uninstalls it on the next switch.
     brews = [
       "railway" # nixpkgs lags far behind (5.30 vs 5.62)
 
