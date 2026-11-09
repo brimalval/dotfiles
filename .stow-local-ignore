@@ -30,3 +30,6 @@ mouseless.*\.config.*
 # Not dotfiles: the Nix flake and docs live in the repo only.
 ^/nix
 ^/docs
+
+# Project-only Claude Code settings; must not land in ~/.claude, where they would apply everywhere.
+^/\.claude/settings\.local\.json

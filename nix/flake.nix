@@ -1,14 +1,15 @@
 {
-  description = "Brian's dotfiles: pinned CLI tools";
+  description = "Brian's dotfiles: nix-darwin + home-manager, and pinned CLI tools";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
-    # Stage 2 (home-manager): uncomment
-    # home-manager.url = "github:nix-community/home-manager";
-    # home-manager.inputs.nixpkgs.follows = "nixpkgs";
+    nix-darwin.url = "github:nix-darwin/nix-darwin/master";
+    nix-darwin.inputs.nixpkgs.follows = "nixpkgs";
+    home-manager.url = "github:nix-community/home-manager";
+    home-manager.inputs.nixpkgs.follows = "nixpkgs";
   };
 
-  outputs = { self, nixpkgs, ... }@inputs:
+  outputs = { self, nixpkgs, nix-darwin, home-manager, ... }@inputs:
     let
       system = "aarch64-darwin";
       pkgs = nixpkgs.legacyPackages.${system};
@@ -20,11 +21,21 @@
         default = self.packages.${system}.agent-browser;
       };
 
-      # Stage 2: standalone home-manager, `home-manager switch --flake ~/Projects/dotfiles/nix#brian`
-      # homeConfigurations.brian = inputs.home-manager.lib.homeManagerConfiguration {
-      #   inherit pkgs;
-      #   extraSpecialArgs = { myPkgs = self.packages.${system}; };
-      #   modules = [ ./home.nix ];
-      # };
+      # sudo darwin-rebuild switch --flake ~/Projects/dotfiles/nix
+      # (darwin-rebuild picks this by hostname: `scutil --get LocalHostName`)
+      darwinConfigurations."Brians-MacBook-Pro" = nix-darwin.lib.darwinSystem {
+        specialArgs = { inherit inputs; myPkgs = self.packages.${system}; };
+        modules = [
+          ./darwin.nix
+          home-manager.darwinModules.home-manager
+          {
+            home-manager.useGlobalPkgs = true;
+            home-manager.useUserPackages = true; # packages land in /etc/profiles/per-user/brian
+            home-manager.backupFileExtension = "before-home-manager";
+            home-manager.extraSpecialArgs = { myPkgs = self.packages.${system}; };
+            home-manager.users.brian = import ./home.nix;
+          }
+        ];
+      };
     };
 }
