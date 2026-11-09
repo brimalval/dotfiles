@@ -44,9 +44,9 @@
     ])
   ];
 
-  # Homebrew, declared. Mirrors `brew list --installed-on-request` and `brew list --cask` on
-  # 2026-11-09. Phase 1 installs what's missing and touches nothing else: no update, no upgrade,
-  # no removal. Phase 2 moves the CLI formulae into home.nix one batch at a time.
+  # Homebrew, declared. Phase 1 mirrored `brew list --installed-on-request` and the casks on
+  # 2026-11-09; phase 2 moved the CLI formulae to home.nix. Activation installs what's missing and
+  # touches nothing else: no update, no upgrade, no removal.
   homebrew = {
     enable = true;
     onActivation = {
@@ -56,46 +56,13 @@
     };
 
     taps = [
-      "hashicorp/tap"
-      "morantron/tmux-fingers"
-      "nats-io/nats-tools"
-      "nikitabobko/tap"
+      "nikitabobko/tap" # aerospace
     ];
 
+    # Phase 2 moved the CLI formulae to home.nix. Removing a line here doesn't uninstall it
+    # (cleanup = "none"); `brew uninstall` does, after the switch.
     brews = [
-      # Phase 2 candidates: all in nixpkgs.
-      "actionlint"
-      "blueutil"
-      "chafa"
-      "cloudflared"
-      "eza"
-      "ffmpeg"
-      "flyctl"
-      "fzf"
-      "gh"
-      "git-filter-repo"
-      "hashicorp/tap/terraform" # nixpkgs: unfree (allowed above)
-      "helm"
-      "imagemagick"
-      "lazygit"
-      "libfaketime"
-      "nats-io/nats-tools/nats"
-      "nats-server"
-      "neovim"
-      "openjdk@17"
-      "poppler"
-      "railway"
-      "ripgrep"
-      "starship"
-      "stow" # goes away in phase 4
-      "tmux"
-      "morantron/tmux-fingers/tmux-fingers" # nixpkgs: tmuxPlugins.fingers
-      "tree-sitter"
-      "tree-sitter-cli"
-      "uv"
-      "whisper.cpp"
-      "yazi"
-      "zoxide"
+      "railway" # nixpkgs lags far behind (5.30 vs 5.62)
 
       # Phase 3 removes it, along with rustup and the other version managers (see README).
       "fnm"

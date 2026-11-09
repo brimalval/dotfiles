@@ -1,10 +1,5 @@
-if [[ -d /opt/homebrew/bin ]]; then
-  export PATH="/opt/homebrew/bin:$PATH"
-fi
-
-if [[ -d /usr/local/bin ]]; then
-  export PATH="/usr/local/bin:$PATH"
-fi
+# Homebrew and /usr/local/bin are on PATH from nix-darwin's /etc/zshenv, after the Nix profiles.
+# Don't prepend them here, or Homebrew's copies shadow the Nix ones.
 
 if [[ -d "/System/Volumes/Data/Applications/neovide.app/Contents/MacOS" ]]; then
   export PATH="/System/Volumes/Data/Applications/neovide.app/Contents/MacOS:$PATH"
@@ -12,12 +7,6 @@ fi
 
 if [[ -d "$HOME/.spicetify" && ":$PATH:" != *":$HOME/.spicetify:"* ]]; then
   export PATH="$HOME/.spicetify:$PATH"
-fi
-
-MAGICK_HOME="/opt/homebrew/opt/imagemagick"
-export MAGICK_HOME
-if [[ -d "$MAGICK_HOME/bin" ]]; then
-  export PATH="$MAGICK_HOME/bin:$PATH"
 fi
 
 if command -v ngrok >/dev/null 2>&1; then

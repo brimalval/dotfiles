@@ -5,17 +5,18 @@
 
 | File | Layer | Owns today |
 |---|---|---|
-| `darwin.nix` | nix-darwin (system) | `/etc/zsh*` and `/etc/bashrc`, system PATH, the Homebrew list (taps, formulae, casks) |
-| `home.nix` | home-manager (user), run inside nix-darwin | nothing yet: wired up, empty |
+| `darwin.nix` | nix-darwin (system) | `/etc/zsh*` and `/etc/bashrc`, system PATH, what's left on Homebrew (casks, railway, docker, postgres, fnm) |
+| `home.nix` | home-manager (user), run inside nix-darwin | CLI packages, the tmux-fingers snippet |
 | `pkgs/agent-browser.nix` | own package | agent-browser pinned for Herdr, installed with `nix profile` |
 
 stow still places the dotfiles and never links this folder into `~` (`^/nix` in `.stow-local-ignore`).
 
 ## Migration phases
 
-1. **nix-darwin with no visible change** ← you are here. Homebrew is declared but not otherwise touched.
-2. CLI formulae move from `homebrew.brews` to `home.packages`, a batch at a time. Before this phase,
-   remove the `/opt/homebrew/bin` prepend in `.zshrc.mac`, or Homebrew's copies win in interactive shells.
+1. nix-darwin with no visible change. Done 2026-11-09.
+2. **CLI formulae move from `homebrew.brews` to `home.packages`** ← you are here. 30 formulae moved; railway
+   stays on brew (nixpkgs lags far behind). `.zshrc.mac` no longer puts Homebrew first. tmux-fingers loads
+   from Nix via `~/.local/share/tmux/nix-plugins.conf`, sourced at the end of `.tmux.conf`.
 3. Retire version managers. Nix supplies the default toolchains, and each project's devShell (loaded by
    nix-direnv) supplies its own versions:
    - fnm goes (brew formula and its setup in `.zshenv`, `.zshrc`, `.zshrc.common`, the `.nvmrc` hook in
@@ -23,7 +24,7 @@ stow still places the dotfiles and never links this folder into `~` (`^/nix` in 
    - rustup goes (`~/.rustup`, `~/.cargo`, `.zshenv`'s `.cargo/env`). Rust comes from nixpkgs, and
      `rust-overlay` in a devShell handles a project that pins a toolchain. Cargo-installed tools like `tms`
      move to nixpkgs.
-   - pyenv's leftover setup in `.zshrc.common` is deleted (pyenv isn't installed).
+   - pyenv's and pgenv's leftover setup in `.zshrc.common` is deleted (neither is installed).
    - bun's own install in `~/.bun` is replaced by `pkgs.bun`.
    - uv stays for packages and venvs, but stops downloading Pythons (`UV_PYTHON_DOWNLOADS=never`). Python
      comes from Nix. Its downloaded interpreters (3.8, 3.12, 3.13) and `~/.local/bin/python3.8` are removed.
