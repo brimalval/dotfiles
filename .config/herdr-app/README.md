@@ -1,16 +1,13 @@
 # herdr-app
 
-Pieces of `~/.config/herdr-app` kept in dotfiles. Each is symlinked in place:
+Pieces of `~/.config/herdr-app` kept in dotfiles: `settings.json`, `keys.json`,
+`layouts/my-main.json`, `themes/rose-pine-moon.json`, `mods/nvim-nav` and
+`mods/lazygit-popup`. home-manager links each one in place (`nix/links.nix`);
+the rest of the folder stays Herdr's.
 
-```sh
-cd ~/.config/herdr-app
-ln -sfn ~/Projects/dotfiles/.config/herdr-app/settings.json settings.json
-ln -sfn ~/Projects/dotfiles/.config/herdr-app/keys.json keys.json
-ln -sfn ~/Projects/dotfiles/.config/herdr-app/layouts/my-main.json layouts/my-main.json
-```
-
-Re-run these after a fresh install, or after `shepherdr uninstall` (it
-rewrites `keys.json` as a plain file).
+After a fresh install, or after `shepherdr uninstall` (it rewrites `keys.json`
+as a plain file), run `sudo darwin-rebuild switch --flake ~/Projects/dotfiles/nix`.
+home-manager moves a plain file aside as `*.before-home-manager` and links the repo's copy.
 
 `layouts/shepherdr.json` is **not** kept here: it's a plain file owned by
 Herdr/Shepherdr, and the Tasks panel mods rewrite it at runtime (which

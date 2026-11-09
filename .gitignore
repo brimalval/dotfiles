@@ -9,7 +9,7 @@ nvim/dictionary/
 .config/opencode/.opencode/
 .config/opencode/.ocx/
 *.migrations.json
-# herdr runtime state (the folder is stowed whole, so herdr writes these into the repo)
+# herdr runtime state, if herdr ever writes it next to the linked config.toml
 .config/herdr/*.sock
 .config/herdr/*.sock.agent
 .config/herdr/*.log
@@ -21,5 +21,5 @@ nvim/dictionary/
 # Claude Code mods: types the engine regenerates on load
 .claude/mods/*/.claude-plugin/types/
 
-# Project-only Claude Code settings for this repo (not for ~/.claude)
+# Project-only Claude Code settings for this repo
 .claude/settings.local.json

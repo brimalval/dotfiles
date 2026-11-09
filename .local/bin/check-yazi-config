@@ -1,0 +1,13 @@
+#!/bin/sh
+
+set -eu
+
+if ! command -v ya >/dev/null 2>&1; then
+	echo "check-yazi-config: ya is not installed or not on PATH" >&2
+	exit 127
+fi
+
+# `ya env` loads and validates Yazi's configuration and installed flavors.
+# Keep its output attached to the terminal; Yazi uses it for capability checks.
+ya env
+echo "Yazi configuration is valid."

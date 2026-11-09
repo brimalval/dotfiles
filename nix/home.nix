@@ -1,9 +1,11 @@
 # User layer (home-manager, run inside nix-darwin).
 # Packages land in /etc/profiles/per-user/brian/bin, ahead of Homebrew on PATH.
-# Dotfiles are still placed by stow until phase 4.
+# Dotfile links: links.nix (phase 4; stow is retired).
 { pkgs, myPkgs, ... }:
 
 {
+  imports = [ ./links.nix ];
+
   home.username = "brian";
   home.homeDirectory = "/Users/brian";
   home.stateVersion = "26.11"; # set once at first install; don't bump
@@ -16,7 +18,6 @@
     fzf
     zoxide
     yazi
-    stow # goes away in phase 4
 
     # editor and terminal
     neovim

@@ -5,18 +5,26 @@
 
 | File | Layer | Owns today |
 |---|---|---|
-| `darwin.nix` | nix-darwin (system) | `/etc/zsh*` and `/etc/bashrc`, system PATH, what's left on Homebrew (casks, railway, docker, postgres, fnm) |
-| `home.nix` | home-manager (user), run inside nix-darwin | CLI packages, the tmux-fingers snippet |
+| `darwin.nix` | nix-darwin (system) | `/etc/zsh*` and `/etc/bashrc`, system PATH, what's left on Homebrew (casks, railway, docker, postgres) |
+| `home.nix` | home-manager (user), run inside nix-darwin | CLI packages and toolchains, session variables, direnv, the tmux-fingers snippet |
+| `links.nix` | home-manager | every dotfile link, pointing back into this checkout |
 | `pkgs/agent-browser.nix` | own package | agent-browser pinned for Herdr, installed with `nix profile` |
 
-stow still places the dotfiles and never links this folder into `~` (`^/nix` in `.stow-local-ignore`).
+## Dotfile links
+
+`links.nix` lists every link. Each points back into this checkout (`mkOutOfStoreSymlink`), so edits take
+effect at once and apps can write to their config. To add one, add a line, `git add` the file, and switch.
+To remove one, delete the line and switch; home-manager removes the link. Every git-tracked file in
+`.local/bin` is linked into a real `~/.local/bin` automatically.
+
+A flake only sees files git tracks: an untracked new config fails the build with "file not found".
 
 ## Migration phases
 
 1. nix-darwin with no visible change. Done 2026-11-09.
 2. CLI formulae move from `homebrew.brews` to `home.packages`. Done 2026-11-09: 30 formulae; railway stays on
    brew (nixpkgs lags far behind). tmux-fingers loads from `~/.local/share/tmux/nix-plugins.conf`.
-3. **Retire version managers** ← you are here. No fnm, rustup, pyenv, pgenv, rv, bun installer or uv-downloaded
+3. Retire version managers. Done 2026-11-09. No fnm, rustup, pyenv, pgenv, rv, bun installer or uv-downloaded
    Pythons. `home.nix` has the defaults: Node 26, pnpm 11, bun, Python 3.14, uv, Rust (rustc, cargo, clippy,
    rustfmt, rust-analyzer) and `tms`. `home.sessionVariables` reach every shell through `~/.zshenv`
    (`UV_PYTHON_DOWNLOADS=never`, `RUST_SRC_PATH`, `NPM_CONFIG_PREFIX`). For other versions in a project:
@@ -25,8 +33,9 @@ stow still places the dotfiles and never links this folder into `~` (`^/nix` in 
    # edit the versions in flake.nix, then:
    direnv allow
    ```
-4. Dotfiles: stow replaced by `home.file` / `xdg.configFile` with `mkOutOfStoreSymlink` (edits stay live).
-   `~/.local/bin` becomes a real directory again.
+4. **Dotfile links from home-manager** ← you are here. Done 2026-11-09: stow and the hand-made herdr-app links
+   replaced by `links.nix`; `~/.local/bin` is a real folder. starship.toml now lands in `~/.config`, where
+   starship reads it. Dead links (alacritty, karabiner, starship variants) dropped; the files stay in the repo.
 5. `system.defaults`, fonts, launchd services (postgres last).
 6. `homebrew.onActivation.cleanup = "zap"`.
 
