@@ -44,6 +44,45 @@
     ])
   ];
 
+  # macOS settings, declared exactly as they were on 2026-11-09 (phase 5): switching changes nothing
+  # on screen, and a new Mac comes out the same. Change them here, not in System Settings, or the
+  # next switch puts them back.
+  system.defaults = {
+    NSGlobalDomain = {
+      KeyRepeat = 2;
+      InitialKeyRepeat = 25;
+      AppleInterfaceStyle = "Dark";
+      "com.apple.swipescrolldirection" = false; # natural scrolling off
+      NSAutomaticCapitalizationEnabled = true;
+      NSAutomaticPeriodSubstitutionEnabled = true;
+    };
+    dock = {
+      autohide = true;
+      tilesize = 60;
+      wvous-br-corner = 14; # bottom-right hot corner: Quick Note
+    };
+    finder = {
+      FXPreferredViewStyle = "clmv"; # column view
+      ShowExternalHardDrivesOnDesktop = true;
+    };
+    WindowManager = {
+      GloballyEnabled = false; # Stage Manager off
+      EnableTiledWindowMargins = false;
+    };
+    trackpad = {
+      Clicking = false; # tap to click off
+      TrackpadRightClick = true;
+      TrackpadThreeFingerDrag = false;
+    };
+  };
+
+  # Fonts land in /Library/Fonts/Nix Fonts. Same family names as the old casks, so terminal and
+  # editor configs don't change.
+  fonts.packages = [
+    pkgs.maple-mono.variable # was cask font-maple-mono
+    pkgs.maple-mono.NF # was cask font-maple-mono-nf
+  ];
+
   # Homebrew, declared. Phase 1 mirrored `brew list --installed-on-request` and the casks on
   # 2026-11-09; phase 2 moved the CLI formulae to home.nix. Activation installs what's missing and
   # touches nothing else: no update, no upgrade, no removal. Phase 3 dropped fnm.
@@ -75,9 +114,6 @@
     casks = [
       "aerospace"
       "android-commandlinetools"
-      "font-maple-mono"
-      "font-maple-mono-nf"
-      "gcloud-cli"
       "google-chrome"
       "mouseless@preview"
     ];

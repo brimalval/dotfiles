@@ -39,6 +39,7 @@
     whisper-cpp
 
     # cloud and infra
+    (google-cloud-sdk.withExtraComponents [ google-cloud-sdk.components.gke-gcloud-auth-plugin ]) # was cask gcloud-cli
     cloudflared
     flyctl
     terraform # unfree (BSL); allowed in darwin.nix

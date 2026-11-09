@@ -33,10 +33,14 @@ A flake only sees files git tracks: an untracked new config fails the build with
    # edit the versions in flake.nix, then:
    direnv allow
    ```
-4. **Dotfile links from home-manager** ← you are here. Done 2026-11-09: stow and the hand-made herdr-app links
+4. Dotfile links from home-manager. Done 2026-11-09: stow and the hand-made herdr-app links
    replaced by `links.nix`; `~/.local/bin` is a real folder. starship.toml now lands in `~/.config`, where
    starship reads it. Dead links (alacritty, karabiner, starship variants) dropped; the files stay in the repo.
-5. `system.defaults`, fonts, launchd services (postgres last).
+5. **macOS settings, fonts, gcloud** ← you are here. Done 2026-11-09: `system.defaults` declares the settings as
+   they were (key repeat, dark mode, Dock, Finder, trackpad, Stage Manager); change them in `darwin.nix`, not
+   System Settings, or the next switch reverts them. Maple Mono fonts and gcloud (with the GKE auth plugin) come
+   from Nix. Postgres stays a Homebrew service on purpose (34 work databases in /opt/homebrew/var/postgresql@18).
+   brew's python@3.14 left with the gcloud cask; the virtualenvs that used it were moved to Nix's 3.14.
 6. `homebrew.onActivation.cleanup = "zap"`.
 
 ## First switch (one-off)
@@ -81,6 +85,16 @@ To add a cask or formula: list it in `darwin.nix`, then switch. Installing with 
 but the tool isn't in the config until you list it.
 
 Uninstall nix-darwin: `sudo darwin-uninstaller`. Then restore the `.before-nix-darwin` files.
+
+## Python virtualenvs after a Python update
+
+Virtualenvs record the interpreter path. uv-made ones point at `/etc/profiles/per-user/brian/bin` and keep
+working across patch releases; a new minor (3.14 → 3.15) needs `uv sync` (or `uv venv --allow-existing`).
+gcloud's own virtualenv points at gcloud's exact Nix Python, so after `nix flake update` and a switch run:
+
+```sh
+gcloud config virtualenv delete --quiet && gcloud config virtualenv create
+```
 
 ## agent-browser pin
 
