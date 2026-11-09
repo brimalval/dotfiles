@@ -37,15 +37,3 @@ function addSshKeysToAgent() {
 
   echo "ssh keys added to ssh agent."
 }
-
-_mac_fnm_use_from_nvmrc() {
-  if [[ -f .nvmrc ]] && command -v fnm >/dev/null 2>&1; then
-    fnm use
-  fi
-}
-
-if command -v fnm >/dev/null 2>&1; then
-  _mac_fnm_use_from_nvmrc
-  autoload -Uz add-zsh-hook
-  add-zsh-hook chpwd _mac_fnm_use_from_nvmrc
-fi

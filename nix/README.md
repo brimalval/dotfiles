@@ -14,21 +14,17 @@ stow still places the dotfiles and never links this folder into `~` (`^/nix` in 
 ## Migration phases
 
 1. nix-darwin with no visible change. Done 2026-11-09.
-2. **CLI formulae move from `homebrew.brews` to `home.packages`** ← you are here. 30 formulae moved; railway
-   stays on brew (nixpkgs lags far behind). `.zshrc.mac` no longer puts Homebrew first. tmux-fingers loads
-   from Nix via `~/.local/share/tmux/nix-plugins.conf`, sourced at the end of `.tmux.conf`.
-3. Retire version managers. Nix supplies the default toolchains, and each project's devShell (loaded by
-   nix-direnv) supplies its own versions:
-   - fnm goes (brew formula and its setup in `.zshenv`, `.zshrc`, `.zshrc.common`, the `.nvmrc` hook in
-     `.zshrc.mac`). Node and pnpm come from Nix.
-   - rustup goes (`~/.rustup`, `~/.cargo`, `.zshenv`'s `.cargo/env`). Rust comes from nixpkgs, and
-     `rust-overlay` in a devShell handles a project that pins a toolchain. Cargo-installed tools like `tms`
-     move to nixpkgs.
-   - pyenv's and pgenv's leftover setup in `.zshrc.common` is deleted (neither is installed).
-   - bun's own install in `~/.bun` is replaced by `pkgs.bun`.
-   - uv stays for packages and venvs, but stops downloading Pythons (`UV_PYTHON_DOWNLOADS=never`). Python
-     comes from Nix. Its downloaded interpreters (3.8, 3.12, 3.13) and `~/.local/bin/python3.8` are removed.
-   - A devShell template goes in this flake: `nix flake init -t ~/Projects/dotfiles/nix#node`.
+2. CLI formulae move from `homebrew.brews` to `home.packages`. Done 2026-11-09: 30 formulae; railway stays on
+   brew (nixpkgs lags far behind). tmux-fingers loads from `~/.local/share/tmux/nix-plugins.conf`.
+3. **Retire version managers** ← you are here. No fnm, rustup, pyenv, pgenv, rv, bun installer or uv-downloaded
+   Pythons. `home.nix` has the defaults: Node 26, pnpm 11, bun, Python 3.14, uv, Rust (rustc, cargo, clippy,
+   rustfmt, rust-analyzer) and `tms`. `home.sessionVariables` reach every shell through `~/.zshenv`
+   (`UV_PYTHON_DOWNLOADS=never`, `RUST_SRC_PATH`, `NPM_CONFIG_PREFIX`). For other versions in a project:
+   ```sh
+   nix flake init -t ~/Projects/dotfiles/nix#node   # or #rust (reads rust-toolchain.toml)
+   # edit the versions in flake.nix, then:
+   direnv allow
+   ```
 4. Dotfiles: stow replaced by `home.file` / `xdg.configFile` with `mkOutOfStoreSymlink` (edits stay live).
    `~/.local/bin` becomes a real directory again.
 5. `system.defaults`, fonts, launchd services (postgres last).

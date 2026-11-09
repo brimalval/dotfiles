@@ -46,7 +46,7 @@
 
   # Homebrew, declared. Phase 1 mirrored `brew list --installed-on-request` and the casks on
   # 2026-11-09; phase 2 moved the CLI formulae to home.nix. Activation installs what's missing and
-  # touches nothing else: no update, no upgrade, no removal.
+  # touches nothing else: no update, no upgrade, no removal. Phase 3 dropped fnm.
   homebrew = {
     enable = true;
     onActivation = {
@@ -63,9 +63,6 @@
     # (cleanup = "none"); `brew uninstall` does, after the switch.
     brews = [
       "railway" # nixpkgs lags far behind (5.30 vs 5.62)
-
-      # Phase 3 removes it, along with rustup and the other version managers (see README).
-      "fnm"
 
       # Staying on brew for now.
       "docker" # CLI for Docker Desktop

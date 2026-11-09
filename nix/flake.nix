@@ -21,6 +21,12 @@
         default = self.packages.${system}.agent-browser;
       };
 
+      # Per-project devShells: `nix flake init -t ~/Projects/dotfiles/nix#node` (or #rust), then `direnv allow`.
+      templates = {
+        node = { path = ./templates/node; description = "Node + pnpm devShell, loaded by direnv"; };
+        rust = { path = ./templates/rust; description = "Rust devShell from rust-toolchain.toml (rust-overlay)"; };
+      };
+
       # sudo darwin-rebuild switch --flake ~/Projects/dotfiles/nix
       # (darwin-rebuild picks this by hostname: `scutil --get LocalHostName`)
       darwinConfigurations."Brians-MacBook-Pro" = nix-darwin.lib.darwinSystem {

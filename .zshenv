@@ -4,29 +4,15 @@ case ":$PATH:" in
   *) export PATH="$HOME/.local/bin:$PATH" ;;
 esac
 
-# FNM for non-interactive shells. Uses the default Node alias only.
-export FNM_DIR="${FNM_DIR:-$HOME/.local/share/fnm}"
-
-if [[ -d "$FNM_DIR/aliases/default/bin" ]]; then
-  case ":$PATH:" in
-    *:"$FNM_DIR/aliases/default/bin":*) ;;
-    *) export PATH="$FNM_DIR/aliases/default/bin:$PATH" ;;
-  esac
+# Variables and PATH entries from home-manager (nix/home.nix: home.sessionVariables / sessionPath),
+# for every shell, interactive or not. Node, Rust, Python and bun come from Nix: no version managers.
+if [[ -r "/etc/profiles/per-user/$USER/etc/profile.d/hm-session-vars.sh" ]]; then
+  . "/etc/profiles/per-user/$USER/etc/profile.d/hm-session-vars.sh"
 fi
-
-case ":$PATH:" in
-  *:"$FNM_DIR":*) ;;
-  *) export PATH="$FNM_DIR:$PATH" ;;
-esac
 
 # Pinned agent-browser for herdr-browser, from nix/ (bump: docs/cli-version-management.md#bumping-the-pin).
 if [[ -x "$HOME/.nix-profile/bin/agent-browser" ]]; then
   export HERDR_BROWSER_BIN="$HOME/.nix-profile/bin/agent-browser"
-fi
-
-# Rust/cargo tools.
-if [[ -r "$HOME/.cargo/env" ]]; then
-  . "$HOME/.cargo/env"
 fi
 
 # Default editor for non-interactive tools that need one.

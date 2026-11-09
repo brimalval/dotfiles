@@ -42,9 +42,6 @@ alias pnpx="pnpm dlx"
 alias gyatt="git"
 
 # Paths
-export BUN_INSTALL="$HOME/.bun"
-export PATH="$BUN_INSTALL/bin:$PATH"
-export PATH="$HOME/.pgenv/bin:$HOME/.pgenv/pgsql/bin:$PATH"
 export PATH="$HOME/.opencode/bin:$PATH"
 export PATH="$HOME/.sst/bin:$PATH"
 if [[ -n "${PNPM_HOME:-}" ]]; then
@@ -60,21 +57,9 @@ export EDITOR="nvim"
 export ECC_HOOK_PROFILE="minimal"
 export ECC_SESSION_START_MAX_CHARS=4000
 
-export PYENV_ROOT="$HOME/.pyenv"
-if [[ -d "$PYENV_ROOT/bin" ]]; then
-  export PATH="$PYENV_ROOT/bin:$PATH"
-fi
-if command -v pyenv >/dev/null 2>&1; then
-  eval "$(pyenv init -)"
-fi
-
 export DOCKER_DEFAULT_PLATFORM=linux/amd64
 
 # Tool inits and completions
-if [[ -n "$BUN_INSTALL" && -s "$BUN_INSTALL/_bun" ]]; then
-  source "$BUN_INSTALL/_bun"
-fi
-
 if command -v ng >/dev/null 2>&1; then
   source <(ng completion script)
 fi
@@ -91,28 +76,3 @@ if command -v zoxide >/dev/null 2>&1; then
   eval "$(zoxide init zsh)"
 fi
 
-fnm_paths=(
-  "$HOME/.local/share/fnm"
-  "$HOME/.fnm"
-  "/opt/homebrew/bin"
-)
-
-if ! command -v fnm >/dev/null 2>&1; then
-  for fnm_dir in "${fnm_paths[@]}"; do
-    if [[ -d "$fnm_dir" ]]; then
-      case ":$PATH:" in
-        *":$fnm_dir:"*) ;;
-        *) export PATH="$fnm_dir:$PATH" ;;
-      esac
-    fi
-  done
-fi
-
-if command -v fnm >/dev/null 2>&1; then
-  eval "$(fnm env)"
-fi
-
-# check if rv exists, and add completions and init if it does
-rv_version="$(rv --version 2>/dev/null)"
-[[ -n "$rv_version" ]] && eval "$(rv shell completions zsh)"
-[[ -n "$rv_version" ]] && eval "$(rv shell init zsh)"
