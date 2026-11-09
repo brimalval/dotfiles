@@ -39,8 +39,9 @@ for arg in "$@"; do
 done
 
 magick=$(command -v magick || true)
-[[ -z $magick && -x /opt/homebrew/bin/magick ]] && magick=/opt/homebrew/bin/magick
-[[ -n $magick ]] || die "ImageMagick 'magick' not found (brew install imagemagick)"
+# Fallback for a minimal PATH (started from a GUI app): the home-manager profile.
+[[ -z $magick && -x /etc/profiles/per-user/$USER/bin/magick ]] && magick=/etc/profiles/per-user/$USER/bin/magick
+[[ -n $magick ]] || die "ImageMagick 'magick' not found (it's in nix/home.nix; run darwin-rebuild switch)"
 
 if [[ -z $src ]]; then
   src=$(osascript -e 'tell application "System Events" to get picture of desktop 1' 2>/dev/null) \
