@@ -125,5 +125,11 @@
       "google-chrome"
       "mouseless@preview"
     ];
+
+    # Mac App Store apps, installed by `mas` (nix-darwin supplies it). Needs an App Store sign-in.
+    # Unlike brews and casks, zap mode never uninstalls these: removing a line only stops managing it.
+    masApps = {
+      Xcode = 497799835; # iOS builds for tenor-mobile; needs macOS 26.6+
+    };
   };
 }
