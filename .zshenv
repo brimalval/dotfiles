@@ -16,6 +16,7 @@ if [[ -x "$HOME/.nix-profile/bin/agent-browser" ]]; then
 fi
 
 # Default editor for non-interactive tools that need one.
+# Fallbacks for machines without nix-darwin; on the Mac, nix/darwin.nix sets both.
 export EDITOR="${EDITOR:-nvim}"
 export VISUAL="${VISUAL:-$EDITOR}"
 

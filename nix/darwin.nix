@@ -13,6 +13,11 @@
   # system-trusted CA (e.g. a VPN's) keeps working. nix-darwin's default is a nixpkgs bundle.
   environment.variables.NIX_SSL_CERT_FILE = "/etc/nix/macos-keychain.crt";
 
+  # nix-darwin's default is EDITOR=nano, exported from /etc/zshenv before ~/.zshenv runs.
+  # Claude Code's Ctrl+G and git prefer VISUAL, so set both.
+  environment.variables.EDITOR = "nvim";
+  environment.variables.VISUAL = "nvim";
+
   system.primaryUser = "brian"; # homebrew and system.defaults act as this user
   users.users.brian.home = "/Users/brian";
 
