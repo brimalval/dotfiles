@@ -62,12 +62,18 @@
     tmux-sessionizer # `tms`, was a `cargo install`
 
     # languages and misc
-    jdk17 # brew's openjdk@17 was keg-only and never linked; now `java` is on PATH
     libfaketime
     blueutil
   ];
   # Stays on Homebrew (darwin.nix): railway (nixpkgs is ~30 releases behind), docker, postgresql@18.
   # agent-browser stays in `nix profile` until HERDR_BROWSER_BIN moves; see README.
+
+  # Java 17 on PATH plus JAVA_HOME, which Gradle, Maestro and project scripts look for
+  # (without it, agents conclude there's no JDK and reach for brew's openjdk@17).
+  programs.java = {
+    enable = true;
+    package = pkgs.jdk17;
+  };
 
   # Exported to every shell by ~/.zshenv, which sources hm-session-vars.sh.
   home.sessionVariables = {
