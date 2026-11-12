@@ -75,6 +75,30 @@
     package = pkgs.jdk17;
   };
 
+  # OmniWM (trial, replacing AeroSpace, which crashes on `focus` over floating windows: upstream #1311;
+  # a fix is kept in aerospace/patches/ in case we go back). home-manager runs it from a launchd agent
+  # that starts it at login and restarts it if it exits. AeroSpace stays installed but isn't started:
+  # only one window manager can run at a time.
+  programs.omniwm = {
+    enable = true;
+    # nixpkgs is at 0.7.6; v0.8.0 is the developer's signed, notarized release.
+    package = pkgs.omniwm.overrideAttrs (finalAttrs: _: {
+      version = "0.8.0";
+      src = pkgs.fetchurl {
+        url = "https://github.com/OmniNull/OmniWM/releases/download/v${finalAttrs.version}/OmniWM-v${finalAttrs.version}.zip";
+        hash = "sha256-b3+z4hHeOoPncrExgAaAyz0g1MY4gRofAhIP0iXwPMc=";
+      };
+    });
+    # The whole file, not just our changes: the schema is strict and rejects a partial file.
+    # Started from OmniWM 0.8.0's defaults with AeroSpace habits: Option+H/J/K/L focus (+Shift moves),
+    # Option+F fullscreen, Option+Tab previous workspace, Option+Shift+Q close, Option+Shift+F float,
+    # Option+/ layout, Option+Shift+Tab workspace to the right monitor. Borders off (square; windows are rounded). Workspaces 10 and 11 show as
+    # D and S (names must be numbers) on Option+D / Option+S; Discord and Slack open there.
+    # OmniWM's Settings window rewrites the live file and the next switch puts this one back:
+    # copy changes you want to keep into nix/omniwm/settings.toml.
+    settings = ./omniwm/settings.toml;
+  };
+
   # Exported to every shell by ~/.zshenv, which sources hm-session-vars.sh.
   home.sessionVariables = {
     UV_PYTHON_DOWNLOADS = "never"; # uv uses Nix's Python; no hidden interpreters

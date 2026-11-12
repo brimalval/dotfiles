@@ -1,0 +1,80 @@
+diff --git a/Sources/AppBundle/command/impl/FocusCommand.swift b/Sources/AppBundle/command/impl/FocusCommand.swift
+index 0bc1fdb..e34477e 100644
+--- a/Sources/AppBundle/command/impl/FocusCommand.swift
++++ b/Sources/AppBundle/command/impl/FocusCommand.swift
+@@ -127,24 +127,45 @@ struct FocusCommand: Command {
+     defer {
+         mruBefore?.markAsMostRecentChild()
+     }
+-    var _floatingWindows: [FloatingWindowData] = []
++    // https://github.com/nikitabobko/AeroSpace/issues/1311
++    // Focus commands run in light sessions that aren't serialized, and every AX read below is a suspension point.
++    // Another focus command (fast key repeat, or a refresh from an AX notification) can unbind/rebind these windows,
++    // or reshape the tiling tree, while we wait. So: first do all the AX reads, then touch the tree in one synchronous
++    // pass that re-validates everything it relies on. No awaits between validation, unbind and bind.
++
++    // Phase 1: AX reads only. Don't touch the tree
++    var probes: [FloatingWindowProbe] = []
+     for window in workspace.floatingWindows {
+         // todo bug: we shouldn't access ax api here. What if the window was moved but it wasn't committed to ax yet?
+         guard let center = try? await window.getCenter(.nonCancellable) else { continue }
+-
+-        let tilingParent: TilingContainer
+-        let index: Int
+         if let target = center.coerce(in: workspace.workspaceMonitor.visibleRectPaddedByOuterGaps)?
+             .findWindowRecursively(in: workspace.rootTilingContainer, virtual: true, fullscreenCoversAll: false)
+         {
+             guard let targetCenter = try? await target.getCenter(.nonCancellable) else { continue }
+-            guard let _tilingParent = target.parent as? TilingContainer else { continue }
++            probes.append(FloatingWindowProbe(window: window, center: center, target: target, targetCenter: targetCenter))
++        } else {
++            probes.append(FloatingWindowProbe(window: window, center: center, target: nil, targetCenter: nil))
++        }
++    }
++
++    // Phase 2: synchronous. Re-validate against the tree as it is now, then unbind
++    var _floatingWindows: [FloatingWindowData] = []
++    for probe in probes {
++        let window = probe.window
++        guard window.parent === workspace.floatingWindowsContainer else { continue } // moved by a concurrent session
++
++        let tilingParent: TilingContainer
++        let index: Int
++        if let target = probe.target, let targetCenter = probe.targetCenter {
++            guard let _tilingParent = target.parent as? TilingContainer, _tilingParent.nodeWorkspace === workspace,
++                  let targetIndex = target.ownIndex else { continue }
+             tilingParent = _tilingParent
++            let center = probe.center
+             index = switch tilingParent.layout {
+                 case .tiles:
+                     center.getProjection(tilingParent.orientation) >= targetCenter.getProjection(tilingParent.orientation)
+-                        ? target.ownIndex.orDie() + 1
+-                        : target.ownIndex.orDie()
++                        ? targetIndex + 1
++                        : targetIndex
+                 case .accordion:
+                     center.getProjection(tilingParent.orientation) >= targetCenter.getProjection(tilingParent.orientation)
+                         ? tilingParent.children.count
+@@ -158,7 +179,7 @@ struct FocusCommand: Command {
+         let data = window.unbindFromParent()
+         let floatingWindowData = FloatingWindowData(
+             window: window,
+-            center: center,
++            center: probe.center,
+             tilingParent: tilingParent,
+             adaptiveWeight: data.adaptiveWeight,
+             index: index,
+@@ -183,6 +204,13 @@ struct FocusCommand: Command {
+     }
+ }
+ 
++private struct FloatingWindowProbe {
++    let window: Window
++    let center: CGPoint
++    let target: Window?
++    let targetCenter: CGPoint?
++}
++
+ private struct FloatingWindowData {
+     let window: Window
+     let center: CGPoint

@@ -127,9 +127,14 @@
     ];
 
     # Mac App Store apps, installed by `mas` (nix-darwin supplies it). Needs an App Store sign-in.
-    # Unlike brews and casks, zap mode never uninstalls these: removing a line only stops managing it.
+    # Once this list is non-empty, zap cleanup also tries to uninstall App Store apps NOT listed here
+    # (nix-darwin's docs say otherwise; Homebrew Bundle now does it). List every App Store app you keep.
+    # `mas list` shows what's installed.
     masApps = {
       Xcode = 497799835; # iOS builds for tenor-mobile; needs macOS 26.6+
+      Numbers = 361304891;
+      Pages = 361309726;
+      PDFgear = 6469021132;
     };
   };
 }
