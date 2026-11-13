@@ -760,7 +760,7 @@ binding = "Unassigned"
 id = "moveWindowToMonitor.down"
 
 [[hotkeys]]
-binding = "Option+F"
+binding = "Control+Option+Shift+F"
 id = "toggleFullscreen"
 
 [[hotkeys]]
@@ -936,7 +936,7 @@ binding = "Unassigned"
 id = "cycleWindowSecondarySpanBackward"
 
 [[hotkeys]]
-binding = "Unassigned"
+binding = "Option+F"
 id = "toggleContainerFullPrimarySpan"
 
 [[hotkeys]]
