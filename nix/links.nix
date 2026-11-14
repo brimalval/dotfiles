@@ -4,12 +4,14 @@
 # and apps that write to their config (lazy-lock.json, opencode.json, keys.json) keep working.
 # The path must be the main checkout: a worktree or a relative path would break or freeze the links.
 #
-# Adding a file: add a line here, `git add` it, then `sudo darwin-rebuild switch --flake ~/Projects/dotfiles/nix`.
+# Adding a file: add a line here, `git add` it, then switch (Mac: `sudo darwin-rebuild switch --flake ~/Projects/dotfiles/nix`;
+# WSL: `home-manager switch --flake ~/Projects/dotfiles/nix`). Mac-only links sit under `lib.optionalAttrs isDarwin`.
 # Removing one: delete the line and switch; home-manager removes the link.
-{ config, lib, ... }:
+{ config, lib, pkgs, ... }:
 
 let
   repo = "${config.home.homeDirectory}/Projects/dotfiles";
+  isDarwin = pkgs.stdenv.hostPlatform.isDarwin;
   link = path: config.lib.file.mkOutOfStoreSymlink "${repo}/${path}";
 
   # Every git-tracked file in .local/bin, linked one by one into a real ~/.local/bin.
@@ -21,6 +23,8 @@ in
     ".zshenv".source = link ".zshenv";
     ".zshrc".source = link ".zshrc"; # sources .zshrc.common and .zshrc.<platform> from the repo itself
     ".tmux.conf".source = link ".tmux.conf";
+  }
+  // lib.optionalAttrs isDarwin {
     ".aerospace.toml".source = link ".aerospace.toml";
   }
   // lib.genAttrs (map (s: ".local/bin/${s}") scripts) (p: { source = link p; });
@@ -36,7 +40,8 @@ in
     "starship.toml".source = link "starship.toml"; # was linked to ~/starship.toml, which starship never read
     "kitty/kitty.conf".source = link ".config/kitty/kitty.conf";
     "herdr/config.toml".source = link ".config/herdr/config.toml";
-
+  }
+  // lib.optionalAttrs isDarwin {
     # herdr-app: only these pieces. Layouts other than my-main.json are written at runtime by
     # Herdr/Shepherdr and must stay plain files (see .config/herdr-app/README.md).
     "herdr-app/settings.json".source = link ".config/herdr-app/settings.json";

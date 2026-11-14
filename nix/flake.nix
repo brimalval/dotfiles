@@ -1,5 +1,5 @@
 {
-  description = "Brian's dotfiles: nix-darwin + home-manager, and pinned CLI tools";
+  description = "Brian's dotfiles: nix-darwin + home-manager (Mac), home-manager (WSL), and pinned CLI tools";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
@@ -39,9 +39,16 @@
             home-manager.useUserPackages = true; # packages land in /etc/profiles/per-user/brian
             home-manager.backupFileExtension = "before-home-manager";
             home-manager.extraSpecialArgs = { myPkgs = self.packages.${system}; };
-            home-manager.users.brian = import ./home.nix;
+            home-manager.users.brian = import ./home-darwin.nix;
           }
         ];
+      };
+
+      # WSL (Debian, standalone home-manager): home-manager switch -b before-home-manager --flake ~/Projects/dotfiles/nix
+      # (home-manager picks this by "$USER@$(hostname)")
+      homeConfigurations."vaiciel@DESKTOP-SN8SC4G" = home-manager.lib.homeManagerConfiguration {
+        pkgs = nixpkgs.legacyPackages.x86_64-linux;
+        modules = [ ./home-wsl.nix ];
       };
     };
 }

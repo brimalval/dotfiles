@@ -1,11 +1,20 @@
-# Nix: this Mac, declared
+# Nix: this Mac and WSL, declared
 
-This folder describes the whole machine: packages, toolchains, dotfile links, macOS settings and the
-Homebrew list. Edit it, switch, and the Mac matches. How it got this way: [docs/nix-migration.md](../docs/nix-migration.md).
+This folder describes both machines: packages, toolchains, dotfile links, and on the Mac, macOS settings and the
+Homebrew list. Edit it, switch, and the machine matches. How it got this way: [docs/nix-migration.md](../docs/nix-migration.md).
+
+| Machine | How | Switch with |
+|---|---|---|
+| Mac (`Brians-MacBook-Pro`) | nix-darwin, with home-manager inside it | `sudo darwin-rebuild switch --flake ~/Projects/dotfiles/nix` |
+| WSL (`DESKTOP-SN8SC4G`, Debian 12) | standalone home-manager, no sudo | `home-manager switch --flake ~/Projects/dotfiles/nix` |
+
+Most of the setup is shared (`home.nix`); each machine adds its own file (`home-darwin.nix`, `home-wsl.nix`).
+Everything below is about the Mac unless it says WSL; [WSL](#wsl) covers what differs there.
 
 - [Current setup](#current-setup)
 - [Making a change](#making-a-change)
 - [Recipes](#recipes)
+- [WSL](#wsl)
 - [Troubleshooting](#troubleshooting)
 
 ## Current setup
@@ -14,10 +23,11 @@ Homebrew list. Edit it, switch, and the Mac matches. How it got this way: [docs/
 
 | What | From | Declared in |
 |---|---|---|
-| CLI tools (rg, nvim, gh, yazi, tmux, terraform, ...) | nixpkgs | `home.nix` → `home.packages` |
+| CLI tools (rg, nvim, gh, yazi, tmux, ...) | nixpkgs | `home.nix` → `home.packages` |
+| Mac-only tools (media, gcloud, terraform, flyctl, helm, nats, blueutil), OmniWM | nixpkgs | `home-darwin.nix` |
 | Toolchains: Node 26, pnpm 11, bun, Python 3.14, uv, Rust, Java 17 | nixpkgs | `home.nix` |
 | Per-project versions | a devShell in the project, loaded by direnv | the project's `flake.nix` (templates in `templates/`) |
-| gcloud (+ bq, gsutil, GKE auth plugin), Maple Mono fonts | nixpkgs | `home.nix`, `darwin.nix` → `fonts.packages` |
+| gcloud (+ bq, gsutil, GKE auth plugin), Maple Mono fonts | nixpkgs | `home-darwin.nix`, `darwin.nix` → `fonts.packages` |
 | Dotfiles (`~/.zshrc`, `~/.config/nvim`, ...) | links back into this checkout | `links.nix` |
 | Scripts in `~/.local/bin` | every git-tracked file in `../.local/bin`, linked | `links.nix` (automatic) |
 | macOS settings (key repeat, Dock, Finder, trackpad, ...) | nix-darwin | `darwin.nix` → `system.defaults` |
@@ -31,11 +41,13 @@ Homebrew list. Edit it, switch, and the Mac matches. How it got this way: [docs/
 
 | File | What it holds |
 |---|---|
-| `flake.nix` | Inputs (nixpkgs, nix-darwin, home-manager), the system for `Brians-MacBook-Pro`, packages, templates |
+| `flake.nix` | Inputs (nixpkgs, nix-darwin, home-manager), the Mac system, the WSL home config, packages, templates |
 | `flake.lock` | The exact version of every input. `nix flake update` moves it |
 | `darwin.nix` | System layer: `/etc` shell files, PATH, `system.defaults`, fonts, the Homebrew list |
-| `home.nix` | User layer: packages, session variables, direnv, the tmux-fingers snippet |
-| `links.nix` | Every dotfile link |
+| `home.nix` | User layer shared by both machines: packages, toolchains, session variables, direnv, the tmux-fingers snippet |
+| `home-darwin.nix` | Mac-only user layer: user `brian`, Mac-only packages, OmniWM |
+| `home-wsl.nix` | WSL-only user layer: user `vaiciel`, `targets.genericLinux` |
+| `links.nix` | Every dotfile link (Mac-only ones under `lib.optionalAttrs isDarwin`) |
 | `pkgs/` | Own packages (agent-browser) |
 | `templates/` | devShell templates: `node`, `rust` |
 
@@ -97,7 +109,7 @@ That checks the active config. For an edited one, build first and point at
 
 Find it: `nix search --inputs-from ~/Projects/dotfiles/nix nixpkgs <name>` (or
 [search.nixos.org](https://search.nixos.org/packages)). `--inputs-from` searches the nixpkgs this flake has
-locked, which is what a switch installs. Then add the attribute to `home.packages` in `home.nix` and switch.
+locked, which is what a switch installs. Then add the attribute to `home.packages` in `home.nix` (both machines) or `home-darwin.nix` / `home-wsl.nix` (one machine) and switch.
 Removing: delete the line and switch; it leaves PATH.
 
 ```nix
@@ -251,6 +263,45 @@ brew cleanup                                         # Homebrew's download cache
 9. Herdr: install it, then `herdr-wallpaper` and `herdr-layout-look` (see `.config/herdr-app/README.md`).
 
 To remove nix-darwin entirely: `sudo darwin-uninstaller`, then move the `.before-nix-darwin` files back.
+
+## WSL
+
+Standalone home-manager on Debian, sharing `home.nix` with the Mac. No nix-darwin, so no Homebrew list, no
+system settings and no sudo for a switch.
+
+```sh
+cd ~/Projects/dotfiles
+$EDITOR nix/home.nix                                        # shared; or nix/home-wsl.nix for WSL only
+git add -A nix
+home-manager build --flake ./nix                            # optional: build only
+home-manager switch --flake ./nix                           # apply (picks "$USER@$(hostname)")
+exec zsh
+```
+
+Undo: `home-manager generations`, then run the `activate` script of the one you want
+(`/nix/store/...-home-manager-generation/activate`).
+
+What differs from the Mac:
+
+- **Packages land in `~/.nix-profile/bin`**, and home-manager's variables in
+  `~/.nix-profile/etc/profile.d/hm-session-vars.sh`. `.zshenv` loads whichever of the two locations exists.
+- **Nix on PATH for every shell.** The installer only hooks interactive shells (`/etc/zsh/zshrc`), so `.zshenv`
+  sources `nix-daemon.sh` on Linux when `/nix/var/nix/profiles/default/bin` isn't on PATH yet. It checks PATH, not
+  the script's own `__ETC_PROFILE_NIX_SOURCED` guard: child processes inherit the guard even after rebuilding PATH.
+- **Fewer packages**: the core CLI tools and toolchains only. Mac-only tools live in `home-darwin.nix`; to
+  add one to WSL, add it to `home-wsl.nix` (or move it to `home.nix` for both).
+- **Docker** comes from Docker Desktop on Windows; `.zshrc.wsl` puts its CLI on PATH.
+- **Not linked on WSL**: `.aerospace.toml` and the herdr-app pieces.
+
+### Set up WSL from scratch
+
+1. Turn on systemd in `/etc/wsl.conf` (`[boot]` → `systemd=true`), then `wsl --shutdown` from Windows.
+2. Install Nix: `curl -fsSL https://install.determinate.systems/nix | sh -s -- install`
+3. Clone this repo to exactly `~/Projects/dotfiles`.
+4. If the user or hostname differs, add a `homeConfigurations."<user>@<host>"` entry in `flake.nix` and set
+   `home.username` / `home.homeDirectory` in `home-wsl.nix`.
+5. First switch, moving existing dotfiles aside as `*.before-home-manager`:
+   `nix run home-manager -- switch -b before-home-manager --flake ~/Projects/dotfiles/nix`
 
 ## Troubleshooting
 
