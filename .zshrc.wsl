@@ -51,3 +51,19 @@ _wsl_imgpaste() {
 }
 zle -N _wsl_imgpaste
 bindkey -M viins '\ev' _wsl_imgpaste
+
+# Toolchains. The Mac gets these from Nix (nix/home.nix); WSL has no Nix yet.
+[[ -r "$HOME/.cargo/env" ]] && . "$HOME/.cargo/env"
+
+export BUN_INSTALL="$HOME/.bun"
+[[ -d "$BUN_INSTALL/bin" ]] && export PATH="$BUN_INSTALL/bin:$PATH"
+[[ -s "$BUN_INSTALL/_bun" ]] && source "$BUN_INSTALL/_bun"
+
+export FNM_DIR="$HOME/.local/share/fnm"
+[[ -d "$FNM_DIR" ]] && export PATH="$FNM_DIR:$PATH"
+command -v fnm >/dev/null 2>&1 && eval "$(fnm env --use-on-cd --shell zsh)"
+
+# Docker Desktop's Windows-side CLI.
+_docker_bin="/mnt/c/Program Files/Docker/Docker/resources/bin"
+[[ -d "$_docker_bin" ]] && export PATH="$_docker_bin:$PATH"
+unset _docker_bin
