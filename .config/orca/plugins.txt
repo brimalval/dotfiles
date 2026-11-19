@@ -1,0 +1,15 @@
+# Orca plugins this setup wants. `orca-plugins sync` installs whichever are missing.
+# One catalog id (publisher.id) per line; text after # is a comment.
+# Orca keeps its own record in ~/Library/Application Support/orca/plugins/plugins.lock.json and
+# rewrites it at runtime, so that file is never linked; this list is the portable part.
+# Plugins that run code ask for approval on each machine (the script shows the access and asks).
+
+# Look
+stablyai.orca-rose-pine-theme      # official rose-pine app + terminal themes
+stablyai.orca-minimal-icons        # official monochrome file icons
+dohaidang.wallpaper-studio         # code: own picture behind translucent terminals; needs Python with Pillow
+
+# Workflow
+joneszeng.orchestra                # code: live orchestration DAG, workers, decision gates
+bautistapessagno.linear-issues     # code: Linear issues via Orca's own Linear connection
+pierreb40.claude-memory            # code: audits Claude Code memories for stale entries

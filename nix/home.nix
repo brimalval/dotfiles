@@ -34,7 +34,9 @@
     nodejs_26
     pnpm_11 # pnpm 12 is nixpkgs' default; 11 avoids a lockfile-format bump
     bun
-    python3 # 3.14, same minor as the brew python@3.14 that gcloud-cli keeps
+    # 3.14, same minor as the brew python@3.14 that gcloud-cli keeps.
+    # Pillow is for Orca's wallpaper-studio plugin, which shells out to python3 -I.
+    (python3.withPackages (ps: [ ps.pillow ]))
     uv # packages and venvs only; Python comes from here or a devShell (UV_PYTHON_DOWNLOADS below)
     rustc
     cargo

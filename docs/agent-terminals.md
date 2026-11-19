@@ -45,3 +45,29 @@ Requirements it was judged on:
 - **Rex**: closed beta whose macOS client isn't packaged for Nix. Revisit at 1.0.
 - **Fallbacks**: Ghostty + tmux, or Zellij. Both are fully declarative.
 - **Wound down**: Conductor (Cloud off 2026-11-20). Crystal is deprecated.
+
+## Working in Orca
+
+How sessions are laid out day to day (set 2026-11-13). The coordinator rules themselves are in `.claude/global/CLAUDE.md`, linked to `~/.claude/CLAUDE.md`.
+
+**Rule of thumb:** a session that changes code or commits gets its own worktree; one that only reads, plans or answers stays in the main checkout.
+
+| Session | Where |
+|---|---|
+| Coordinator: plans, writes briefs, talks to me | Main checkout (e.g. `~/Projects/tenor`, where `notes/work/briefs` lives), new tab |
+| Ad-hoc question | Main checkout of that project, new tab, plain session (no Run) |
+| Worker building or fixing | Its own top-level worktree under `~/orca/workspaces/<repo>/<name>`, made by the coordinator |
+| Small fix done by hand | Its own worktree, via Linear Issues' **Start work** (linked to the issue) |
+
+Common cases:
+
+- **New ticket.** New coordinator tab, one Run for that objective. It plans the chain up front with `--deps` (build → review → fix → push), with a decision gate on push for my go, and starts workers in their own worktrees. Watch and answer gates in Orchestra. Close the tab once it ships.
+- **Several tickets at once.** One coordinator and one Run for the batch. Independent tickets start together; only real shared state (a branch, a local database) becomes a dependency.
+- **Ad-hoc question** (e.g. from the Filmore front desk). Plain session in the main checkout. If the answer turns out to be a bug, write a ticket and give it to a new coordinator, rather than fixing it in the question tab.
+- **Follow-up on shipped work.** New coordinator and new Run, pointed at the old report. Don't reopen the old coordinator: long-lived Runs are what cluttered Orchestra (one stayed open 41 hours).
+- **Research or comparison.** Parallel workers with no dependencies; a flat graph is right here.
+- **Quick fix.** No coordinator. Orchestration only earns its keep with more than one step or more than one agent.
+
+A day: one question tab per project's main checkout, one coordinator tab per objective in flight, Orchestra in the sidebar. Worker tabs are opened only to watch one.
+
+Plugins Orca should have are listed in `.config/orca/plugins.txt`; `orca-plugins sync` installs the missing ones on a new machine.

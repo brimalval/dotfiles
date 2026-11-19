@@ -1,0 +1,64 @@
+#!/usr/bin/env bash
+# orca-plugins: keep Orca's installed plugins in line with the list in the dotfiles
+# (.config/orca/plugins.txt). Orca's own lock file is runtime state, so the list is
+# the portable record and this script applies it.
+#
+#   orca-plugins            # same as `status`
+#   orca-plugins status     # wanted vs installed, and installed plugins not in the list
+#   orca-plugins sync       # install the missing ones; code plugins show their access and ask
+#   orca-plugins sync -y    # ...approving code plugins without asking (only for a list you trust)
+#
+# Updates are Orca's job: `orca plugin update --all`.
+# Env: ORCA_PLUGINS_LIST (default ~/Projects/dotfiles/.config/orca/plugins.txt).
+set -euo pipefail
+
+list="${ORCA_PLUGINS_LIST:-$HOME/Projects/dotfiles/.config/orca/plugins.txt}"
+die() { echo "orca-plugins: $*" >&2; exit 2; }
+
+command -v orca >/dev/null || die "orca CLI not on PATH (it ships in /Applications/Orca.app/Contents/Resources/bin)"
+command -v jq >/dev/null || die "jq not on PATH"
+[[ -r "$list" ]] || die "no plugin list at $list"
+
+wanted() { sed -e 's/#.*//' -e 's/[[:space:]]//g' "$list" | grep -v '^$'; }
+installed() { orca plugin list --json | jq -r '.result.plugins[].pluginKey'; }
+
+orca status >/dev/null 2>&1 || orca open >/dev/null || die "Orca isn't running and couldn't be started"
+
+cmd="${1:-status}"; shift || true
+yes=0; [[ "${1:-}" == "-y" ]] && yes=1
+
+have="$(installed)"
+missing=()
+while read -r id; do grep -qxF "$id" <<<"$have" || missing+=("$id"); done < <(wanted)
+
+case "$cmd" in
+  status)
+    while read -r id; do
+      if grep -qxF "$id" <<<"$have"; then echo "ok       $id"; else echo "missing  $id"; fi
+    done < <(wanted)
+    # Not in the list (bundled plugins ship with Orca, so they're left out)
+    comm -13 <(wanted | sort) <(orca plugin list --json | jq -r '.result.plugins[] | select(.bundled | not) | .pluginKey' | sort) \
+      | sed 's/^/extra    /'
+    ;;
+  sync)
+    (( ${#missing[@]} )) || { echo "All listed plugins are installed."; exit 0; }
+    failed=0
+    for id in "${missing[@]}"; do
+      echo "==> $id"
+      set +e; out="$(orca plugin install "$id" 2>&1)"; rc=$?; set -e
+      if (( rc == 0 )); then echo "$out"; continue; fi
+      if (( rc != 3 )); then echo "$out" >&2; failed=1; continue; fi
+      # Exit 3: it runs code. Orca printed what it would get and the exact --approve command.
+      echo "$out"
+      fp="$(grep -oE -- '--approve[= ]+[^ ]+' <<<"$out" | head -1 | sed -E 's/--approve[= ]+//')"
+      [[ -n "$fp" ]] || { echo "  couldn't find the approval fingerprint; run the command above yourself" >&2; failed=1; continue; }
+      if (( ! yes )); then
+        read -r -p "  Approve $id with this access? [y/N] " ans </dev/tty
+        [[ "$ans" == [yY]* ]] || { echo "  skipped"; continue; }
+      fi
+      orca plugin install "$id" --approve "$fp" || failed=1
+    done
+    exit "$failed"
+    ;;
+  *) die "unknown command '$cmd' (status | sync [-y])" ;;
+esac

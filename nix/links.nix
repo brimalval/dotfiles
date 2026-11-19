@@ -26,6 +26,7 @@ in
   }
   // lib.optionalAttrs isDarwin {
     ".aerospace.toml".source = link ".aerospace.toml";
+    ".claude/CLAUDE.md".source = link ".claude/global/CLAUDE.md"; # user-level rules for every Claude session (Orca coordinators)
   }
   // lib.genAttrs (map (s: ".local/bin/${s}") scripts) (p: { source = link p; });
 
