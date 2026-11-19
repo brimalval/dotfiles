@@ -8,6 +8,8 @@
 #   orca-plugins sync       # install the missing ones; code plugins show their access and ask
 #   orca-plugins sync -y    # ...approving code plugins without asking (only for a list you trust)
 #
+# Entries are catalog ids (publisher.id) or plugin folders (a path starting with ./, ../, / or ~/,
+# relative to the list's own folder); a folder installs as local.<its id>.
 # Updates are Orca's job: `orca plugin update --all`.
 # Env: ORCA_PLUGINS_LIST (default ~/Projects/dotfiles/.config/orca/plugins.txt).
 set -euo pipefail
@@ -19,7 +21,23 @@ command -v orca >/dev/null || die "orca CLI not on PATH (it ships in /Applicatio
 command -v jq >/dev/null || die "jq not on PATH"
 [[ -r "$list" ]] || die "no plugin list at $list"
 
-wanted() { sed -e 's/#.*//' -e 's/[[:space:]]//g' "$list" | grep -v '^$'; }
+listdir="$(cd "$(dirname "$list")" && pwd)"
+# One line per entry: "<plugin key><TAB><what orca plugin install takes>".
+entries() {
+  local e dir id
+  sed -e 's/#.*//' -e 's/[[:space:]]//g' "$list" | grep -v '^$' | while read -r e; do
+    case "$e" in
+      /*|./*|../*|"~/"*)
+        dir="${e/#\~/$HOME}"; [[ "$dir" == /* ]] || dir="$listdir/$dir"
+        id="$(jq -r '.id // empty' "$dir/orca-plugin.json" 2>/dev/null || true)"
+        if [[ -z "$id" ]]; then echo "orca-plugins: no orca-plugin.json in $e, skipped" >&2; continue; fi
+        printf 'local.%s\t%s\n' "$id" "$(cd "$dir" && pwd)" ;;
+      *) printf '%s\t%s\n' "$e" "$e" ;;
+    esac
+  done
+}
+wanted() { entries | cut -f1; }
+source_of() { entries | awk -F'\t' -v k="$1" '$1 == k { print $2; exit }'; }
 installed() { orca plugin list --json | jq -r '.result.plugins[].pluginKey'; }
 
 orca status >/dev/null 2>&1 || orca open >/dev/null || die "Orca isn't running and couldn't be started"
@@ -45,7 +63,8 @@ case "$cmd" in
     failed=0
     for id in "${missing[@]}"; do
       echo "==> $id"
-      set +e; out="$(orca plugin install "$id" 2>&1)"; rc=$?; set -e
+      src="$(source_of "$id")"
+      set +e; out="$(orca plugin install "$src" 2>&1)"; rc=$?; set -e
       if (( rc == 0 )); then echo "$out"; continue; fi
       if (( rc != 3 )); then echo "$out" >&2; failed=1; continue; fi
       # Exit 3: it runs code. Orca printed what it would get and the exact --approve command.
@@ -56,7 +75,7 @@ case "$cmd" in
         read -r -p "  Approve $id with this access? [y/N] " ans </dev/tty
         [[ "$ans" == [yY]* ]] || { echo "  skipped"; continue; }
       fi
-      orca plugin install "$id" --approve "$fp" || failed=1
+      orca plugin install "$src" --approve "$fp" || failed=1
     done
     exit "$failed"
     ;;

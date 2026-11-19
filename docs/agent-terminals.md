@@ -48,7 +48,7 @@ Requirements it was judged on:
 
 ## Working in Orca
 
-How sessions are laid out day to day (set 2026-11-13). The coordinator rules themselves are in `.claude/global/CLAUDE.md`, linked to `~/.claude/CLAUDE.md`.
+How sessions are laid out day to day (set 2026-11-13). The coordinator rules themselves are in `.claude/global/CLAUDE.md`, linked as `~/.claude/CLAUDE.md`, `~/.codex/AGENTS.md` and (through `.config/opencode/AGENTS.md`) OpenCode's global rules, so every coordinator agent gets them.
 
 **Rule of thumb:** a session that changes code or commits gets its own worktree; one that only reads, plans or answers stays in the main checkout.
 
@@ -61,7 +61,7 @@ How sessions are laid out day to day (set 2026-11-13). The coordinator rules the
 
 Common cases:
 
-- **New ticket.** New coordinator tab, one Run for that objective. It plans the chain up front with `--deps` (build → review → fix → push), with a decision gate on push for my go, and starts workers in their own worktrees. Watch and answer gates in Orchestra. Close the tab once it ships.
+- **New ticket.** New coordinator tab, one Run for that objective. It plans the chain up front with `--deps` (build → review → fix → push), with a decision gate on push for my go, and starts workers in their own worktrees. Watch it and answer gates in the Coordinators panel (our `coordinator-status` plugin, `.config/orca/plugins/coordinator-status`): Orca's own status shows a coordinator as done whenever its turn ends, even while its workers run. Close the tab once it ships.
 - **Several tickets at once.** One coordinator and one Run for the batch. Independent tickets start together; only real shared state (a branch, a local database) becomes a dependency.
 - **Ad-hoc question** (e.g. from the Filmore front desk). Plain session in the main checkout. If the answer turns out to be a bug, write a ticket and give it to a new coordinator, rather than fixing it in the question tab.
 - **Follow-up on shipped work.** New coordinator and new Run, pointed at the old report. Don't reopen the old coordinator: long-lived Runs are what cluttered Orchestra (one stayed open 41 hours).

@@ -1,5 +1,5 @@
 # Orca plugins this setup wants. `orca-plugins sync` installs whichever are missing.
-# One catalog id (publisher.id) per line; text after # is a comment.
+# One catalog id (publisher.id) or plugin folder (./path, relative to this file) per line; text after # is a comment.
 # Orca keeps its own record in ~/Library/Application Support/orca/plugins/plugins.lock.json and
 # rewrites it at runtime, so that file is never linked; this list is the portable part.
 # Plugins that run code ask for approval on each machine (the script shows the access and asks).
@@ -13,3 +13,4 @@ dohaidang.wallpaper-studio         # code: own picture behind translucent termin
 joneszeng.orchestra                # code: live orchestration DAG, workers, decision gates
 bautistapessagno.linear-issues     # code: Linear issues via Orca's own Linear connection
 pierreb40.claude-memory            # code: audits Claude Code memories for stale entries
+./plugins/coordinator-status        # code, ours: coordinators' real state, answer gates; edit in place after `orca plugin dev load` on it

@@ -26,7 +26,8 @@ in
   }
   // lib.optionalAttrs isDarwin {
     ".aerospace.toml".source = link ".aerospace.toml";
-    ".claude/CLAUDE.md".source = link ".claude/global/CLAUDE.md"; # user-level rules for every Claude session (Orca coordinators)
+    ".claude/CLAUDE.md".source = link ".claude/global/CLAUDE.md"; # user-level rules for Orca coordinators, shared by every agent
+    ".codex/AGENTS.md".source = link ".claude/global/CLAUDE.md"; # same rules for Codex; OpenCode gets them via .config/opencode/AGENTS.md
   }
   // lib.genAttrs (map (s: ".local/bin/${s}") scripts) (p: { source = link p; });
 

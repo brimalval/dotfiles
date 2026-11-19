@@ -1,0 +1,52 @@
+{
+  "manifestVersion": 2,
+  "id": "coordinator-status",
+  "name": "Coordinator status",
+  "version": "0.1.0",
+  "description": "Whether each orchestration coordinator is really done: Orca shows \"done\" whenever its turn ends, even while its workers run. Status bar, panel and notifications from the Run itself.",
+  "engines": {
+    "orca": ">=1.4.257"
+  },
+  "execution": "trusted-worker",
+  "pluginApi": 1,
+  "main": "src/worker.ts",
+  "contributes": {
+    "panels": [
+      {
+        "id": "coordinator-status",
+        "title": "Coordinators",
+        "icon": "bot",
+        "entry": "src/panel.tsx",
+        "ui": "components"
+      }
+    ],
+    "commands": [
+      {
+        "id": "coordinator-status.focus",
+        "title": "Coordinators: go to the one that needs me"
+      }
+    ],
+    "statusBarItems": [
+      {
+        "id": "coordinators",
+        "icon": "bot",
+        "text": "",
+        "tooltip": "Orchestration coordinators",
+        "command": "coordinator-status.focus"
+      }
+    ],
+    "events": [
+      {
+        "on": "agent.status.changed"
+      }
+    ]
+  },
+  "capabilities": [
+    {
+      "kind": "agent:read"
+    },
+    {
+      "kind": "notifications:show"
+    }
+  ]
+}
