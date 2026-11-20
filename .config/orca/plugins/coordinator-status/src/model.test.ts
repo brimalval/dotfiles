@@ -99,3 +99,11 @@ test('tasks: what matters now first, open worker sessions linked, gated tasks ma
     ['d', 'queued', null, false], ['a', 'done', 'term_a', false]
   ])
 })
+
+test('the Run a coordinator is bound to shows however old, and comes first', () => {
+  const old = run({ id: 'run_old', objective: 'Revived', updatedAt: NOW - 10 * FINISHED_RUN_TTL_MS, current: true, tasks: [task('a', 'completed')] })
+  const recent = run({ id: 'run_new', objective: 'Recent', updatedAt: NOW - 1000, tasks: [task('b', 'completed')] })
+  const view = coordinatorView('term_c', [recent, old], 'done', NOW, NOW)
+  assert.deepEqual(view?.runs.map(item => item.id), ['run_old', 'run_new'])
+  assert.equal(coordinatorView('term_c', [{ ...old, current: false }], 'done', NOW, NOW), null)
+})

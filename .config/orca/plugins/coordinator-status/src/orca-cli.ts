@@ -52,13 +52,39 @@ export async function orca(args: string[]): Promise<unknown> {
   return null
 }
 
-export type Terminal = { handle: string; worktreeId: string | null; title: string | null }
+export type Terminal = { handle: string; worktreeId: string | null; title: string | null; agent?: boolean }
 
 export function parseTerminals(value: unknown): Terminal[] {
   return rows(value, 'terminals').flatMap(item => record(item) && typeof item.handle === 'string'
-    ? [{ handle: item.handle, worktreeId: text(item.worktreeId), title: text(item.title) }] : [])
+    ? [{ handle: item.handle, worktreeId: text(item.worktreeId), title: text(item.title), agent: !!text(item.agentIdentity) }] : [])
 }
-export function parseRunHeads(value: unknown): Omit<RawRun, 'tasks' | 'gates' | 'workers'>[] {
+
+/** The Run a terminal coordinates now (`run-current`), or null for a worker or a plain shell. */
+export type Binding = { runId: string; objective: string }
+export function parseBinding(value: unknown): Binding | null {
+  const result = record(value) && record(value.result) ? value.result : null
+  return result && typeof result.runId === 'string' ? { runId: result.runId, objective: text(result.objective) ?? '' } : null
+}
+
+type Head = Omit<RawRun, 'tasks' | 'gates' | 'workers'>
+/**
+ * run-list names whoever created a Run. A coordinator that takes over an old Run (`run-use`, as a
+ * revived session does) is only visible through run-current, which is also where Orca sends that
+ * Run's messages: bindings win, and a bound Run is marked current.
+ */
+export function applyBindings(heads: readonly Head[], bindings: ReadonlyMap<string, Binding>): Head[] {
+  const byRun = new Map([...bindings].map(([terminal, binding]) => [binding.runId, { terminal, binding }]))
+  const result = heads.map(head => {
+    const bound = byRun.get(head.id)
+    return bound ? { ...head, coordinator: bound.terminal, current: true } : head
+  })
+  // A Run too old for the run-list window still counts once a coordinator is bound to it.
+  for (const [runId, { terminal, binding }] of byRun) {
+    if (!heads.some(head => head.id === runId)) result.push({ id: runId, objective: binding.objective, coordinator: terminal, updatedAt: 0, current: true })
+  }
+  return result
+}
+export function parseRunHeads(value: unknown): Head[] {
   return rows(value, 'runs').flatMap(item => record(item) && typeof item.id === 'string' && typeof item.coordinator_handle === 'string'
     ? [{ id: item.id, objective: text(item.objective) ?? '', coordinator: item.coordinator_handle,
         updatedAt: Math.max(time(item.created_at), time(item.updated_at)) }] : [])
@@ -88,11 +114,30 @@ export function parseWorkers(value: unknown): RawWorker[] {
   })
 }
 
-/** A settled Run whose record has not changed since it was read needs no new read. */
+/** Settled Runs already read in full. */
 const settled = new Map<string, RawRun>()
 const isSettled = (run: RawRun) => run.tasks.length > 0 && run.tasks.every(task => task.status === 'completed' || task.status === 'failed')
 
 export type Snapshot = { terminals: Terminal[]; runs: RawRun[] }
+
+/** Bindings change only on run-create or run-use, so each agent terminal is asked at most this often. */
+const BINDING_TTL_MS = 30_000
+const bindingCache = new Map<string, { binding: Binding | null; at: number }>()
+async function readBindings(terminals: readonly Terminal[]): Promise<Map<string, Binding>> {
+  const now = Date.now()
+  const agents = terminals.filter(terminal => terminal.agent)
+  for (const handle of bindingCache.keys()) if (!agents.some(terminal => terminal.handle === handle)) bindingCache.delete(handle)
+  await Promise.all(agents.map(async ({ handle }) => {
+    const cached = bindingCache.get(handle)
+    if (cached && now - cached.at < BINDING_TTL_MS) return
+    const answer = await orca(['orchestration', 'run-current', '--from', handle, '--json'])
+    // A failed read keeps the last answer rather than dropping the coordinator for a pass.
+    if (answer !== null || !cached) bindingCache.set(handle, { binding: parseBinding(answer), at: now })
+  }))
+  const result = new Map<string, Binding>()
+  for (const [handle, { binding }] of bindingCache) if (binding) result.set(handle, binding)
+  return result
+}
 
 /** Every Run whose coordinator terminal is still open, in full. null when the read failed. */
 export async function readSnapshot(): Promise<Snapshot | null> {
@@ -103,10 +148,16 @@ export async function readSnapshot(): Promise<Snapshot | null> {
   if (terminalsAnswer === null || runsAnswer === null) return null
   const terminals = parseTerminals(terminalsAnswer)
   const open = new Set(terminals.map(terminal => terminal.handle))
-  const heads = parseRunHeads(runsAnswer).filter(run => open.has(run.coordinator)).slice(0, RUNS_READ)
+  const bindings = await readBindings(terminals)
+  const heads = applyBindings(parseRunHeads(runsAnswer), bindings)
+    .filter(run => open.has(run.coordinator))
+    .sort((a, b) => Number(!!b.current) - Number(!!a.current))
+    .slice(0, RUNS_READ)
   const runs = await Promise.all(heads.map(async (head): Promise<RawRun | null> => {
-    const cached = settled.get(head.id)
-    if (cached && cached.updatedAt === head.updatedAt) return cached
+    // Orca never bumps updated_at, so only a Run no coordinator is bound to (nobody adds to it)
+    // is served from the cache; the Run being coordinated now is read every pass.
+    const cached = head.current ? undefined : settled.get(head.id)
+    if (cached) return { ...cached, ...head }
     const [tasks, gates, workers] = await Promise.all([
       orca(['orchestration', 'task-list', '--run', head.id, '--json']),
       orca(['orchestration', 'gate-list', '--run', head.id, '--json']),

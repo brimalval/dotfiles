@@ -22,7 +22,10 @@ export type RawRun = {
   id: string
   objective: string
   coordinator: string
+  /** Orca never moves a Run's updated_at past its creation, so this is when it was made. */
   updatedAt: number
+  /** The coordinator terminal is bound to this Run right now (`run-current`). */
+  current?: boolean
   tasks: RawTask[]
   gates: RawGate[]
   workers: RawWorker[]
@@ -103,10 +106,11 @@ export function summarizeRun(run: RawRun): RunSummary {
   }
 }
 
-/** Runs worth showing: open ones, and settled ones from the last 12 hours. */
+/** Runs worth showing: open ones, the Run a coordinator is bound to right now however old (a
+ *  revived coordinator resumes an old Run), and other settled ones from the last 12 hours. */
 export function liveRuns(runs: readonly RawRun[], now: number): RawRun[] {
-  return runs.filter(run => run.tasks.length > 0 &&
-    (!run.tasks.every(task => FINAL.has(task.status)) || now - run.updatedAt <= FINISHED_RUN_TTL_MS))
+  return runs.filter(run => run.tasks.length > 0 && (run.current ||
+    !run.tasks.every(task => FINAL.has(task.status)) || now - run.updatedAt <= FINISHED_RUN_TTL_MS))
 }
 
 const plural = (n: number, word: string): string => `${n} ${word}${n === 1 ? '' : 's'}`
@@ -126,7 +130,7 @@ const clip = (value: string, max: number): string => value.length > max ? `${val
 export function coordinatorView(
   handle: string, runs: readonly RawRun[], agent: AgentState, agentSince: number | null, now: number
 ): CoordinatorView | null {
-  const shown = liveRuns(runs, now).sort((a, b) => b.updatedAt - a.updatedAt)
+  const shown = liveRuns(runs, now).sort((a, b) => Number(!!b.current) - Number(!!a.current) || b.updatedAt - a.updatedAt)
   if (!shown.length) return null
   const summaries = shown.map(summarizeRun)
   const attention = summaries.flatMap(run => run.attention)

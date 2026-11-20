@@ -24,7 +24,9 @@ going. This plugin adds the Run back in and shows what each coordinator is reall
   resolve its own gates.
 - **Notifications:** a new gate or waiting worker, a stall, a coordinator whose Runs all finished.
 
-Only coordinators whose terminal is still open count; settled Runs drop out after 12 hours.
+Only coordinators whose terminal is still open count. A Run's coordinator is the terminal bound to it
+now (`run-current`), so a revived session that took over an old Run with `run-use` shows with it,
+however old. Other settled Runs drop out 12 hours after they were created.
 Run state is read through the bundled `orca orchestration` CLI every 10 s and shortly after any
 agent status change (the approach follows matteoeusebi/orca-pulse, MIT). The rules are in
 `src/model.ts`.
