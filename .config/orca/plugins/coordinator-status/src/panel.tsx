@@ -1,6 +1,6 @@
 // No build step: Orca strips the types and compiles the JSX when the panel loads.
 import {
-  atom, Badge, Box, Button, Callout, Collapsible, EmptyState, Heading, IconButton, Input, List, ListItem, plugin, Progress,
+  atom, Badge, Box, Button, Callout, Checkbox, Collapsible, EmptyState, Heading, IconButton, Input, List, ListItem, plugin, Progress,
   read, RelativeTime, Row, set, Stack, Text, update, type PanelContext
 } from 'orca'
 import type { StatusAnswer } from './protocol'
@@ -14,6 +14,11 @@ const errors = atom<Record<string, string>>({})
 const drafts = atom<Record<string, string>>({})
 /** Which runs' task lists are open, by run id; kept across refreshes and panel runs. */
 const expanded = atom<Record<string, boolean>>('expanded', {}, { persist: 'plugin' })
+/** Projects filtered out. Hidden rather than shown, so a project's first coordinator always shows. */
+const hiddenProjects = atom<string[]>('hiddenProjects', [], { persist: 'plugin' })
+const filterOpen = atom(false)
+const NO_PROJECT = 'Other'
+const projectName = (view: CoordinatorView) => view.project ?? NO_PROJECT
 const TASK_ICON: Record<TaskState, 'play' | 'flag' | 'error' | 'more' | 'check'> = {
   working: 'play', blocked: 'flag', failed: 'error', queued: 'more', done: 'check'
 }
@@ -126,7 +131,10 @@ function Coordinator({ view }: { view: CoordinatorView }) {
   return (
     <Box border padding="sm" radius="md" direction="column" gap="sm">
       <Row justify="between" gap="sm">
-        <Badge tone={TONE[view.state]}>{LABEL[view.state]}</Badge>
+        <Row gap="sm">
+          <Badge tone={TONE[view.state]}>{LABEL[view.state]}</Badge>
+          {view.project ? <Text size="xs" muted>{view.project}</Text> : null}
+        </Row>
         <IconButton icon="terminal" label="Open coordinator" size="sm" variant="ghost" onPress={() => focus(view.handle)} />
       </Row>
       <Text weight="medium">{view.title}</Text>
@@ -148,8 +156,36 @@ function Coordinator({ view }: { view: CoordinatorView }) {
   )
 }
 
+function ProjectFilter({ views }: { views: CoordinatorView[] }) {
+  const hidden = read(hiddenProjects)
+  const counts = new Map<string, number>()
+  for (const view of views) counts.set(projectName(view), (counts.get(projectName(view)) ?? 0) + 1)
+  const projects = [...counts.keys()].sort((a, b) => a.localeCompare(b))
+  const shown = projects.filter(project => !hidden.includes(project))
+  const summary = shown.length === projects.length ? 'all' : shown.length === 0 ? 'none' : shown.join(', ')
+  const toggle = (project: string, on: boolean) =>
+    update(hiddenProjects, (all) => on ? all.filter(item => item !== project) : [...new Set([...all, project])])
+  return (
+    <Collapsible title={`Projects: ${summary}`} open={read(filterOpen)} onChange={(next) => set(filterOpen, next)}>
+      <Stack gap="xs">
+        {projects.map(project => (
+          <Checkbox key={project} label={`${project} (${counts.get(project)})`} checked={!hidden.includes(project)}
+            onChange={(on) => toggle(project, on)} />
+        ))}
+        {shown.length < projects.length
+          ? <Button size="sm" variant="ghost" onPress={() => update(hiddenProjects, (all) => all.filter(item => !projects.includes(item)))}>Show all</Button>
+          : null}
+      </Stack>
+    </Collapsible>
+  )
+}
+
 export default function Panel() {
   const answer = read(status)
+  const hidden = read(hiddenProjects)
+  const views = answer?.views ?? []
+  const multiple = new Set(views.map(projectName)).size > 1
+  const visible = views.filter(view => !hidden.includes(projectName(view)))
   return (
     <Stack gap="md">
       <Row justify="between">
@@ -157,9 +193,14 @@ export default function Panel() {
         <IconButton icon="refresh" label="Refresh" variant="ghost" onPress={refresh} />
       </Row>
       {answer === null ? <Text muted>Reading orchestration runs…</Text>
-        : answer.views.length === 0
+        : views.length === 0
           ? <EmptyState icon="bot" title="No live runs" description="Coordinators with an open Orca orchestration Run show here." />
-          : answer.views.map(view => <Coordinator key={view.handle} view={view} />)}
+          : <Stack gap="md">
+              {multiple || visible.length < views.length ? <ProjectFilter views={views} /> : null}
+              {visible.length === 0
+                ? <EmptyState icon="filter" title="All filtered out" description={`${views.length} coordinator${views.length === 1 ? '' : 's'} in hidden projects.`} />
+                : visible.map(view => <Coordinator key={view.handle} view={view} />)}
+            </Stack>}
       {answer?.readAt ? <Text size="xs" muted>Read <RelativeTime at={answer.readAt} /></Text> : null}
     </Stack>
   )

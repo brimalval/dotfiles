@@ -53,6 +53,8 @@ export type CoordinatorView = {
   detail: string
   runs: RunSummary[]
   attention: Attention[]
+  /** The Orca repo the coordinator's terminal works in, for the panel's project filter. */
+  project?: string | null
 }
 
 /** A Run whose tasks are all settled stays on show this long, then it is history. */

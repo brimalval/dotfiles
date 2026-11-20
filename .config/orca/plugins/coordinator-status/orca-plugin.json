@@ -2,7 +2,7 @@
   "manifestVersion": 2,
   "id": "coordinator-status",
   "name": "Coordinator status",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Whether each orchestration coordinator is really done: Orca shows \"done\" whenever its turn ends, even while its workers run. Status bar, panel and notifications from the Run itself.",
   "engines": {
     "orca": ">=1.4.257"

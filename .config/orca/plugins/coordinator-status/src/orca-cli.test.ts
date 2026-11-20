@@ -1,6 +1,6 @@
 // The parsing and binding rules in src/orca-cli.ts, with Orca's real answer shapes.
 import { assert, test } from 'orca/testing'
-import { applyBindings, parseBinding, parseTerminals, type Binding } from './orca-cli'
+import { applyBindings, parseBinding, parseRepos, parseTerminals, projectOf, type Binding } from './orca-cli'
 
 test('run-current: a coordinator names its Run; a worker or a shell names none', () => {
   assert.deepEqual(parseBinding({ ok: true, result: { runId: 'run_old', objective: 'Retail PR C' } }), { runId: 'run_old', objective: 'Retail PR C' })
@@ -30,4 +30,13 @@ test('a revived coordinator that took over an old Run (run-use) owns it, even pa
     { id: 'run_other', objective: 'Other', coordinator: 'term_x', updatedAt: 2 },
     { id: 'run_ancient', objective: 'Ancient', coordinator: 'term_y', updatedAt: 0, current: true }
   ])
+})
+
+test('a coordinator\'s project is the Orca repo its worktree belongs to', () => {
+  const repos = parseRepos({ ok: true, result: { repos: [{ id: 'r1', displayName: 'tenor', path: '/p/tenor' }] } })
+  assert.equal(projectOf('r1::/Users/b/Projects/tenor', repos), 'tenor')
+  assert.equal(projectOf('r1::/Users/b/orca/workspaces/tenor/feature', repos), 'tenor')
+  assert.equal(projectOf('gone::/Users/b/Projects/other/', repos), 'other')
+  assert.equal(projectOf('gone::C:\\Users\\b\\other', repos), 'other')
+  assert.equal(projectOf(null, repos), null)
 })

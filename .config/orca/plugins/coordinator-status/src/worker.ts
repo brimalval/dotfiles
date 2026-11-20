@@ -6,7 +6,7 @@ import {
   coordinatorView, notices, SEVERITY, statusBar,
   type AgentState, type CoordinatorView, type StatusBarText
 } from './model'
-import { focusTerminal, readSnapshot, resolveGate } from './orca-cli'
+import { focusTerminal, projectOf, readSnapshot, resolveGate } from './orca-cli'
 
 const POLL_MS = 10_000
 /** An agent status change usually means a Run moved: read again shortly after it. */
@@ -67,9 +67,11 @@ export default function activate(orca: OrcaWorkerApi): void {
       .map(terminal => terminal.worktreeId as string))]
     await readAgents(workspaceIds)
     const next = coordinators
-      .map(handle => {
+      .map((handle): CoordinatorView | null => {
         const agent = agents.get(handle) ?? { state: 'unknown' as const, since: null }
-        return coordinatorView(handle, snapshot.runs.filter(run => run.coordinator === handle), agent.state, agent.since, now)
+        const view = coordinatorView(handle, snapshot.runs.filter(run => run.coordinator === handle), agent.state, agent.since, now)
+        const terminal = snapshot.terminals.find(item => item.handle === handle)
+        return view && { ...view, project: projectOf(terminal?.worktreeId ?? null, snapshot.repos ?? {}) }
       })
       .filter((view): view is CoordinatorView => view !== null)
       .sort((a, b) => SEVERITY[b.state] - SEVERITY[a.state])

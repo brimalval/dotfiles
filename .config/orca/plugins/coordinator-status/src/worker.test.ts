@@ -5,7 +5,8 @@ import type { Snapshot } from './orca-cli'
 
 const NOW = 10_000_000_000
 const snapshot = (taskStatus: string): Snapshot => ({
-  terminals: [{ handle: 'term_c', worktreeId: 'ws1', title: 'coordinator' }],
+  terminals: [{ handle: 'term_c', worktreeId: 'r1::/p/tenor', title: 'coordinator' }],
+  repos: { r1: 'tenor' },
   runs: [{ id: 'run_1', objective: 'Ship it', coordinator: 'term_c', updatedAt: NOW,
     tasks: [{ id: 'a', title: 'Build', status: taskStatus }], gates: [], workers: [] }]
 })
@@ -26,6 +27,7 @@ test('Orca says done, the run is open: the worker reports waiting, then finished
 
   const first = await worker.request('status.get')
   assert.equal(first.views[0].state, 'waiting-on-workers')
+  assert.equal(first.views[0].project, 'tenor')
   const bar = host.callsOf('statusBar.update').at(-1) as { text: string; visible: boolean }
   assert.equal(bar.text, '1 worker running')
   assert.equal(bar.visible, true)

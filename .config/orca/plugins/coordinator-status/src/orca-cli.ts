@@ -26,7 +26,8 @@ function bundledCli(): string | null {
   const end = process.execPath.indexOf(marker)
   return end < 0 ? null : join(process.execPath.slice(0, end + marker.length), 'Resources', 'bin', 'orca')
 }
-const CANDIDATES = [process.env.ORCA_CLI, bundledCli(), '/Applications/Orca.app/Contents/Resources/bin/orca']
+// Last, whatever `orca` is on PATH (Orca's "Install CLI" puts it there on every platform).
+const CANDIDATES = [process.env.ORCA_CLI, bundledCli(), '/Applications/Orca.app/Contents/Resources/bin/orca', 'orca']
   .filter((path): path is string => !!path)
 
 function runJson(command: string, args: string[]): Promise<unknown> {
@@ -118,7 +119,23 @@ export function parseWorkers(value: unknown): RawWorker[] {
 const settled = new Map<string, RawRun>()
 const isSettled = (run: RawRun) => run.tasks.length > 0 && run.tasks.every(task => task.status === 'completed' || task.status === 'failed')
 
-export type Snapshot = { terminals: Terminal[]; runs: RawRun[] }
+/** Orca repo id -> its name in Orca's sidebar. */
+export type Repos = Record<string, string>
+export function parseRepos(value: unknown): Repos {
+  const result: Repos = {}
+  for (const item of rows(value, 'repos')) {
+    if (record(item) && typeof item.id === 'string') result[item.id] = text(item.displayName) ?? text(item.name) ?? item.id
+  }
+  return result
+}
+/** A worktree id is `<repo id>::<path>`: the repo's name, else the folder's. */
+export function projectOf(worktreeId: string | null, repos: Repos): string | null {
+  if (!worktreeId) return null
+  const [repoId, path = ''] = worktreeId.split('::')
+  return repos[repoId] ?? (path.split(/[\\/]/).filter(Boolean).pop() || null)
+}
+
+export type Snapshot = { terminals: Terminal[]; runs: RawRun[]; repos?: Repos }
 
 /** Bindings change only on run-create or run-use, so each agent terminal is asked at most this often. */
 const BINDING_TTL_MS = 30_000
@@ -141,9 +158,10 @@ async function readBindings(terminals: readonly Terminal[]): Promise<Map<string,
 
 /** Every Run whose coordinator terminal is still open, in full. null when the read failed. */
 export async function readSnapshot(): Promise<Snapshot | null> {
-  const [terminalsAnswer, runsAnswer] = await Promise.all([
+  const [terminalsAnswer, runsAnswer, reposAnswer] = await Promise.all([
     orca(['terminal', 'list', '--json']),
-    orca(['orchestration', 'run-list', '--limit', String(RUNS_SCANNED), '--json', '--full'])
+    orca(['orchestration', 'run-list', '--limit', String(RUNS_SCANNED), '--json', '--full']),
+    orca(['repo', 'list', '--json'])
   ])
   if (terminalsAnswer === null || runsAnswer === null) return null
   const terminals = parseTerminals(terminalsAnswer)
@@ -175,7 +193,7 @@ export async function readSnapshot(): Promise<Snapshot | null> {
   const withOpen = runs.filter((run): run is RawRun => run !== null).map(run => ({
     ...run, workers: run.workers.map(worker => ({ ...worker, open: !!worker.terminal && open.has(worker.terminal) }))
   }))
-  return { terminals, runs: withOpen }
+  return { terminals, runs: withOpen, repos: parseRepos(reposAnswer) }
 }
 
 export type ResolveResult = { ok: true } | { ok: false; error: string }
@@ -196,7 +214,7 @@ export async function resolveGate(gate: { runId: string; gateId: string; taskId:
   if (resolved === null) return { ok: false, error: 'Orca refused to resolve the gate.' }
   settled.delete(gate.runId)
   const body = [
-    `Brian answered this decision gate from the Coordinators panel. The gate is resolved and its task (${gate.taskId}) is no longer blocked on it.`,
+    `The user answered this decision gate from the Coordinators panel. The gate is resolved and its task (${gate.taskId}) is no longer blocked on it.`,
     `Question: ${gate.question}`,
     `Answer: ${resolution}`,
     'Act on the answer now. If the answer says it was already handled, the gate was stale: confirm and move on.'

@@ -48,3 +48,28 @@ test('shows each coordinator and answers a gate only after a second press', asyn
   assert.deepEqual(shown.refusals, [])
   await shown.unmount()
 })
+
+test('project filter: hidden projects drop out and stay hidden; one project needs no filter', async () => {
+  const other = { ...view, handle: 'term_d', title: 'Dotfiles work', project: 'dotfiles' }
+  const tenor = { ...view, project: 'tenor' }
+  const host = mockHost({ requests: { 'status.get': () => ({ views: [tenor, other], readAt: NOW }) } })
+  const shown = await mount(panel, { host })
+  const filterTitle = () => shown.findAll({ type: 'Collapsible' }).map(node => String(node.props.title)).find(title => title.startsWith('Projects')) ?? null
+  assert.equal(filterTitle(), 'Projects: all')
+  await shown.toggle({ type: 'Collapsible' })
+  await shown.toggle({ label: 'dotfiles (1)' })
+  assert.equal(shown.find({ text: 'Dotfiles work' }), null)
+  assert.ok(shown.find({ text: 'Ship voice count' }))
+  assert.equal(filterTitle(), 'Projects: tenor')
+
+  await shown.toggle({ label: 'tenor (1)' })
+  assert.ok(shown.find({ type: 'EmptyState' }))
+  await shown.press({ text: 'Show all' })
+  assert.ok(shown.find({ text: 'Dotfiles work' }))
+
+  await shown.post('status.changed', { views: [tenor], readAt: NOW })
+  assert.equal(filterTitle(), null)
+  assert.deepEqual(shown.errors, [])
+  assert.deepEqual(shown.refusals, [])
+  await shown.unmount()
+})
