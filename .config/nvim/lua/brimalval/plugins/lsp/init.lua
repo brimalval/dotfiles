@@ -126,59 +126,73 @@ return {
 		end,
 	},
 	{
+		-- main branch (the rewrite; master is frozen and breaks on nvim 0.12). It only installs parsers and
+		-- queries: highlighting, indent and selection are switched on below with nvim's own treesitter API.
+		-- Needs the tree-sitter CLI and a C compiler on PATH (nix/home.nix, nix/home-nixos-wsl.nix).
 		"nvim-treesitter/nvim-treesitter",
-		event = { "BufReadPre", "BufNewFile" },
-		build = ":TSUpdate",
 		branch = "main",
+		lazy = false, -- main doesn't support lazy-loading
+		build = ":TSUpdate",
 		config = function()
-			local treesitter = require("nvim-treesitter.configs")
+			require("nvim-treesitter").install({
+				"bash",
+				"c",
+				"cpp",
+				"css",
+				"dockerfile",
+				"gitignore",
+				"html",
+				"http",
+				"javascript",
+				"json",
+				"lua",
+				"markdown",
+				"markdown_inline",
+				"prisma",
+				"python",
+				"query",
+				"rust",
+				"sql",
+				"toml",
+				"tsx",
+				"typescript",
+				"vim",
+				"yaml",
+				"scss",
+				"svelte",
+				"typst",
+				"vue",
+			})
 
-			---@diagnostic disable-next-line: missing-fields
-			treesitter.setup({
-				highlight = {
-					enable = true,
-				},
-				indent = { enable = true },
-				ensure_installed = {
-					"bash",
-					"c",
-					"cpp",
-					"css",
-					"dockerfile",
-					"gitignore",
-					"html",
-					"http",
-					"javascript",
-					"json",
-					"lua",
-					"markdown",
-					"markdown_inline",
-					"prisma",
-					"python",
-					"query",
-					"rust",
-					"sql",
-					"toml",
-					"tsx",
-					"typescript",
-					"vim",
-					"yaml",
-					"latex",
-					"norg",
-					"scss",
-					"svelte",
-					"typst",
-					"vue",
-				},
-				incremental_selection = {
-					enable = true,
-					keymaps = {
-						init_selection = "<CR>",
-						node_incremental = "<CR>",
-						scope_incremental = false,
-						node_decremental = "<BS>",
-					},
-				},
+			vim.api.nvim_create_autocmd("FileType", {
+				group = vim.api.nvim_create_augroup("brimalval_treesitter", { clear = true }),
+				callback = function(args)
+					-- No parser for this filetype: leave the buffer alone (regex syntax, default indent, <CR> as usual).
+					if not pcall(vim.treesitter.start, args.buf) then
+						return
+					end
+					vim.bo[args.buf].indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+
+					-- Incremental selection, as before: <CR> starts and grows it, <BS> shrinks it.
+					-- Calls what nvim 0.12's built-in visual `an`/`in` call: mini.ai takes over those keys
+					-- ("around/inside next"), so mapping to the keys would reach mini.ai instead.
+					-- vim.treesitter._select is internal; if a newer nvim renames it, look at `:verbose xmap an`
+					-- with mini.ai disabled.
+					local select = require("vim.treesitter._select")
+					local map = function(mode, lhs, rhs, desc)
+						vim.keymap.set(mode, lhs, rhs, { buffer = args.buf, desc = desc })
+					end
+					map("n", "<CR>", function()
+						vim.cmd("normal! v")
+						select.select_parent(vim.v.count1)
+					end, "Start treesitter selection")
+					map("x", "<CR>", function()
+						select.select_parent(vim.v.count1)
+					end, "Grow treesitter selection")
+					map("x", "<BS>", function()
+						select.select_child(vim.v.count1)
+					end, "Shrink treesitter selection")
+				end,
 			})
 		end,
 	},
