@@ -16,10 +16,14 @@
     fzf
     zoxide
     yazi
+    fd
 
     # editor and terminal
     neovim
     tree-sitter # brew's tree-sitter + tree-sitter-cli; nvim-treesitter uses the CLI
+    chafa # nvim: snacks dashboard image
+    imagemagick # nvim: snacks image (converts images for the terminal)
+    stylua # nvim: conform's Lua formatter (tabs); without it format-on-save falls back to lua_ls (spaces)
     tmux # tmux-fingers loads from Nix, see xdg.dataFile below
     starship
     lazygit

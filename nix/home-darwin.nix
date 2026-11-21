@@ -9,11 +9,9 @@
   home.homeDirectory = "/Users/brian";
 
   home.packages = with pkgs; [
-    # media (yazi previews, herdr-wallpaper)
+    # media (yazi previews, herdr-wallpaper); chafa and imagemagick are in home.nix (nvim needs them everywhere)
     ffmpeg
-    imagemagick
     poppler-utils
-    chafa
     whisper-cpp
 
     # cloud and infra

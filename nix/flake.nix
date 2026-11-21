@@ -1,5 +1,5 @@
 {
-  description = "Brian's dotfiles: nix-darwin + home-manager (Mac), home-manager (WSL), and pinned CLI tools";
+  description = "Brian's dotfiles: nix-darwin + home-manager (Mac), home-manager (WSL), NixOS-WSL, and pinned CLI tools";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
@@ -7,9 +7,11 @@
     nix-darwin.inputs.nixpkgs.follows = "nixpkgs";
     home-manager.url = "github:nix-community/home-manager";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
+    nixos-wsl.url = "github:nix-community/NixOS-WSL/main";
+    nixos-wsl.inputs.nixpkgs.follows = "nixpkgs";
   };
 
-  outputs = { self, nixpkgs, nix-darwin, home-manager, ... }@inputs:
+  outputs = { self, nixpkgs, nix-darwin, home-manager, nixos-wsl, ... }@inputs:
     let
       system = "aarch64-darwin";
       pkgs = nixpkgs.legacyPackages.${system};
@@ -49,6 +51,23 @@
       homeConfigurations."vaiciel@DESKTOP-SN8SC4G" = home-manager.lib.homeManagerConfiguration {
         pkgs = nixpkgs.legacyPackages.x86_64-linux;
         modules = [ ./home-wsl.nix ];
+      };
+
+      # NixOS-WSL (whole system, home-manager inside it): sudo nixos-rebuild switch --flake ~/Projects/dotfiles/nix
+      # (nixos-rebuild picks this by hostname: `hostname`)
+      nixosConfigurations.nixos = nixpkgs.lib.nixosSystem {
+        specialArgs = { inherit inputs; };
+        modules = [
+          nixos-wsl.nixosModules.default
+          ./nixos-wsl.nix
+          home-manager.nixosModules.home-manager
+          {
+            home-manager.useGlobalPkgs = true;
+            home-manager.useUserPackages = true; # packages land in /etc/profiles/per-user/nixos
+            home-manager.backupFileExtension = "before-home-manager";
+            home-manager.users.nixos = import ./home-nixos-wsl.nix;
+          }
+        ];
       };
     };
 }
