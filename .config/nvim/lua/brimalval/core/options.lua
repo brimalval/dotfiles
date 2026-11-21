@@ -32,6 +32,12 @@ opt.ignorecase = true
 -- Use system clipboard
 opt.clipboard = "unnamedplus"
 
+-- WSL: talk to the Windows clipboard directly. Without this nvim picks wl-copy (WAYLAND_DISPLAY is set),
+-- which goes through WSLg and fails whenever WSLg's compositor is down. win32yank comes from nix/pkgs.
+if vim.fn.has("wsl") == 1 and vim.fn.executable("win32yank.exe") == 1 then
+	vim.g.clipboard = "win32yank"
+end
+
 -- Splits
 opt.splitright = true
 opt.splitbelow = true

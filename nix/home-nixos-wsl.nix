@@ -14,6 +14,8 @@
     gcc # nvim-treesitter compiles parsers; telescope-fzf-native, LuaSnip's jsregexp
     gnumake # telescope-fzf-native (`build = "make"`), LuaSnip (`make install_jsregexp`)
     unzip # Mason unpacks most language servers from .zip releases
+
+    (pkgs.callPackage ./pkgs/win32yank.nix { }) # nvim's clipboard on WSL (core/options.lua)
   ];
 
   # No targets.genericLinux here: that's for Nix on other distros (home-wsl.nix, Debian). NixOS sets up
