@@ -85,6 +85,7 @@ bind("SUPER + Return", exec("uwsm app -- " .. terminal))
 bind("SUPER + Space", exec(launcher))
 bind("SUPER + CTRL + V", exec("vicinae deeplink vicinae://launch/clipboard/history")) -- Vicinae records copies itself
 bind("SUPER + Escape", exec("hyprlock"))
+bind("CTRL + SHIFT + Escape", exec("uwsm app -- " .. terminal .. " -e btop")) -- task manager
 bind("Print", exec('grim -g "$(slurp)" - | wl-copy')) -- region → clipboard
 bind("SHIFT + Print", exec('grim -g "$(slurp)" - | satty --filename -')) -- region → annotate
 bind("SUPER + SHIFT + E", exec("uwsm stop")) -- log out

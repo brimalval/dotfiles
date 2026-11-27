@@ -27,6 +27,7 @@
     tmux # tmux-fingers loads from Nix, see xdg.dataFile below
     starship
     lazygit
+    btop # task manager (Ctrl+Shift+Esc on the desktop)
 
     # git and GitHub
     gh
