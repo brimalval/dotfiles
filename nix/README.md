@@ -308,12 +308,13 @@ What differs from the Mac:
 ## NixOS desktop
 
 The PC (Ryzen 5 5600X, RTX 3060 Ti) runs NixOS from the 2 TB SSD as its main system. Windows stays on the
-500 GB Samsung for games with kernel anticheat (League's Vanguard). Hyprland is the default session and
-Plasma is a fallback; pick either at the login screen.
+500 GB Samsung for games with kernel anticheat (League's Vanguard). Hyprland is the session; the login screen also
+offers Steam Big Picture (gamescope). Plasma was removed: its apps cluttered the launcher and misbehave
+outside Plasma.
 
 | File | What it holds |
 |---|---|
-| `nixos-desktop.nix` | System: boot and Secure Boot, NVIDIA, Hyprland + Plasma, audio, Steam, fonts, user `brian` |
+| `nixos-desktop.nix` | System: boot and Secure Boot, NVIDIA, Hyprland, audio, Steam, fonts, user `brian` |
 | `hardware-desktop.nix` | Disks (by label), kernel modules, microcode |
 | `home-nixos-desktop.nix` | User: `home.nix` plus the Hyprland session's tools, Discord, Lutris, Heroic, GTK theme |
 | `../.config/hypr/` | `hyprland.lua` (Hyprland 0.57+ reads only Lua; keys mirror `.aerospace.toml` with SUPER for alt), `hypridle.conf`, `hyprlock.conf` |

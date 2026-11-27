@@ -57,12 +57,12 @@ in
     package = config.boot.kernelPackages.nvidiaPackages.stable;
   };
 
-  # --- Desktop: Hyprland, with Plasma as a fallback session; pick either at the login screen ---
+  # --- Desktop: Hyprland. Plasma was a fallback session until 2026-11; it put ~170 KDE apps in the launcher
+  # that don't work well outside Plasma. If Hyprland breaks: the Steam session at the login screen, or a TTY. ---
   programs.hyprland = {
     enable = true;
     withUWSM = true; # starts Hyprland as a systemd session, so services and env vars behave
   };
-  services.desktopManager.plasma6.enable = true;
   services.displayManager.sddm = {
     enable = true;
     wayland.enable = true;
