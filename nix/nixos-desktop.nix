@@ -126,6 +126,16 @@ in
 
   programs.firefox.enable = true;
 
+  # Flatpaks, for apps nixpkgs dropped. nix-flatpak installs what's listed from Flathub on each switch
+  # (other Flatpaks are left alone: uninstallUnmanaged is off). Flathub is its default remote.
+  services.flatpak = {
+    enable = true;
+    packages = [
+      "com.brave.Browser" # removed from nixpkgs 2026-11 (no committer to land security fixes); Brave publishes this one
+    ];
+    update.auto = { enable = true; onCalendar = "weekly"; }; # browser security fixes
+  };
+
   # Set at first install; don't bump. It isn't the NixOS version you run.
   system.stateVersion = "26.11";
 }

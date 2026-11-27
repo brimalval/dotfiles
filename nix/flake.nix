@@ -11,9 +11,10 @@
     nixos-wsl.inputs.nixpkgs.follows = "nixpkgs";
     lanzaboote.url = "github:nix-community/lanzaboote"; # Secure Boot for the desktop (Vanguard needs it on)
     lanzaboote.inputs.nixpkgs.follows = "nixpkgs";
+    nix-flatpak.url = "github:gmodena/nix-flatpak/?ref=latest"; # declarative Flatpaks on the desktop (Brave)
   };
 
-  outputs = { self, nixpkgs, nix-darwin, home-manager, nixos-wsl, lanzaboote, ... }@inputs:
+  outputs = { self, nixpkgs, nix-darwin, home-manager, nixos-wsl, lanzaboote, nix-flatpak, ... }@inputs:
     let
       system = "aarch64-darwin";
       pkgs = nixpkgs.legacyPackages.${system};
@@ -78,6 +79,7 @@
         specialArgs = { inherit inputs; };
         modules = [
           lanzaboote.nixosModules.lanzaboote
+          nix-flatpak.nixosModules.nix-flatpak
           ./nixos-desktop.nix
           home-manager.nixosModules.home-manager
           {
