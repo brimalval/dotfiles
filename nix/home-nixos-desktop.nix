@@ -41,6 +41,9 @@
     lutris # non-Steam launchers (HoYoPlay, Kuro, ...)
     heroic # Epic and GOG
     mangohud # FPS overlay: `mangohud %command%` in Steam
+
+    # Wallpaper Engine
+    linux-wallpaperengine
   ];
 
   # Launcher on SUPER+Space, Raycast-style: apps, open windows across workspaces ("Switch Windows"),

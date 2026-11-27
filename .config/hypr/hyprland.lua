@@ -42,13 +42,16 @@ hl.on("hyprland.start", function()
 	hl.exec_cmd("uwsm app -- hypridle")
 	hl.exec_cmd("uwsm app -- nm-applet --indicator")
 	hl.exec_cmd("systemctl --user start hyprpolkitagent")
+	-- Wallpaper Engine scene "Purple day (紫の日)" (Steam Workshop 2070137802; subscribe in Steam to download it).
+	-- Pauses itself while a window is fullscreen (games).
+	hl.exec_cmd("uwsm app -- linux-wallpaperengine --screen-root DP-1 --bg 2070137802 --silent --fps 30")
 end)
 
 -- --- Look (AeroSpace had no gaps; same here) ---
 hl.config({
 	general = {
-		gaps_in = 0,
-		gaps_out = 0,
+		gaps_in = 3,
+		gaps_out = 5,
 		border_size = 2,
 		col = {
 			active_border = "rgba(c4a7e7ff)",
