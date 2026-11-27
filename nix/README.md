@@ -316,7 +316,7 @@ Plasma is a fallback; pick either at the login screen.
 | `nixos-desktop.nix` | System: boot and Secure Boot, NVIDIA, Hyprland + Plasma, audio, Steam, fonts, user `brian` |
 | `hardware-desktop.nix` | Disks (by label), kernel modules, microcode |
 | `home-nixos-desktop.nix` | User: `home.nix` plus the Hyprland session's tools, Discord, Lutris, Heroic, GTK theme |
-| `../.config/hypr/` | `hyprland.conf` (keys mirror `.aerospace.toml` with SUPER for alt), `hypridle.conf`, `hyprlock.conf` |
+| `../.config/hypr/` | `hyprland.lua` (Hyprland 0.57+ reads only Lua; keys mirror `.aerospace.toml` with SUPER for alt), `hypridle.conf`, `hyprlock.conf` |
 | `../.zshrc.linux` | zsh fragment for native Linux (`.zshrc` sets `PLATFORM=linux`) |
 
 Change workflow: edit, `git add -A nix`, `sudo nixos-rebuild switch --flake ~/Projects/dotfiles/nix`.
