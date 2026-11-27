@@ -101,6 +101,7 @@ in
     pkgs.maple-mono.NF # kitty's font_family
     pkgs.noto-fonts
     pkgs.noto-fonts-cjk-sans # Japanese/Chinese text in games and on the web
+    pkgs.nerd-fonts.jetbrains-mono # waybar's text and icons
     pkgs.noto-fonts-color-emoji
   ];
 

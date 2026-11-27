@@ -1,0 +1,196 @@
+/* Waybar, desktop PC: "Corners" in Rosé Pine Moon. Tabs hang from the screen's top edge; between them
+ * the bar is transparent, so the wallpaper shows. Reloads on save.
+ * Styling reference: https://github.com/Alexays/Waybar/wiki/Styling
+ * Inspect live: `GTK_DEBUG=interactive waybar`. */
+
+/* --- Rosé Pine Moon (https://rosepinetheme.com/palette) --- */
+@define-color base    #232136;
+@define-color surface #2a273f;
+@define-color overlay #393552;
+@define-color muted   #6e6a86;
+@define-color subtle  #908caa;
+@define-color text    #e0def4;
+@define-color love    #eb6f92;
+@define-color gold    #f6c177;
+@define-color rose    #ea9a97;
+@define-color foam    #9ccfd8;
+@define-color iris    #c4a7e7;
+
+/* The tab colour; the corner images in corners/ repeat it as #232136. */
+@define-color tab @base;
+
+* {
+  border: none;
+  border-radius: 0;
+  font-family: "JetBrainsMono Nerd Font", monospace;
+  font-size: 14px;
+  font-weight: 500;
+  min-height: 0;
+  padding: 0;
+  margin: 0;
+  box-shadow: none;
+}
+
+window#waybar {
+  background: transparent;
+  color: @text;
+}
+
+/* --- Tabs --- */
+#tab-left,
+#tab-center,
+#tab-right {
+  background-color: @tab;
+}
+
+#tab-left {
+  border-radius: 0 0 18px 0;
+  padding: 0 18px 0 16px;
+}
+
+#tab-center {
+  border-radius: 0 0 18px 18px;
+  padding: 0 22px;
+}
+
+#tab-right {
+  border-radius: 0 0 0 18px;
+  padding: 0 14px 0 18px;
+}
+
+/* --- Ears: the curved inside corners where a tab meets the screen edge --- */
+/* 18px SVGs in corners/ (the tab colour minus a quarter circle). They repeat the tab colour, #232136:
+ * change it there too if @tab changes. GTK's radial-gradient draws this corner blurry, hence images. */
+#custom-ear-left,
+#custom-ear-right {
+  min-width: 18px;
+  background-repeat: no-repeat;
+  background-size: 18px 18px;
+  background-position: left top;
+}
+
+/* Left of a tab: the curve opens toward the bottom left */
+#custom-ear-left {
+  background-image: url("corners/left.svg");
+}
+
+/* Right of a tab: the curve opens toward the bottom right */
+#custom-ear-right {
+  background-image: url("corners/right.svg");
+}
+
+/* --- Workspaces: dots; the active one stretches into a pill with its name --- */
+#workspaces {
+  margin: 0 2px;
+}
+
+/* GTK stretches buttons to the bar's height, so vertical margins set the dot size: (40 - 12) / 2 = 14. */
+#workspaces button {
+  min-width: 12px;
+  min-height: 12px;
+  margin: 14px 4px;
+  padding: 0;
+  border-radius: 7px;
+  background-color: @subtle;
+  color: transparent;
+  font-size: 1px;
+  /* Only width and colour animate. Margins and label size switch instantly: animating them passes through
+   * heights taller than the bar, which resizes it mid-switch and nudges every window. */
+  transition: min-width 200ms ease, background-color 200ms ease, color 200ms ease;
+}
+
+#workspaces button label {
+  font-size: 1px;
+  min-height: 0;
+}
+
+#workspaces button.active label {
+  font-size: 12px;
+}
+
+#workspaces button.empty {
+  background-color: @overlay;
+}
+
+#workspaces button.active {
+  min-width: 30px;
+  margin: 9px 4px;
+  padding: 0 6px;
+  background-color: @iris;
+  color: @base;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+#workspaces button.urgent {
+  background-color: @love;
+}
+
+#workspaces button:hover {
+  background-color: @rose;
+  box-shadow: none;
+  text-shadow: none;
+}
+
+/* --- Clock --- */
+#clock {
+  font-weight: 700;
+  font-size: 15px;
+}
+
+/* --- Status --- */
+#mpris,
+#cpu,
+#pulseaudio,
+#network {
+  padding: 0 9px;
+  color: @subtle;
+}
+
+#mpris {
+  color: @rose;
+}
+
+#mpris.paused {
+  color: @muted;
+}
+
+#pulseaudio.muted {
+  color: @muted;
+}
+
+#network.disconnected {
+  color: @love;
+}
+
+#tray {
+  padding-left: 9px;
+}
+
+#tray > .needs-attention {
+  background-color: alpha(@love, 0.4);
+  border-radius: 6px;
+}
+
+/* --- Tooltips and menus --- */
+tooltip {
+  background-color: @base;
+  border: 1px solid @overlay;
+  border-radius: 10px;
+}
+
+tooltip label {
+  color: @text;
+  padding: 4px 6px;
+}
+
+menu {
+  background-color: @base;
+  border: 1px solid @overlay;
+  border-radius: 10px;
+  padding: 4px 0;
+}
+
+menu menuitem:hover {
+  background-color: @overlay;
+}

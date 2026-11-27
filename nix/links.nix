@@ -60,6 +60,7 @@ in
   // lib.optionalAttrs config.dotfiles.linuxDesktop {
     "hypr".source = link ".config/hypr"; # hyprland.lua, hypridle.conf, hyprlock.conf
     "kitty/linux.conf".source = link ".config/kitty/linux.conf"; # smaller font_size than the Mac
+    "waybar".source = link ".config/waybar"; # config.jsonc, style.css, corners/
   };
 
   # Not linked on purpose:

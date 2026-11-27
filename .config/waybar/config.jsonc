@@ -1,0 +1,93 @@
+// Waybar, desktop PC: "Corners". Three tabs hang from the top edge of the screen with curved inside
+// corners, as if cut out of the screen frame: workspaces left, clock in a centre notch, status right.
+// Colours: Rosé Pine Moon (style.css). Linked to ~/.config/waybar by nix/links.nix.
+// Reload after editing this file: `pkill -SIGUSR2 waybar` (style.css reloads on save).
+// Module reference: https://github.com/Alexays/Waybar/wiki
+//
+// The curved inside corners are the empty custom/ear-* modules: GTK CSS has no ::before/::after, so
+// each one is a small box whose background is a radial gradient (style.css, "Ears").
+//
+// Known gap: Waybar 0.15 switches workspaces on click with Hyprland's pre-0.57 dispatch syntax, which
+// Hyprland 0.57 rejects, so clicking a workspace does nothing until Waybar catches up. SUPER+key works.
+{
+  "layer": "top",
+  "position": "top",
+  "height": 40,
+  "spacing": 0,
+  "reload_style_on_change": true,
+
+  "modules-left": ["group/tab-left", "custom/ear-right"],
+  "modules-center": ["custom/ear-left", "group/tab-center", "custom/ear-right"],
+  "modules-right": ["custom/ear-left", "group/tab-right"],
+
+  "group/tab-left": { "orientation": "horizontal", "modules": ["hyprland/workspaces"] },
+  "group/tab-center": { "orientation": "horizontal", "modules": ["clock"] },
+  "group/tab-right": { "orientation": "horizontal", "modules": ["mpris", "cpu", "pulseaudio", "network", "tray"] },
+
+  "custom/ear-left": { "format": " ", "tooltip": false },
+  "custom/ear-right": { "format": " ", "tooltip": false },
+
+  // Dots; the active one stretches into a pill showing its name (1-9, or a letter for SUPER+letter).
+  "hyprland/workspaces": {
+    "format": "{name}",
+    "sort-by": "number",
+    "on-scroll-up": "hyprctl dispatch \"hl.dsp.focus({ workspace = 'e-1' })\"",
+    "on-scroll-down": "hyprctl dispatch \"hl.dsp.focus({ workspace = 'e+1' })\""
+  },
+
+  // Time in full ink, day and date muted. Right-click: calendar mode; scroll: change month.
+  "clock": {
+    "format": "{:%H:%M  <span color='#908caa'>%a %d %b</span>}",
+    "interval": 10,
+    "tooltip-format": "<tt>{calendar}</tt>",
+    "calendar": {
+      "mode": "month",
+      "on-scroll": 1,
+      "format": {
+        "months": "<span color='#c4a7e7'><b>{}</b></span>",
+        "weekdays": "<span color='#f6c177'><b>{}</b></span>",
+        "today": "<span color='#eb6f92'><b><u>{}</u></b></span>"
+      }
+    },
+    "actions": { "on-scroll-up": "shift_up", "on-scroll-down": "shift_down" }
+  },
+
+  // Current player; hidden when nothing plays. Click: play/pause; right-click: next.
+  "mpris": {
+    "format": "󰝚 {title}",
+    "format-paused": "󰏤 {title}",
+    "title-len": 28,
+    "tooltip-format": "{player}: {artist} – {title}",
+    "on-click": "playerctl play-pause",
+    "on-click-right": "playerctl next"
+  },
+
+  "cpu": {
+    "format": "󰘚 {usage}%",
+    "interval": 5
+  },
+
+  // Click: mixer; right-click: mute; scroll: volume.
+  "pulseaudio": {
+    "format": "{icon} {volume}%",
+    "format-muted": "󰝟 muted",
+    "format-icons": { "default": ["󰕿", "󰖀", "󰕾"] },
+    "scroll-step": 5,
+    "on-click": "uwsm app -- pavucontrol",
+    "on-click-right": "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"
+  },
+
+  // Click: nmtui in a terminal (the tray's nm-applet has the menu too).
+  "network": {
+    "format-ethernet": "󰈀",
+    "format-wifi": "󰤨",
+    "format-disconnected": "󰤮",
+    "tooltip-format": "{ifname}  {ipaddr}/{cidr}",
+    "on-click": "uwsm app -- kitty -e nmtui"
+  },
+
+  "tray": {
+    "icon-size": 16,
+    "spacing": 8
+  }
+}
