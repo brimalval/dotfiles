@@ -5,7 +5,8 @@
 # The path must be the main checkout: a worktree or a relative path would break or freeze the links.
 #
 # Adding a file: add a line here, `git add` it, then switch (Mac: `sudo darwin-rebuild switch --flake ~/Projects/dotfiles/nix`;
-# WSL: `home-manager switch --flake ~/Projects/dotfiles/nix`). Mac-only links sit under `lib.optionalAttrs isDarwin`.
+# WSL: `home-manager switch --flake ~/Projects/dotfiles/nix`; NixOS: `sudo nixos-rebuild switch --flake ~/Projects/dotfiles/nix`).
+# Mac-only links sit under `lib.optionalAttrs isDarwin`, the Linux desktop's under `config.dotfiles.linuxDesktop`.
 # Removing one: delete the line and switch; home-manager removes the link.
 { config, lib, pkgs, ... }:
 
@@ -19,7 +20,10 @@ let
   scripts = lib.attrNames (lib.filterAttrs (_: type: type == "regular") (builtins.readDir ../.local/bin));
 in
 {
-  home.file = {
+  # Set by the bare-metal NixOS desktop (home-nixos-desktop.nix): links the Hyprland session's configs.
+  options.dotfiles.linuxDesktop = lib.mkEnableOption "the Linux desktop's (Hyprland) config links";
+
+  config.home.file = {
     ".zshenv".source = link ".zshenv";
     ".zshrc".source = link ".zshrc"; # sources .zshrc.common and .zshrc.<platform> from the repo itself
     ".tmux.conf".source = link ".tmux.conf";
@@ -31,7 +35,7 @@ in
   }
   // lib.genAttrs (map (s: ".local/bin/${s}") scripts) (p: { source = link p; });
 
-  xdg.configFile = {
+  config.xdg.configFile = {
     # Whole folders
     "nvim".source = link ".config/nvim";
     "opencode".source = link ".config/opencode";
@@ -52,6 +56,9 @@ in
     "herdr-app/themes/rose-pine-moon.json".source = link ".config/herdr-app/themes/rose-pine-moon.json";
     "herdr-app/mods/nvim-nav".source = link ".config/herdr-app/mods/nvim-nav";
     "herdr-app/mods/lazygit-popup".source = link ".config/herdr-app/mods/lazygit-popup";
+  }
+  // lib.optionalAttrs config.dotfiles.linuxDesktop {
+    "hypr".source = link ".config/hypr"; # hyprland.conf, hypridle.conf, hyprlock.conf
   };
 
   # Not linked on purpose:

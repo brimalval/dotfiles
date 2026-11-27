@@ -1,0 +1,27 @@
+# Native Linux (the NixOS desktop) environment and tooling setup
+
+export PATH="$PATH:$HOME/.local/bin"
+
+alias see="xdg-open"
+
+# pnpm home: global installs (`pnpm add -g`). Appended, so pnpm itself comes from Nix (nix/home.nix).
+export PNPM_HOME="$HOME/.local/share/pnpm"
+case ":$PATH:" in
+  *":$PNPM_HOME:"*) ;;
+  *) export PATH="$PATH:$PNPM_HOME" ;;
+esac
+
+# zsh-autosuggestions
+if [[ ! -d "$HOME/.zsh/zsh-autosuggestions" ]] && command -v git >/dev/null 2>&1; then
+  mkdir -p "$HOME/.zsh"
+  git clone https://github.com/zsh-users/zsh-autosuggestions "$HOME/.zsh/zsh-autosuggestions" ||
+    printf 'warning: failed to clone zsh-autosuggestions, continuing without it\n'
+fi
+if [[ -f "$HOME/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh" ]]; then
+  source "$HOME/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh"
+  ZSH_AUTOSUGGEST_STRATEGY=(history completion)
+fi
+
+if command -v fastfetch >/dev/null 2>&1; then
+  fastfetch
+fi

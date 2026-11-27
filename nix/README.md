@@ -7,6 +7,7 @@ Homebrew list. Edit it, switch, and the machine matches. How it got this way: [d
 |---|---|---|
 | Mac (`Brians-MacBook-Pro`) | nix-darwin, with home-manager inside it | `sudo darwin-rebuild switch --flake ~/Projects/dotfiles/nix` |
 | WSL (`DESKTOP-SN8SC4G`, Debian 12) | standalone home-manager, no sudo | `home-manager switch --flake ~/Projects/dotfiles/nix` |
+| Desktop PC (`desktop`, bare-metal NixOS, dual boot) | NixOS, with home-manager inside it | `sudo nixos-rebuild switch --flake ~/Projects/dotfiles/nix` |
 
 Most of the setup is shared (`home.nix`); each machine adds its own file (`home-darwin.nix`, `home-wsl.nix`).
 Everything below is about the Mac unless it says WSL; [WSL](#wsl) covers what differs there.
@@ -15,6 +16,7 @@ Everything below is about the Mac unless it says WSL; [WSL](#wsl) covers what di
 - [Making a change](#making-a-change)
 - [Recipes](#recipes)
 - [WSL](#wsl)
+- [NixOS desktop](#nixos-desktop)
 - [Troubleshooting](#troubleshooting)
 
 ## Current setup
@@ -302,6 +304,77 @@ What differs from the Mac:
    `home.username` / `home.homeDirectory` in `home-wsl.nix`.
 5. First switch, moving existing dotfiles aside as `*.before-home-manager`:
    `nix run home-manager -- switch -b before-home-manager --flake ~/Projects/dotfiles/nix`
+
+## NixOS desktop
+
+The PC (Ryzen 5 5600X, RTX 3060 Ti) runs NixOS from the 2 TB SSD as its main system. Windows stays on the
+500 GB Samsung for games with kernel anticheat (League's Vanguard). Hyprland is the default session and
+Plasma is a fallback; pick either at the login screen.
+
+| File | What it holds |
+|---|---|
+| `nixos-desktop.nix` | System: boot and Secure Boot, NVIDIA, Hyprland + Plasma, audio, Steam, fonts, user `brian` |
+| `hardware-desktop.nix` | Disks (by label), kernel modules, microcode |
+| `home-nixos-desktop.nix` | User: `home.nix` plus the Hyprland session's tools, Discord, Lutris, Heroic, GTK theme |
+| `../.config/hypr/` | `hyprland.conf` (keys mirror `.aerospace.toml` with SUPER for alt), `hypridle.conf`, `hyprlock.conf` |
+| `../.zshrc.linux` | zsh fragment for native Linux (`.zshrc` sets `PLATFORM=linux`) |
+
+Change workflow: edit, `git add -A nix`, `sudo nixos-rebuild switch --flake ~/Projects/dotfiles/nix`.
+Undo: `sudo nixos-rebuild switch --rollback`, or pick an older generation in the boot menu.
+
+**Switching to Windows:** press the firmware's boot-menu key at power-on (F8 on ASUS boards) and choose
+Windows Boot Manager. NixOS stays first in the boot order. If Windows Update ever makes itself first again,
+fix the order in the firmware (or `sudo efibootmgr` from NixOS).
+
+### Install the desktop
+
+Before starting, in Windows: turn off Fast Startup (Control Panel → Power Options → "Choose what the power
+buttons do"). BitLocker is off on every drive (checked 2026-11-27), so no recovery key is needed.
+
+1. Flash the NixOS ISO (graphical, from <https://nixos.org/download>) to the USB stick.
+2. In the firmware (Del at power-on): turn Secure Boot **off** for now. Boot the USB in UEFI mode.
+3. Find the 2 TB disk. **Check this twice: the wrong disk erases Windows.**
+   ```sh
+   lsblk -o NAME,SIZE,MODEL,TRAN
+   DISK=/dev/...      # the ~1.8T one; never the 465.8G Samsung (Windows) or the 931.5G Seagate (E:)
+   ```
+4. Partition and format it (erases everything on it):
+   ```sh
+   sudo wipefs -a $DISK
+   sudo parted $DISK -- mklabel gpt
+   sudo parted $DISK -- mkpart ESP fat32 1MiB 1GiB
+   sudo parted $DISK -- set 1 esp on
+   sudo parted $DISK -- mkpart root ext4 1GiB 100%
+   sudo mkfs.fat -F 32 -n NIXBOOT /dev/disk/by-partlabel/ESP
+   sudo mkfs.ext4 -L nixos /dev/disk/by-partlabel/root
+   sudo mount /dev/disk/by-label/nixos /mnt
+   sudo mkdir -p /mnt/boot && sudo mount -o umask=077 /dev/disk/by-label/NIXBOOT /mnt/boot
+   ```
+5. Clone this repo and install (`hardware-desktop.nix` finds the disks by the labels just set):
+   ```sh
+   sudo mkdir -p /mnt/home/brian/Projects
+   sudo nix-shell -p git --run 'git clone https://github.com/brimalval/dotfiles /mnt/home/brian/Projects/dotfiles'
+   sudo nixos-install --flake /mnt/home/brian/Projects/dotfiles/nix#desktop   # asks for a root password
+   sudo nixos-enter --root /mnt -c 'passwd brian && chown -R brian:users /home/brian'
+   ```
+6. Reboot, unplug the USB. Log in as `brian` (Hyprland). SUPER+Enter opens kitty.
+7. Sign in again: `gh auth login`; copy `~/.ssh` keys over and set this repo's signing settings (AGENTS.md).
+
+### Secure Boot
+
+Vanguard refuses to run on Windows 11 with Secure Boot off, so it has to be on, and NixOS then has to be
+signed. lanzaboote does that with your own keys, enrolled next to Microsoft's (so Windows keeps booting).
+
+1. In NixOS: `sudo sbctl create-keys`.
+2. Set `secureBoot = true;` at the top of `nixos-desktop.nix`, switch, then `sudo sbctl verify` (the
+   NixOS kernels and systemd-boot show as signed; a few other files may not, which is fine).
+3. Reboot into the firmware (Del): Boot → Secure Boot → Key Management → **Clear Secure Boot keys**
+   (this puts it in setup mode). Save and boot NixOS.
+4. `sudo sbctl enroll-keys --microsoft` (the `--microsoft` part keeps Windows and the GPU's firmware
+   bootable; never leave it out).
+5. Reboot into the firmware, set Secure Boot on (OS Type: "Windows UEFI mode"), save.
+6. Check: `bootctl status` in NixOS says "Secure Boot: enabled (user)". In Windows, `msinfo32` says
+   "Secure Boot State: On".
 
 ## Troubleshooting
 

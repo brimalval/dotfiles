@@ -22,6 +22,8 @@ else
       __uname="$(uname -s 2>/dev/null)"
       if [[ "$__uname" == "Darwin" ]]; then
         PLATFORM="mac"
+      elif [[ "$__uname" == "Linux" ]]; then
+        PLATFORM="linux" # native Linux (the NixOS desktop); WSL was caught above
       fi
     fi
     if [[ "$PLATFORM" == "unknown" && "${OSTYPE:-}" == darwin* ]]; then
