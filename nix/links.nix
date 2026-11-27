@@ -63,6 +63,10 @@ in
     "waybar".source = link ".config/waybar"; # config.jsonc, style.css, corners/
   };
 
+  config.xdg.dataFile = lib.optionalAttrs config.dotfiles.linuxDesktop {
+    "vicinae/scripts".source = link ".config/vicinae/scripts"; # Vicinae script commands (Hyprland actions)
+  };
+
   # Not linked on purpose:
   # - .claude/mods: Claude Code loads them from the repo via CLAUDE_CODE_PLUGIN_DIRS.
   # - alacritty.yml, karabiner.json, kitty.conf.bak, starship-*.toml, mouseless.*: kept in the repo, unused.

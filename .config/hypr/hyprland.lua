@@ -8,7 +8,7 @@
 -- the Mac's option key does, so the same fingers do the same things. SUPER also stays out of games' way.
 
 local terminal = "kitty"
-local launcher = "fuzzel"
+local launcher = "vicinae toggle" -- the server runs as a systemd user service (home-nixos-desktop.nix)
 
 local function bind(keys, dispatcher, opts)
 	hl.bind(keys, dispatcher, opts)
@@ -41,7 +41,6 @@ hl.on("hyprland.start", function()
 	hl.exec_cmd("uwsm app -- mako")
 	hl.exec_cmd("uwsm app -- hypridle")
 	hl.exec_cmd("uwsm app -- nm-applet --indicator")
-	hl.exec_cmd("uwsm app -- wl-paste --watch cliphist store")
 	hl.exec_cmd("systemctl --user start hyprpolkitagent")
 end)
 
@@ -80,8 +79,8 @@ hl.animation({ leaf = "global", enabled = true, speed = 3, bezier = "default" })
 
 -- --- Apps ---
 bind("SUPER + Return", exec("uwsm app -- " .. terminal))
-bind("SUPER + Space", exec(launcher .. ' --launch-prefix="uwsm app -- "'))
-bind("SUPER + CTRL + V", exec("cliphist list | fuzzel --dmenu | cliphist decode | wl-copy"))
+bind("SUPER + Space", exec(launcher))
+bind("SUPER + CTRL + V", exec("vicinae deeplink vicinae://launch/clipboard/history")) -- Vicinae records copies itself
 bind("SUPER + Escape", exec("hyprlock"))
 bind("Print", exec('grim -g "$(slurp)" - | wl-copy')) -- region → clipboard
 bind("SHIFT + Print", exec('grim -g "$(slurp)" - | satty --filename -')) -- region → annotate
