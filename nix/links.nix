@@ -59,6 +59,7 @@ in
   }
   // lib.optionalAttrs config.dotfiles.linuxDesktop {
     "hypr".source = link ".config/hypr"; # hyprland.lua, hypridle.conf, hyprlock.conf
+    "mako/config".source = link ".config/mako/config"; # notification popups
     "kitty/linux.conf".source = link ".config/kitty/linux.conf"; # smaller font_size than the Mac
     "waybar".source = link ".config/waybar"; # config.jsonc, style.css, corners/
   };

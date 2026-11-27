@@ -319,6 +319,7 @@ outside Plasma.
 | `home-nixos-desktop.nix` | User: `home.nix` plus the Hyprland session's tools, Discord, Lutris, Heroic, GTK theme |
 | `../.config/hypr/` | `hyprland.lua` (Hyprland 0.57+ reads only Lua; keys mirror `.aerospace.toml` with SUPER for alt), `hypridle.conf`, `hyprlock.conf` |
 | `../.config/vicinae/scripts/` | Launcher (SUPER+Space) script commands: Hyprland window actions, Do Not Disturb |
+| `../.config/mako/config` | Notification popups, Rosé Pine Moon to match waybar |
 | `../.zshrc.linux` | zsh fragment for native Linux (`.zshrc` sets `PLATFORM=linux`) |
 
 Change workflow: edit, `git add -A nix`, `sudo nixos-rebuild switch --flake ~/Projects/dotfiles/nix`.

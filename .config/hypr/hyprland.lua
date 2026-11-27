@@ -85,6 +85,9 @@ bind("SUPER + Escape", exec("hyprlock"))
 bind("Print", exec('grim -g "$(slurp)" - | wl-copy')) -- region → clipboard
 bind("SHIFT + Print", exec('grim -g "$(slurp)" - | satty --filename -')) -- region → annotate
 bind("SUPER + SHIFT + E", exec("uwsm stop")) -- log out
+bind("SUPER + BackSpace", exec("makoctl dismiss")) -- dismiss the newest notification
+bind("SUPER + SHIFT + BackSpace", exec("makoctl dismiss --all"))
+bind("SUPER + CTRL + BackSpace", exec("makoctl restore")) -- bring back the last dismissed one
 
 -- --- Windows (AeroSpace: alt-...) ---
 local dirs = { H = "left", J = "down", K = "up", L = "right" }
